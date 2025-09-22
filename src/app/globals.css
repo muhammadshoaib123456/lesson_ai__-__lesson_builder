@@ -1,0 +1,16 @@
+/* app/globals.css */
+@import "tailwindcss";
+
+/* Register daisyUI in v4 */
+@plugin "daisyui";
+
+/* (optional) Define/enable themes here */
+@plugin "daisyui" {
+  /* make “lessn” available and default; fall back to light */
+  themes: lessn --default, light;
+}
+
+/* If you want to keep Tailwind v3-style directives, remove them.
+   v4 doesn’t need these: 
+   @tailwind base; @tailwind components; @tailwind utilities; 
+*/

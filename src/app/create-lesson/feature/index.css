@@ -1,0 +1,64 @@
+/*
+ * This file bootstraps Tailwind and defines a handful of utility classes
+ * used throughout the create‑lesson feature. The original builder
+ * application relies on DaisyUI for its button styles. DaisyUI is a
+ * Tailwind plugin; if it isn’t configured in your tailwind.config.js
+ * the built–in classes such as `btn`, `btn-square` and the color
+ * variants won’t render correctly. To avoid a broken UI when DaisyUI
+ * isn’t available we explicitly define the basic look and feel of
+ * these classes here. Should you enable DaisyUI via the Tailwind
+ * plugins array the definitions below will gracefully override with
+ * the plugin’s styles.
+ */
+
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+@layer components {
+  /* Generic button base – matches DaisyUI’s `.btn` shape */
+  .btn {
+    @apply inline-flex items-center justify-center font-medium transition-colors duration-200 ease-in-out focus:outline-none;
+    @apply px-4 py-2 rounded-lg;
+  }
+
+  /* Medium sized button modifier used throughout the outline view */
+  .btn-m {
+    @apply text-sm px-3 py-1.5;
+  }
+
+  /* DaisyUI uses a `.btn-md` class for medium buttons. Define it here
+   * to provide reasonable spacing when DaisyUI isn’t installed. */
+  .btn-md {
+    @apply text-sm px-4 py-2;
+  }
+
+  /* Square button wrapper */
+  .btn-square {
+    @apply flex items-center justify-center p-0 rounded-lg;
+  }
+
+  /* Disabled state for buttons */
+  .btn-disabled {
+    @apply cursor-not-allowed opacity-50;
+  }
+
+  /* Colour utilities approximating the builder palette. Feel free to adjust
+   * these values to better match your brand colours. */
+  .bg-green-primary { @apply bg-green-500; }
+  .bg-indigo-secondary { @apply bg-indigo-600; }
+  .bg-orange-100 { @apply bg-orange-100; }
+  .border-orange-600 { @apply border-orange-600; }
+  .bg-gray-primary { @apply bg-gray-700; }
+  .border-gray-primary { @apply border-gray-700; }
+
+  /* Utility colours for text; these help ensure readability on coloured
+   * backgrounds. */
+  .text-green-primary { @apply text-green-600; }
+  .text-gray-primary { @apply text-gray-700; }
+
+  /* Loading spinner styling – simple border spinner */
+  .loading {
+    @apply h-5 w-5 border-2 border-t-transparent border-current rounded-full animate-spin mr-2;
+  }
+}
