@@ -1,0 +1,190 @@
+KEY,TEXT,FILE,LINE,TAG,ATTR
+"OOPS_LOST_IN_SPACE","Oops! Lost in Space","src\app\not-found.js",24,p,
+"THIS_PAGE_WANDERED_OFF_SOMEWHERE_EVEN_OUR_EMOJI_IS_SAD_ABOU","This page wandered off somewhere. Even our emoji is sad about it. But hey, you can still head back safely!","src\app\not-found.js",25,p,
+"TAKE_ME_HOME","Take Me Home","src\app\not-found.js",37,link,
+"SEARCH_IN_LIBRARY","Search in Library","src\components\ExploreClient.jsx",513,input,placeholder
+"FILTERS","Filters","src\components\ExploreClient.jsx",552,button,
+"SELECT_FILTER","Select Filter","src\components\FilterPopup.jsx",351,h2,
+"TOPICS_SUB_TOPICS","Topics & Sub-Topics","src\components\FilterPopup.jsx",434,h3,
+"SELECT_ALL","Select all","src\components\FilterPopup.jsx",441,button,
+"CLEAR","Clear","src\components\FilterPopup.jsx",444,button,
+"SEARCH_TOPIC","Search topic","src\components\FilterPopup.jsx",453,input,placeholder
+"REMOVE","Remove","src\components\FilterPopup.jsx",472,button,title
+"SELECT_ALL","Select all","src\components\FilterPopup.jsx",500,button,
+"CLEAR","Clear","src\components\FilterPopup.jsx",503,button,
+"SEARCH_SUB_TOPICS","Search sub-topics","src\components\FilterPopup.jsx",512,input,placeholder
+"REMOVE","Remove","src\components\FilterPopup.jsx",531,button,title
+"APPLY_FILTERS","Apply Filters","src\components\FilterPopup.jsx",572,button,
+"REMOVE_FILTERS","Remove Filters","src\components\FilterPopup.jsx",586,button,
+"REMOVE_ALL_FILTERS","Remove all filters","src\components\FilterPopup.jsx",585,button,title
+"BROUGHT_TO_YOU_BY","Brought to you by","src\components\Footer.jsx",19,p,
+"PRIVACY_POLICY","Privacy policy","src\components\Footer.jsx",26,link,
+"TERMS_OF_SERVICE","Terms of service","src\components\Footer.jsx",30,link,
+"EXPLORE_LIBRARY","Explore Library","src\components\Header.jsx",147,link,
+"MY_LESSONS","My Lessons","src\components\Header.jsx",152,link,
+"CREATE_A_LESSON","Create a Lesson","src\components\Header.jsx",156,link,
+"SELECT_GRADE","Select Grade","src\components\Header.jsx",166,span,
+"SELECT_SUBJECT","Select Subject","src\components\Header.jsx",207,span,
+"EXPLORE_LIBRARY","Explore Library","src\components\Header.jsx",305,link,
+"MY_LESSONS","My Lessons","src\components\Header.jsx",310,link,
+"CREATE_A_LESSON","Create a Lesson","src\components\Header.jsx",314,link,
+"LOGIN","Login","src\components\Header.jsx",410,link,
+"MY_PROFILE","My Profile","src\components\Header.jsx",415,link,
+"MY_LIBRARY","My Library","src\components\Header.jsx",418,link,
+"PRICING_SUBSCRIPTION","Pricing & Subscription","src\components\Header.jsx",421,link,
+"VIDEO_CONFERENCE","Video Conference","src\components\HelpPopup.jsx",62,span,
+"AUDIO_CALL","Audio Call","src\components\HelpPopup.jsx",76,span,
+"LIVE_CHAT","Live Chat","src\components\HelpPopup.jsx",92,span,
+"WE_CAN_HELP_NOW_ON_VIDEO_AUDIO_OR_CHAT","We can help now on video, audio or chat.","src\components\HelpPopup.jsx",107,h3,
+"ALSO_AVAILABLE_VIA_EMAIL","Also available via email:","src\components\HelpPopup.jsx",122,p,
+"OR_PHONE","or phone:","src\components\HelpPopup.jsx",126,p,
+"EXPLORE_LIBRARY","Explore Library","src\components\HeroSection.jsx",393,link,
+"MY_LESSONS","My Lessons","src\components\HeroSection.jsx",400,link,
+"CREATE_A_LESSON","Create a Lesson","src\components\HeroSection.jsx",406,link,
+"SELECT_GRADE","Select Grade","src\components\HeroSection.jsx",418,span,
+"SELECT_SUBJECT","Select Subject","src\components\HeroSection.jsx",448,span,
+"LOGIN","Login","src\components\HeroSection.jsx",485,link,
+"LOGIN","Login","src\components\HeroSection.jsx",508,link,
+"MY_PROFILE","My Profile","src\components\HeroSection.jsx",512,link,
+"EXPLORE_LIBRARY","Explore Library","src\components\HeroSection.jsx",565,link,
+"MY_LESSONS","My Lessons","src\components\HeroSection.jsx",570,link,
+"CREATE_A_LESSON","Create a Lesson","src\components\HeroSection.jsx",574,link,
+"SELECT_GRADE_2","Select Grade","src\components\HeroSection.jsx",577,button,
+"SELECT_SUBJECT_2","Select Subject","src\components\HeroSection.jsx",578,button,
+"LOGIN","Login","src\components\HeroSection.jsx",583,link,
+"MY_PROFILE","My Profile","src\components\HeroSection.jsx",588,link,
+"MY_LIBRARY","My Library","src\components\HeroSection.jsx",591,link,
+"PRICING_SUBSCRIPTION","Pricing & Subscription","src\components\HeroSection.jsx",594,link,
+"HELP","HELP","src\components\HeroSection.jsx",608,button,
+"YOUR_NEXT_GREAT_LESSN_STARTS_HERE","Your next great Lessn starts here.","src\components\HeroSection.jsx",642,h1,
+"BUILD_AND_EXPLORE_STANDARDS_BASED_AI_DRIVEN_LESSONS","Build and explore standards-based, AI-driven lessons","src\components\HeroSection.jsx",645,p,
+"SEARCH_E_G_ENGLISH_COLONIES_UNIT_RATES","Search e.g. English colonies, unit rates","src\components\HeroSection.jsx",670,input,placeholder
+"SEARCH","Search","src\components\HeroSection.jsx",684,button,
+"SEE_ALL_RESULTS","See all results","src\components\HeroSection.jsx",748,button,
+"GENERATE_A_NEW_LESSON","Generate a new lesson","src\components\HeroSection.jsx",762,link,
+"PREV","Prev","src\components\Paginator.jsx",10,button,
+"NEXT","Next","src\components\Paginator.jsx",21,button,
+"SPEND_MORE_TIME_WITH_YOUR_STUDENTS_LESS_ON_YOUR_PLANNING","Spend more time with your students, less on your planning","src\components\PlanningSection.jsx",6,h2,
+"GENERATE_STANDARDS_BASED_AI_DRIVEN_LESSONS_THAT_PROVIDE_A_S","Generate standards-based, AI-driven lessons that provide a solid foundation for your lectures.","src\components\PlanningSection.jsx",9,p,
+"LEVERAGE_THE_LESSON_LIBRARY_WITH_MORE_THAN_10K_EXPERT_CRAFTE","Leverage the lesson library with more than 10K expert-crafted lessons.","src\components\PlanningSection.jsx",13,p,
+"VIEW_PRESENTATION","View Presentation","src\components\PresentationCard.jsx",271,span,
+"MY_PROFILE","My Profile","src\components\ProfileDropdown.jsx",70,link,
+"MY_LIBRARY","My Library","src\components\ProfileDropdown.jsx",73,link,
+"PRICING_SUBSCRIPTION","Pricing & Subscription","src\components\ProfileDropdown.jsx",76,link,
+"LOG_OUT","Log out","src\components\ProfileDropdown.jsx",84,button,
+"TEACHERS_LOVE_THESE","Teachers love these","src\components\TeacherSectionClient.jsx",36,param,title
+"EXPLORE_LESSN_LIBRARY","Explore Lessn Library","src\components\TeacherSectionClient.jsx",39,param,ctaLabel
+"TEACHERS_LOVE_THESE_2","Teachers love these","src\components\TeacherSectionClient.jsx",36,prop,title
+"EXPLORE_LESSN_LIBRARY_2","Explore Lessn Library","src\components\TeacherSectionClient.jsx",39,prop,ctaLabel
+"AS_A_MATH_TEACHER_I_TRULY_VALUE_THE_QUALITY_AND_VARIETY_OF","As a math teacher, I truly value the quality and variety of these presentations. They break down complex concepts effectively and positively impact my students overall performance!","src\components\TestimonialsSection.jsx",9,prop,quote
+"MATH_TEACHER","Math Teacher","src\components\TestimonialsSection.jsx",11,prop,author
+"BEING_ABLE_TO_QUICKLY_GENERATE_STANDARDS_BASED_LESSONS_HAS_B","Being able to quickly generate standards-based lessons has been a game changer for my classroom. Lessnos library helps me stay organized and saves me precious planning time.","src\components\TestimonialsSection.jsx",14,prop,quote
+"JOHN_BORTHWICK","John Borthwick","src\components\TestimonialsSection.jsx",16,prop,author
+"THE_LESSN_EFFECT","The Lessn effect","src\components\TestimonialsSection.jsx",67,h2,
+"YOUR_SECRET_WEAPON_FOR_IMPACTFUL_INSTANT_LESSONS","Your secret weapon for impactful, instant lessons","src\components\WeaponSection.jsx",33,h2,
+"WELCOME_START_EXPLORING_LESSONS","Welcome, ! Start exploring lessons:","src\lib\email-templates.js",5,prop,text
+"RESET_YOUR_PASSWORD","Reset your password:","src\lib\email-templates.js",18,prop,text
+"EXPLORE_LESSN_LIBRARY_3","Explore Lessn Library","src\app\explore-library\page.js",62,prop,title
+"SEARCH_AND_FILTER_LESSONS_BY_SUBJECT_GRADE_AND_TOPIC","Search and filter lessons by subject, grade, and topic.","src\app\explore-library\page.js",63,prop,description
+"EXPLORE_LESSN_LIBRARY_4","Explore Lessn Library","src\app\explore-library\page.js",99,h1,
+"FORGOT_PASSWORD","Forgot password","src\app\forgot-password\page.js",27,h2,
+"ENTER_THE_EMAIL_FOR_YOUR_LESSN_ACCOUNT_YOU_LL_RECEIVE_A_RES","Enter the email for your Lessn account. You'll receive a reset link.","src\app\forgot-password\page.js",28,p,
+"ENTER_USER_EMAIL","Enter User Email","src\app\forgot-password\page.js",34,label,
+"ENTER_YOUR_EMAIL","Enter your email","src\app\forgot-password\page.js",39,input,placeholder
+"RESET_PASSWORD","Reset Password","src\app\forgot-password\page.js",48,button,
+"BACK_TO_LOGIN","Back to login","src\app\forgot-password\page.js",55,a,
+"MY_LIBRARY_2","My Library","src\app\library\page.js",9,h1,
+"LOG_IN_TO_YOUR_ACCOUNT","Log in to your account","src\app\login\page.js",54,h2,
+"SIGN_IN_WITH_GOOGLE_COMING_SOON","Sign in with Google (coming soon)","src\app\login\page.js",59,button,
+"SIGN_IN_WITH_MICROSOFT_COMING_SOON","Sign in with Microsoft (coming soon)","src\app\login\page.js",63,button,
+"REMEMBER_ME","Remember me","src\app\login\page.js",105,label,
+"FORGOT_PASSWORD_2","Forgot password?","src\app\login\page.js",108,a,
+"SIGN_UP_FOR_FREE","Sign up for free","src\app\login\page.js",126,a,
+"MY_LESSONS_2","My Lessons","src\app\my-lessons\page.jsx",52,h1,
+"PLEASE_LOG_IN_TO_USE_THIS_FEATURE_ONCE_YOU_ARE_LOGGED_IN_AN","Please log in to use this feature.Once you are logged in, any saved presentations will appear here.","src\app\my-lessons\page.jsx",53,p,
+"LOGIN","Login","src\app\my-lessons\page.jsx",57,link,
+"REGISTER","Register","src\app\my-lessons\page.jsx",60,link,
+"MY_LESSONS_2","My Lessons","src\app\my-lessons\page.jsx",76,h1,
+"LIBRARY","library","src\app\my-lessons\page.jsx",82,link,
+"PRICING_SUBSCRIPTION_2","Pricing & Subscription","src\app\pricing\page.js",9,h1,
+"SHOW_YOUR_PLANS_HERE","Show your plans here.","src\app\pricing\page.js",10,p,
+"CREATE_AN_ACCOUNT","Create an account","src\app\register\page.js",71,h2,
+"SIGN_UP_WITH_GOOGLE_COMING_SOON","Sign up with Google (coming soon)","src\app\register\page.js",76,button,
+"SIGN_UP_WITH_MICROSOFT_COMING_SOON","Sign up with Microsoft (coming soon)","src\app\register\page.js",80,button,
+"FIRST_NAME","First Name","src\app\register\page.js",95,input,placeholder
+"PASSWORD_MIN_6_CHARS","Password (min 6 chars)","src\app\register\page.js",121,input,placeholder
+"BY_SIGNING_UP_YOU_AGREE_TO_OUR","By signing up you agree to our","src\app\register\page.js",132,p,
+"PRIVACY_POLICY_2","Privacy Policy","src\app\register\page.js",134,a,
+"TERMS","Terms","src\app\register\page.js",135,a,
+"ALREADY_HAVE_AN_ACCOUNT_LOG_IN","Already have an account? Log in","src\app\register\page.js",151,a,
+"MY_PROFILE_2","My Profile","src\app\profile\page.js",13,h1,
+"LOG_IN","log in","src\app\profile\page.js",26,a,
+"SEARCH_RESULTS","Search results","src\app\see-all-results\page.js",5,prop,title
+"SEE_ALL_MATCHING_PRESENTATIONS","See all matching presentations","src\app\see-all-results\page.js",6,prop,description
+"RESULTS_FOR","Results for:","src\app\see-all-results\page.js",18,h1,
+"SCROLL_TO_LOAD_MORE_PRESENTATIONS_RELATED_TO_YOUR_SEARCH","Scroll to load more presentations related to your search.","src\app\see-all-results\page.js",21,p,
+"PLEASE_SIGN_IN","Please sign in","src\app\create-lesson\feature\AccessGate.jsx",58,span,
+"YOU_NEED_TO_LOG_IN_OR_CREATE_AN_ACCOUNT_TO_ACCESS_THE_LESSON","You need to log in or create an account to access the lesson builder.","src\app\create-lesson\feature\AccessGate.jsx",62,p,
+"LOG_IN_2","Log in","src\app\create-lesson\feature\AccessGate.jsx",98,link,
+"CREATE_ACCOUNT","Create account","src\app\create-lesson\feature\AccessGate.jsx",106,link,
+"BY_CONTINUING_YOU_AGREE_TO_OUR_TERMS_AND_ACKNOWLEDGE_OUR_PR","By continuing, you agree to our Terms and acknowledge our Privacy Policy.","src\app\create-lesson\feature\AccessGate.jsx",113,p,
+"PRESENTATION_PREVIEW_IS_NOT_AVAILABLE","Presentation preview is not available.","src\app\presentations\[slug]\page.jsx",200,p,
+"TO_DOWNLOAD_THE_PRESENTATION_ACCESS_IS_AVAILABLE_TO_REGISTE","to download the presentation. Access is available to registered users only.","src\app\presentations\[slug]\page.jsx",214,p,
+"LOG_IN_3","LOG IN","src\app\presentations\[slug]\page.jsx",212,a,
+"DOWNLOAD_PDF","Download PDF","src\app\presentations\[slug]\page.jsx",224,a,
+"EXPORT_TO_SLIDES","Export to Slides","src\app\presentations\[slug]\page.jsx",234,a,
+"DOWNLOAD_PPT","Download PPT","src\app\presentations\[slug]\page.jsx",242,a,
+"VIEW_MORE_CONTENT","View More Content","src\app\presentations\[slug]\page.jsx",260,teachersectionclient,title
+"SHOW_DETAILS","Show Details","src\app\presentations\[slug]\page.jsx",267,summary,
+"SET_A_NEW_PASSWORD","Set a new password","src\app\reset-password\[token]\page.js",46,h2,
+"NEW_PASSWORD","New password","src\app\reset-password\[token]\page.js",51,input,placeholder
+"CONFIRM_PASSWORD","Confirm password","src\app\reset-password\[token]\page.js",58,input,placeholder
+"RESOURCE_LIMIT_REACHED","Resource Limit Reached","src\app\create-lesson\feature\Layout\index.jsx",58,p,
+"THE_SERVER_IS_CURRENTLY_OVERLOADED_AND_CANNOT_PROCESS_YOUR_R","The server is currently overloaded and cannot process your request.","src\app\create-lesson\feature\Layout\index.jsx",61,p,
+"PRESENTATION_COMPLETED_SUCCESSFULLY","Presentation Completed Successfully","src\app\create-lesson\feature\Loaders\index.jsx",77,h2,
+"SMTP_TEST_OK","SMTP test OK","src\app\api\_debug\send-test-email\route.js",15,prop,text
+"TOPIC_GRADE_SUBJECT","Topic: , Grade: , Subject:","src\app\create-lesson\feature\Pages\MainPage\index.jsx",61,prop,label
+"CREATE_A_LESSON_2","Create a Lesson","src\app\create-lesson\feature\Pages\MainPage\index.jsx",86,h1,
+"CREATE_INTERACTIVE_ACCURATE_AI_POWERED_LESSONS_FOR_ENGAGED","Create interactive, accurate AI-powered lessons for engaged classrooms","src\app\create-lesson\feature\Pages\MainPage\index.jsx",90,p,
+"PROFILE","Profile","src\app\create-lesson\feature\Layout\Components\DropDown.jsx",10,a,
+"SETTINGS","Settings","src\app\create-lesson\feature\Layout\Components\DropDown.jsx",11,a,
+"LOGOUT","Logout","src\app\create-lesson\feature\Layout\Components\DropDown.jsx",12,a,
+"OUR_SUPPORT","Our Support","src\app\create-lesson\feature\Layout\Components\GuruPopup.jsx",40,p,
+"VIDEO_CONFERENCE_2","Video Conference","src\app\create-lesson\feature\Layout\Components\GuruPopup.jsx",54,p,
+"AUDIO_CONFERENCE","Audio Conference","src\app\create-lesson\feature\Layout\Components\GuruPopup.jsx",62,p,
+"FREE_UNLIMITED","Free, unlimited","src\app\create-lesson\feature\Layout\Components\GuruPopup.jsx",72,p,
+"HELP_TRAINING","help & training","src\app\create-lesson\feature\Layout\Components\GuruPopup.jsx",75,p,
+"NOW_ON_DESKTOP_MOBILE","Now on desktop & mobile","src\app\create-lesson\feature\Layout\Components\GuruPopup.jsx",80,p,
+"WE_CAN_HELP_NOW_ON_VIDEO_AUDIO_OR_CHAT_2","We can help now on video, audio or chat.","src\app\create-lesson\feature\Layout\Components\GuruPopup.jsx",88,p,
+"ALSO_AVAILABLE_VIA_EMAIL","Also available via email:","src\app\create-lesson\feature\Layout\Components\GuruPopup.jsx",98,p,
+"HOME","Home","src\app\create-lesson\feature\Layout\Components\SideMenu.jsx",28,a,
+"CREATE_LESSON","Create Lesson","src\app\create-lesson\feature\Layout\Components\SideMenu.jsx",29,a,
+"EXPLORE_LIBRARY_2","Explore Library","src\app\create-lesson\feature\Layout\Components\SideMenu.jsx",30,a,
+"CREATE_A_LESSN","Create a Lessn","src\app\create-lesson\feature\Pages\OutlinePage\index.jsx",148,h1,
+"CREATE_INTERACTIVE_ACCURATE_AI_POWERED_LESSON_FOR_ENGAGED_C","Create interactive, accurate AI-powered lesson for engaged classrooms.","src\app\create-lesson\feature\Pages\OutlinePage\index.jsx",151,p,
+"OUTLINE_PREVIEW","Outline Preview","src\app\create-lesson\feature\Pages\OutlinePage\index.jsx",158,h2,
+"BACK_TO_OUTLINE","Back to outline","src\app\create-lesson\feature\Pages\SlidesPreview\index.jsx",231,button,title
+"CANCEL","Cancel","src\app\create-lesson\feature\Pages\OutlinePage\Components\ButtonGroup.jsx",24,link,
+"REGENERATE_SLIDES","Regenerate Slides","src\app\create-lesson\feature\Pages\OutlinePage\Components\ButtonGroup.jsx",37,button,
+"GENERATE_SLIDES","Generate Slides","src\app\create-lesson\feature\Pages\OutlinePage\Components\ButtonGroup.jsx",49,button,
+"INSERT_BULLET_BELOW","Insert bullet below","src\app\create-lesson\feature\Pages\OutlinePage\Components\LiPoint.jsx",77,button,title
+"REORDER_BULLET","Reorder bullet","src\app\create-lesson\feature\Pages\OutlinePage\Components\LiPoint.jsx",87,button,title
+"DELETE_BULLET","Delete bullet","src\app\create-lesson\feature\Pages\OutlinePage\Components\LiPoint.jsx",100,button,title
+"ADD_SLIDE_BELOW","Add slide below","src\app\create-lesson\feature\Pages\OutlinePage\Components\SlideButtonGroup.jsx",18,button,title
+"ADD_SLIDE_ABOVE","Add slide above","src\app\create-lesson\feature\Pages\OutlinePage\Components\SlideButtonGroup.jsx",39,button,title
+"DELETE_SLIDE","Delete slide","src\app\create-lesson\feature\Pages\OutlinePage\Components\SlideButtonGroup.jsx",60,button,title
+"ADD_BULLET","Add bullet","src\app\create-lesson\feature\Pages\OutlinePage\Components\SlideButtonGroup.jsx",70,button,title
+"DELETE_SLIDE","Delete slide","src\app\create-lesson\feature\Pages\OutlinePage\Components\SlideComponent.jsx",88,button,title
+"SLIDE_TITLE","Slide title","src\app\create-lesson\feature\Pages\OutlinePage\Components\SlideComponent.jsx",97,input,placeholder
+"ADD_A_SLIDE","Add a slide","src\app\create-lesson\feature\Pages\OutlinePage\Components\SlideComponent.jsx",138,button,
+"OUTLINE_FOR_THE_TOPIC","Outline for the Topic","src\app\create-lesson\feature\Pages\OutlinePage\Components\TopText.jsx",25,p,
+"SUBJECT",", subject","src\app\create-lesson\feature\Pages\OutlinePage\Components\TopText.jsx",31,p,
+"SELECT_SUBJECT_3","Select Subject","src\app\create-lesson\feature\Pages\MainPage\Components\Form.jsx",202,formselect,label
+"ENTER_TOPIC","Enter Topic","src\app\create-lesson\feature\Pages\MainPage\Components\Form.jsx",215,forminput,label
+"BIG_BANG_THEORY","Big Bang Theory","src\app\create-lesson\feature\Pages\MainPage\Components\Form.jsx",217,forminput,placeholder
+"GENERATE_OUTLINE","Generate Outline","src\app\create-lesson\feature\Pages\MainPage\Components\Form.jsx",236,button,
+"ILLUSTRATION_OF_MAN","Illustration of man","src\app\create-lesson\feature\Pages\MainPage\Components\Image.jsx",12,nextimage,alt
+"CREATE_INTERACTIVE_ACCURATE_AI_POWERED_LESSONS_FOR_ENGAGED","Create interactive, accurate AI-powered lessons for engaged classrooms","src\app\create-lesson\feature\Pages\MainPage\Components\SideText.jsx",7,p,
+"MICROSOFT_POWERPOINT_DOCUMENT","Microsoft PowerPoint document","src\app\create-lesson\feature\Pages\SlidesPreview\Components\DownloadMenu.jsx",141,span,
+"GOOGLE_SLIDES","Google Slides","src\app\create-lesson\feature\Pages\SlidesPreview\Components\DownloadMenu.jsx",165,span,
+"TABLE_OF_CONTENTS","Table of Contents","src\app\create-lesson\feature\Pages\SlidesPreview\Components\SmallTable.jsx",31,h1,

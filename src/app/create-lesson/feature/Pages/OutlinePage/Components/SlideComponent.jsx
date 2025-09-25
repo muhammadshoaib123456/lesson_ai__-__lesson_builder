@@ -1,45 +1,36 @@
 "use client";
-
 import LiPoint from "./LiPoint.jsx";
-import uuid from "react-uuid";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 
+/**
+ * SlideComponent
+ *
+ * Represents a single slide in the outline. Contains a title field, a list
+ * of bullet points and controls to delete the slide or add a new slide below.
+ * Styling follows the provided spec: white card with rounded corners and
+ * subtle border and shadow. Each bullet point is handled by the LiPoint
+ * component above.
+ */
 export default function SlideComponent({
   points,
   setDataJson,
   index,
   title,
   DeleteSlide,
-  addSlideAbove,
   addSlideBelow,
 }) {
-  // ---------- CONFIG: adjust these if you want ----------
-  const cardBg = "#D6D5E6";        // Card background color (matches screenshot)
-  const bottomPadClass = "pb-12";  // Padding at bottom so arrows don't cover bullets
-  // ------------------------------------------------------
+  const [dragOverIndex, setDragOverIndex] = useState(-1);
 
-  // helpers
-  const AddPoint = useCallback(() => {
-    setDataJson((prev) => {
-      const next = prev.map((s) => ({ ...s, content: [...s.content] }));
-      next[index - 1] = {
-        ...next[index - 1],
-        content: [...next[index - 1].content, ""],
-      };
-      return next;
-    });
-  }, [index, setDataJson]);
-
-  const AddPointAbove = useCallback(
+  const AddPointBelow = useCallback(
     (cIndex) => {
       setDataJson((prev) => {
         const next = prev.map((s) => ({ ...s, content: [...s.content] }));
         next[index - 1] = {
           ...next[index - 1],
           content: [
-            ...next[index - 1].content.slice(0, cIndex),
+            ...next[index - 1].content.slice(0, cIndex + 1),
             "",
-            ...next[index - 1].content.slice(cIndex),
+            ...next[index - 1].content.slice(cIndex + 1),
           ],
         };
         return next;
@@ -62,24 +53,45 @@ export default function SlideComponent({
     [index, setDataJson]
   );
 
+  const handleDrop = useCallback(
+    (e) => {
+      e.preventDefault();
+      const draggedIndex = parseInt(e.dataTransfer.getData("text/plain"));
+      if (isNaN(draggedIndex) || draggedIndex === dragOverIndex) return;
+      setDataJson((prev) => {
+        const next = [...prev.map((s) => ({ ...s, content: [...s.content] }))];
+        const content = next[index - 1].content;
+        const [moved] = content.splice(draggedIndex, 1);
+        content.splice(dragOverIndex, 0, moved);
+        return next;
+      });
+      setDragOverIndex(-1);
+    },
+    [dragOverIndex, index, setDataJson]
+  );
+
   return (
     <li
-      className={`w-full rounded-2xl p-4 shadow-sm relative ${bottomPadClass}`}
-      style={{ backgroundColor: cardBg }}
+      className="w-full bg-[#FAF5FF] border border-gray-200 rounded-2xl p-5 shadow-sm"
+      // Each slide is a white card with a light grey border and subtle shadow.
+      // To change the border radius, adjust rounded-2xl. For a darker border,
+      // modify border-gray-200. Increase/decrease p-5 to change padding.
     >
-      {/* Title row: cross on left, title centered (same line) */}
-      <div className="relative flex items-center justify-center mb-2">
-        {/* Cross */}
+      {/* Slide title area */}
+      <div
+        className="relative flex items-center justify-center mb-4"
+        // The title area centers the input and positions the delete button on the left.
+      >
         <button
           type="button"
           onClick={() => DeleteSlide(index)}
           title="Delete slide"
-          className="absolute left-0 flex items-center justify-center w-8 h-8 text-red-600 hover:bg-red-50 rounded-full transition-colors"
+          className="absolute left-0 flex items-center justify-center w-7 h-7 rounded-full bg-red-100 hover:bg-red-200 text-red-500 transition-colors"
+          // Red delete icon for the slide. Adjust sizes via w-7/h-7 and change
+          // colours via bg-red-*/text-red-* utilities.
         >
           <span className="text-xl font-bold">×</span>
         </button>
-
-        {/* Title (border hidden by default; appears on focus) */}
         <input
           type="text"
           placeholder="Slide title"
@@ -92,81 +104,39 @@ export default function SlideComponent({
               return next;
             });
           }}
-          className="w-3/4 mx-auto text-center text-lg font-semibold placeholder-gray-500
-                     bg-transparent rounded-md border-2 transition
-                     focus:outline-none focus:border-black focus:bg-white focus:text-black
-                     py-2 px-3"
-          style={{
-            borderColor: cardBg, // invisible at rest (same as card)
-          }}
+          className="w-3/4 mx-auto text-center text-lg font-semibold placeholder-gray-500 bg-transparent rounded-md border-0 focus:outline-none focus:border-black focus:bg-white focus:text-black py-2 px-3"
+          // The slide title input. The border-0 removes default borders. Use
+          // focus:border-black to add a border on focus. Adjust w-3/4 to change
+          // how wide the title field is relative to the card.
         />
       </div>
-
       {/* Bullets */}
-      <div className="space-y-1"> 
-        {/* ↑ reduce vertical space between bullet rows by decreasing space-y */}
+      <div className="space-y-2">
         {points.map((item, cIndex) => (
           <LiPoint
             point={item}
-            key={uuid()}
+            key={`${index}-${cIndex}`}
             index={cIndex}
             pIndex={index}
             setDataJson={setDataJson}
             deletePoint={DeletePoint}
-            addPointAbove={AddPointAbove}
-            cardBg={cardBg} // keeps borders invisible at rest
+            addPointBelow={AddPointBelow}
+            cardBg="#FFFFFF"
+            setDragOverIndex={setDragOverIndex}
+            handleDrop={handleDrop}
           />
         ))}
-
-        {/* Add bullet */}
-        <div className="flex justify-start pt-1">
-          {/* <button
-            type="button"
-            onClick={AddPoint}
-            className="flex items-center justify-center w-8 h-8 text-purple-600 border border-purple-300 rounded-full hover:bg-purple-50 transition-colors"
-            title="Add bullet"
-          >
-            <span className="text-xl leading-none">+</span>
-          </button> */}
-        </div>
       </div>
-
-      {/* Arrows (inside card, bottom-right). If they get clipped, ensure parent container doesn't set overflow:hidden */}
-      <div className="absolute bottom-3 right-3 flex space-x-2">
-        <button
-          type="button"
-          onClick={() => addSlideBelow(index)}
-          title="Move down"
-          className="flex items-center justify-center w-8 h-8 bg-purple-500 text-white rounded-full hover:bg-purple-600 transition-colors"
-        >
-          <svg
-            className="w-4 h-4"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            xmlns="http://www.w3.org/2000/svg"
-            aria-hidden
-          >
-            <path d="M10.9393 23.0607C11.5251 23.6464 12.4749 23.6464 13.0607 23.0607L22.6066 13.5147C23.1924 12.9289 23.1924 11.9792 22.6066 11.3934C22.0208 10.8076 21.0711 10.8076 20.4853 11.3934L12 19.8787L3.51472 11.3934C2.92893 10.8076 1.97918 10.8076 1.3934 11.3934C0.807611 11.9792 0.807611 12.9289 1.3934 13.5147L10.9393 23.0607ZM10.5 0L10.5 22H13.5L13.5 0L10.5 0Z" />
-          </svg>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => addSlideAbove(index)}
-          title="Move up"
-          className="flex items-center justify-center w-8 h-8 bg-purple-500 text-white rounded-full hover:bg-purple-600 transition-colors"
-        >
-          <svg
-            className="w-4 h-4"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            xmlns="http://www.w3.org/2000/svg"
-            aria-hidden
-          >
-            <path d="M13.0607 0.93934C12.4749 0.353553 11.5251 0.353553 10.9393 0.93934L1.3934 10.4853C0.807612 11.0711 0.807612 12.0208 1.3934 12.6066C1.97918 13.1924 2.92893 13.1924 3.51472 12.6066L12 4.12132L20.4853 12.6066C21.0711 13.1924 22.0208 13.1924 22.6066 12.6066C23.1924 12.0208 23.1924 11.0711 22.6066 10.4853L13.0607 0.93934ZM13.5 24L13.5 2H10.5L10.5 24H13.5Z" />
-          </svg>
-        </button>
-      </div>
+      {/* Add new slide below */}
+      <button
+        type="button"
+        onClick={() => addSlideBelow(index)}
+        className="mt-4 flex items-center justify-center px-4 py-2 rounded-full bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium transition-colors"
+        // Button to insert a new slide below this one. Modify bg-purple-600 to
+        // change the fill colour. px-4/py-2 control the size.
+      >
+        <span className="mr-2 text-lg leading-none">+</span> Add a slide
+      </button>
     </li>
   );
 }

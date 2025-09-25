@@ -1,0 +1,1683 @@
+{
+  "meta": {
+    "total": 189,
+    "unique": 160,
+    "generatedAt": "2025-09-24T22:31:06.690Z"
+  },
+  "messages": {
+    "OOPS_LOST_IN_SPACE": "Oops! Lost in Space",
+    "THIS_PAGE_WANDERED_OFF_SOMEWHERE_EVEN_OUR_EMOJI_IS_SAD_ABOU": "This page wandered off somewhere. Even our emoji is sad about it. But hey, you can still head back safely!",
+    "TAKE_ME_HOME": "Take Me Home",
+    "SEARCH_IN_LIBRARY": "Search in Library",
+    "FILTERS": "Filters",
+    "SELECT_FILTER": "Select Filter",
+    "TOPICS_SUB_TOPICS": "Topics & Sub-Topics",
+    "SELECT_ALL": "Select all",
+    "CLEAR": "Clear",
+    "SEARCH_TOPIC": "Search topic",
+    "REMOVE": "Remove",
+    "SEARCH_SUB_TOPICS": "Search sub-topics",
+    "APPLY_FILTERS": "Apply Filters",
+    "REMOVE_FILTERS": "Remove Filters",
+    "REMOVE_ALL_FILTERS": "Remove all filters",
+    "BROUGHT_TO_YOU_BY": "Brought to you by",
+    "PRIVACY_POLICY": "Privacy policy",
+    "TERMS_OF_SERVICE": "Terms of service",
+    "EXPLORE_LIBRARY": "Explore Library",
+    "MY_LESSONS": "My Lessons",
+    "CREATE_A_LESSON": "Create a Lesson",
+    "SELECT_GRADE": "Select Grade",
+    "SELECT_SUBJECT": "Select Subject",
+    "LOGIN": "Login",
+    "MY_PROFILE": "My Profile",
+    "MY_LIBRARY": "My Library",
+    "PRICING_SUBSCRIPTION": "Pricing & Subscription",
+    "VIDEO_CONFERENCE": "Video Conference",
+    "AUDIO_CALL": "Audio Call",
+    "LIVE_CHAT": "Live Chat",
+    "WE_CAN_HELP_NOW_ON_VIDEO_AUDIO_OR_CHAT": "We can help now on video, audio or chat.",
+    "ALSO_AVAILABLE_VIA_EMAIL": "Also available via email:",
+    "OR_PHONE": "or phone:",
+    "SELECT_GRADE_2": "Select Grade",
+    "SELECT_SUBJECT_2": "Select Subject",
+    "HELP": "HELP",
+    "YOUR_NEXT_GREAT_LESSN_STARTS_HERE": "Your next great Lessn starts here.",
+    "BUILD_AND_EXPLORE_STANDARDS_BASED_AI_DRIVEN_LESSONS": "Build and explore standards-based, AI-driven lessons",
+    "SEARCH_E_G_ENGLISH_COLONIES_UNIT_RATES": "Search e.g. English colonies, unit rates",
+    "SEARCH": "Search",
+    "SEE_ALL_RESULTS": "See all results",
+    "GENERATE_A_NEW_LESSON": "Generate a new lesson",
+    "PREV": "Prev",
+    "NEXT": "Next",
+    "SPEND_MORE_TIME_WITH_YOUR_STUDENTS_LESS_ON_YOUR_PLANNING": "Spend more time with your students, less on your planning",
+    "GENERATE_STANDARDS_BASED_AI_DRIVEN_LESSONS_THAT_PROVIDE_A_S": "Generate standards-based, AI-driven lessons that provide a solid foundation for your lectures.",
+    "LEVERAGE_THE_LESSON_LIBRARY_WITH_MORE_THAN_10K_EXPERT_CRAFTE": "Leverage the lesson library with more than 10K expert-crafted lessons.",
+    "VIEW_PRESENTATION": "View Presentation",
+    "LOG_OUT": "Log out",
+    "TEACHERS_LOVE_THESE": "Teachers love these",
+    "EXPLORE_LESSN_LIBRARY": "Explore Lessn Library",
+    "TEACHERS_LOVE_THESE_2": "Teachers love these",
+    "EXPLORE_LESSN_LIBRARY_2": "Explore Lessn Library",
+    "AS_A_MATH_TEACHER_I_TRULY_VALUE_THE_QUALITY_AND_VARIETY_OF": "As a math teacher, I truly value the quality and variety of these presentations. They break down complex concepts effectively and positively impact my students overall performance!",
+    "MATH_TEACHER": "Math Teacher",
+    "BEING_ABLE_TO_QUICKLY_GENERATE_STANDARDS_BASED_LESSONS_HAS_B": "Being able to quickly generate standards-based lessons has been a game changer for my classroom. Lessnos library helps me stay organized and saves me precious planning time.",
+    "JOHN_BORTHWICK": "John Borthwick",
+    "THE_LESSN_EFFECT": "The Lessn effect",
+    "YOUR_SECRET_WEAPON_FOR_IMPACTFUL_INSTANT_LESSONS": "Your secret weapon for impactful, instant lessons",
+    "WELCOME_START_EXPLORING_LESSONS": "Welcome, ! Start exploring lessons:",
+    "RESET_YOUR_PASSWORD": "Reset your password:",
+    "EXPLORE_LESSN_LIBRARY_3": "Explore Lessn Library",
+    "SEARCH_AND_FILTER_LESSONS_BY_SUBJECT_GRADE_AND_TOPIC": "Search and filter lessons by subject, grade, and topic.",
+    "EXPLORE_LESSN_LIBRARY_4": "Explore Lessn Library",
+    "FORGOT_PASSWORD": "Forgot password",
+    "ENTER_THE_EMAIL_FOR_YOUR_LESSN_ACCOUNT_YOU_LL_RECEIVE_A_RES": "Enter the email for your Lessn account. You'll receive a reset link.",
+    "ENTER_USER_EMAIL": "Enter User Email",
+    "ENTER_YOUR_EMAIL": "Enter your email",
+    "RESET_PASSWORD": "Reset Password",
+    "BACK_TO_LOGIN": "Back to login",
+    "MY_LIBRARY_2": "My Library",
+    "LOG_IN_TO_YOUR_ACCOUNT": "Log in to your account",
+    "SIGN_IN_WITH_GOOGLE_COMING_SOON": "Sign in with Google (coming soon)",
+    "SIGN_IN_WITH_MICROSOFT_COMING_SOON": "Sign in with Microsoft (coming soon)",
+    "REMEMBER_ME": "Remember me",
+    "FORGOT_PASSWORD_2": "Forgot password?",
+    "SIGN_UP_FOR_FREE": "Sign up for free",
+    "MY_LESSONS_2": "My Lessons",
+    "PLEASE_LOG_IN_TO_USE_THIS_FEATURE_ONCE_YOU_ARE_LOGGED_IN_AN": "Please log in to use this feature.Once you are logged in, any saved presentations will appear here.",
+    "REGISTER": "Register",
+    "LIBRARY": "library",
+    "PRICING_SUBSCRIPTION_2": "Pricing & Subscription",
+    "SHOW_YOUR_PLANS_HERE": "Show your plans here.",
+    "CREATE_AN_ACCOUNT": "Create an account",
+    "SIGN_UP_WITH_GOOGLE_COMING_SOON": "Sign up with Google (coming soon)",
+    "SIGN_UP_WITH_MICROSOFT_COMING_SOON": "Sign up with Microsoft (coming soon)",
+    "FIRST_NAME": "First Name",
+    "PASSWORD_MIN_6_CHARS": "Password (min 6 chars)",
+    "BY_SIGNING_UP_YOU_AGREE_TO_OUR": "By signing up you agree to our",
+    "PRIVACY_POLICY_2": "Privacy Policy",
+    "TERMS": "Terms",
+    "ALREADY_HAVE_AN_ACCOUNT_LOG_IN": "Already have an account? Log in",
+    "MY_PROFILE_2": "My Profile",
+    "LOG_IN": "log in",
+    "SEARCH_RESULTS": "Search results",
+    "SEE_ALL_MATCHING_PRESENTATIONS": "See all matching presentations",
+    "RESULTS_FOR": "Results for:",
+    "SCROLL_TO_LOAD_MORE_PRESENTATIONS_RELATED_TO_YOUR_SEARCH": "Scroll to load more presentations related to your search.",
+    "PLEASE_SIGN_IN": "Please sign in",
+    "YOU_NEED_TO_LOG_IN_OR_CREATE_AN_ACCOUNT_TO_ACCESS_THE_LESSON": "You need to log in or create an account to access the lesson builder.",
+    "LOG_IN_2": "Log in",
+    "CREATE_ACCOUNT": "Create account",
+    "BY_CONTINUING_YOU_AGREE_TO_OUR_TERMS_AND_ACKNOWLEDGE_OUR_PR": "By continuing, you agree to our Terms and acknowledge our Privacy Policy.",
+    "PRESENTATION_PREVIEW_IS_NOT_AVAILABLE": "Presentation preview is not available.",
+    "TO_DOWNLOAD_THE_PRESENTATION_ACCESS_IS_AVAILABLE_TO_REGISTE": "to download the presentation. Access is available to registered users only.",
+    "LOG_IN_3": "LOG IN",
+    "DOWNLOAD_PDF": "Download PDF",
+    "EXPORT_TO_SLIDES": "Export to Slides",
+    "DOWNLOAD_PPT": "Download PPT",
+    "VIEW_MORE_CONTENT": "View More Content",
+    "SHOW_DETAILS": "Show Details",
+    "SET_A_NEW_PASSWORD": "Set a new password",
+    "NEW_PASSWORD": "New password",
+    "CONFIRM_PASSWORD": "Confirm password",
+    "RESOURCE_LIMIT_REACHED": "Resource Limit Reached",
+    "THE_SERVER_IS_CURRENTLY_OVERLOADED_AND_CANNOT_PROCESS_YOUR_R": "The server is currently overloaded and cannot process your request.",
+    "PRESENTATION_COMPLETED_SUCCESSFULLY": "Presentation Completed Successfully",
+    "SMTP_TEST_OK": "SMTP test OK",
+    "TOPIC_GRADE_SUBJECT": "Topic: , Grade: , Subject:",
+    "CREATE_A_LESSON_2": "Create a Lesson",
+    "CREATE_INTERACTIVE_ACCURATE_AI_POWERED_LESSONS_FOR_ENGAGED": "Create interactive, accurate AI-powered lessons for engaged classrooms",
+    "PROFILE": "Profile",
+    "SETTINGS": "Settings",
+    "LOGOUT": "Logout",
+    "OUR_SUPPORT": "Our Support",
+    "VIDEO_CONFERENCE_2": "Video Conference",
+    "AUDIO_CONFERENCE": "Audio Conference",
+    "FREE_UNLIMITED": "Free, unlimited",
+    "HELP_TRAINING": "help & training",
+    "NOW_ON_DESKTOP_MOBILE": "Now on desktop & mobile",
+    "WE_CAN_HELP_NOW_ON_VIDEO_AUDIO_OR_CHAT_2": "We can help now on video, audio or chat.",
+    "HOME": "Home",
+    "CREATE_LESSON": "Create Lesson",
+    "EXPLORE_LIBRARY_2": "Explore Library",
+    "CREATE_A_LESSN": "Create a Lessn",
+    "CREATE_INTERACTIVE_ACCURATE_AI_POWERED_LESSON_FOR_ENGAGED_C": "Create interactive, accurate AI-powered lesson for engaged classrooms.",
+    "OUTLINE_PREVIEW": "Outline Preview",
+    "BACK_TO_OUTLINE": "Back to outline",
+    "CANCEL": "Cancel",
+    "REGENERATE_SLIDES": "Regenerate Slides",
+    "GENERATE_SLIDES": "Generate Slides",
+    "INSERT_BULLET_BELOW": "Insert bullet below",
+    "REORDER_BULLET": "Reorder bullet",
+    "DELETE_BULLET": "Delete bullet",
+    "ADD_SLIDE_BELOW": "Add slide below",
+    "ADD_SLIDE_ABOVE": "Add slide above",
+    "DELETE_SLIDE": "Delete slide",
+    "ADD_BULLET": "Add bullet",
+    "SLIDE_TITLE": "Slide title",
+    "ADD_A_SLIDE": "Add a slide",
+    "OUTLINE_FOR_THE_TOPIC": "Outline for the Topic",
+    "SUBJECT": ", subject",
+    "SELECT_SUBJECT_3": "Select Subject",
+    "ENTER_TOPIC": "Enter Topic",
+    "BIG_BANG_THEORY": "Big Bang Theory",
+    "GENERATE_OUTLINE": "Generate Outline",
+    "ILLUSTRATION_OF_MAN": "Illustration of man",
+    "MICROSOFT_POWERPOINT_DOCUMENT": "Microsoft PowerPoint document",
+    "GOOGLE_SLIDES": "Google Slides",
+    "TABLE_OF_CONTENTS": "Table of Contents"
+  },
+  "refs": [
+    {
+      "key": "OOPS_LOST_IN_SPACE",
+      "text": "Oops! Lost in Space",
+      "file": "src\\app\\not-found.js",
+      "line": 24,
+      "tag": "p",
+      "attr": ""
+    },
+    {
+      "key": "THIS_PAGE_WANDERED_OFF_SOMEWHERE_EVEN_OUR_EMOJI_IS_SAD_ABOU",
+      "text": "This page wandered off somewhere. Even our emoji is sad about it. But hey, you can still head back safely!",
+      "file": "src\\app\\not-found.js",
+      "line": 25,
+      "tag": "p",
+      "attr": ""
+    },
+    {
+      "key": "TAKE_ME_HOME",
+      "text": "Take Me Home",
+      "file": "src\\app\\not-found.js",
+      "line": 37,
+      "tag": "link",
+      "attr": ""
+    },
+    {
+      "key": "SEARCH_IN_LIBRARY",
+      "text": "Search in Library",
+      "file": "src\\components\\ExploreClient.jsx",
+      "line": 513,
+      "tag": "input",
+      "attr": "placeholder"
+    },
+    {
+      "key": "FILTERS",
+      "text": "Filters",
+      "file": "src\\components\\ExploreClient.jsx",
+      "line": 552,
+      "tag": "button",
+      "attr": ""
+    },
+    {
+      "key": "SELECT_FILTER",
+      "text": "Select Filter",
+      "file": "src\\components\\FilterPopup.jsx",
+      "line": 351,
+      "tag": "h2",
+      "attr": ""
+    },
+    {
+      "key": "TOPICS_SUB_TOPICS",
+      "text": "Topics & Sub-Topics",
+      "file": "src\\components\\FilterPopup.jsx",
+      "line": 434,
+      "tag": "h3",
+      "attr": ""
+    },
+    {
+      "key": "SELECT_ALL",
+      "text": "Select all",
+      "file": "src\\components\\FilterPopup.jsx",
+      "line": 441,
+      "tag": "button",
+      "attr": ""
+    },
+    {
+      "key": "CLEAR",
+      "text": "Clear",
+      "file": "src\\components\\FilterPopup.jsx",
+      "line": 444,
+      "tag": "button",
+      "attr": ""
+    },
+    {
+      "key": "SEARCH_TOPIC",
+      "text": "Search topic",
+      "file": "src\\components\\FilterPopup.jsx",
+      "line": 453,
+      "tag": "input",
+      "attr": "placeholder"
+    },
+    {
+      "key": "REMOVE",
+      "text": "Remove",
+      "file": "src\\components\\FilterPopup.jsx",
+      "line": 472,
+      "tag": "button",
+      "attr": "title"
+    },
+    {
+      "key": "SELECT_ALL",
+      "text": "Select all",
+      "file": "src\\components\\FilterPopup.jsx",
+      "line": 500,
+      "tag": "button",
+      "attr": ""
+    },
+    {
+      "key": "CLEAR",
+      "text": "Clear",
+      "file": "src\\components\\FilterPopup.jsx",
+      "line": 503,
+      "tag": "button",
+      "attr": ""
+    },
+    {
+      "key": "SEARCH_SUB_TOPICS",
+      "text": "Search sub-topics",
+      "file": "src\\components\\FilterPopup.jsx",
+      "line": 512,
+      "tag": "input",
+      "attr": "placeholder"
+    },
+    {
+      "key": "REMOVE",
+      "text": "Remove",
+      "file": "src\\components\\FilterPopup.jsx",
+      "line": 531,
+      "tag": "button",
+      "attr": "title"
+    },
+    {
+      "key": "APPLY_FILTERS",
+      "text": "Apply Filters",
+      "file": "src\\components\\FilterPopup.jsx",
+      "line": 572,
+      "tag": "button",
+      "attr": ""
+    },
+    {
+      "key": "REMOVE_FILTERS",
+      "text": "Remove Filters",
+      "file": "src\\components\\FilterPopup.jsx",
+      "line": 586,
+      "tag": "button",
+      "attr": ""
+    },
+    {
+      "key": "REMOVE_ALL_FILTERS",
+      "text": "Remove all filters",
+      "file": "src\\components\\FilterPopup.jsx",
+      "line": 585,
+      "tag": "button",
+      "attr": "title"
+    },
+    {
+      "key": "BROUGHT_TO_YOU_BY",
+      "text": "Brought to you by",
+      "file": "src\\components\\Footer.jsx",
+      "line": 19,
+      "tag": "p",
+      "attr": ""
+    },
+    {
+      "key": "PRIVACY_POLICY",
+      "text": "Privacy policy",
+      "file": "src\\components\\Footer.jsx",
+      "line": 26,
+      "tag": "link",
+      "attr": ""
+    },
+    {
+      "key": "TERMS_OF_SERVICE",
+      "text": "Terms of service",
+      "file": "src\\components\\Footer.jsx",
+      "line": 30,
+      "tag": "link",
+      "attr": ""
+    },
+    {
+      "key": "EXPLORE_LIBRARY",
+      "text": "Explore Library",
+      "file": "src\\components\\Header.jsx",
+      "line": 147,
+      "tag": "link",
+      "attr": ""
+    },
+    {
+      "key": "MY_LESSONS",
+      "text": "My Lessons",
+      "file": "src\\components\\Header.jsx",
+      "line": 152,
+      "tag": "link",
+      "attr": ""
+    },
+    {
+      "key": "CREATE_A_LESSON",
+      "text": "Create a Lesson",
+      "file": "src\\components\\Header.jsx",
+      "line": 156,
+      "tag": "link",
+      "attr": ""
+    },
+    {
+      "key": "SELECT_GRADE",
+      "text": "Select Grade",
+      "file": "src\\components\\Header.jsx",
+      "line": 166,
+      "tag": "span",
+      "attr": ""
+    },
+    {
+      "key": "SELECT_SUBJECT",
+      "text": "Select Subject",
+      "file": "src\\components\\Header.jsx",
+      "line": 207,
+      "tag": "span",
+      "attr": ""
+    },
+    {
+      "key": "EXPLORE_LIBRARY",
+      "text": "Explore Library",
+      "file": "src\\components\\Header.jsx",
+      "line": 305,
+      "tag": "link",
+      "attr": ""
+    },
+    {
+      "key": "MY_LESSONS",
+      "text": "My Lessons",
+      "file": "src\\components\\Header.jsx",
+      "line": 310,
+      "tag": "link",
+      "attr": ""
+    },
+    {
+      "key": "CREATE_A_LESSON",
+      "text": "Create a Lesson",
+      "file": "src\\components\\Header.jsx",
+      "line": 314,
+      "tag": "link",
+      "attr": ""
+    },
+    {
+      "key": "LOGIN",
+      "text": "Login",
+      "file": "src\\components\\Header.jsx",
+      "line": 410,
+      "tag": "link",
+      "attr": ""
+    },
+    {
+      "key": "MY_PROFILE",
+      "text": "My Profile",
+      "file": "src\\components\\Header.jsx",
+      "line": 415,
+      "tag": "link",
+      "attr": ""
+    },
+    {
+      "key": "MY_LIBRARY",
+      "text": "My Library",
+      "file": "src\\components\\Header.jsx",
+      "line": 418,
+      "tag": "link",
+      "attr": ""
+    },
+    {
+      "key": "PRICING_SUBSCRIPTION",
+      "text": "Pricing & Subscription",
+      "file": "src\\components\\Header.jsx",
+      "line": 421,
+      "tag": "link",
+      "attr": ""
+    },
+    {
+      "key": "VIDEO_CONFERENCE",
+      "text": "Video Conference",
+      "file": "src\\components\\HelpPopup.jsx",
+      "line": 62,
+      "tag": "span",
+      "attr": ""
+    },
+    {
+      "key": "AUDIO_CALL",
+      "text": "Audio Call",
+      "file": "src\\components\\HelpPopup.jsx",
+      "line": 76,
+      "tag": "span",
+      "attr": ""
+    },
+    {
+      "key": "LIVE_CHAT",
+      "text": "Live Chat",
+      "file": "src\\components\\HelpPopup.jsx",
+      "line": 92,
+      "tag": "span",
+      "attr": ""
+    },
+    {
+      "key": "WE_CAN_HELP_NOW_ON_VIDEO_AUDIO_OR_CHAT",
+      "text": "We can help now on video, audio or chat.",
+      "file": "src\\components\\HelpPopup.jsx",
+      "line": 107,
+      "tag": "h3",
+      "attr": ""
+    },
+    {
+      "key": "ALSO_AVAILABLE_VIA_EMAIL",
+      "text": "Also available via email:",
+      "file": "src\\components\\HelpPopup.jsx",
+      "line": 122,
+      "tag": "p",
+      "attr": ""
+    },
+    {
+      "key": "OR_PHONE",
+      "text": "or phone:",
+      "file": "src\\components\\HelpPopup.jsx",
+      "line": 126,
+      "tag": "p",
+      "attr": ""
+    },
+    {
+      "key": "EXPLORE_LIBRARY",
+      "text": "Explore Library",
+      "file": "src\\components\\HeroSection.jsx",
+      "line": 393,
+      "tag": "link",
+      "attr": ""
+    },
+    {
+      "key": "MY_LESSONS",
+      "text": "My Lessons",
+      "file": "src\\components\\HeroSection.jsx",
+      "line": 400,
+      "tag": "link",
+      "attr": ""
+    },
+    {
+      "key": "CREATE_A_LESSON",
+      "text": "Create a Lesson",
+      "file": "src\\components\\HeroSection.jsx",
+      "line": 406,
+      "tag": "link",
+      "attr": ""
+    },
+    {
+      "key": "SELECT_GRADE",
+      "text": "Select Grade",
+      "file": "src\\components\\HeroSection.jsx",
+      "line": 418,
+      "tag": "span",
+      "attr": ""
+    },
+    {
+      "key": "SELECT_SUBJECT",
+      "text": "Select Subject",
+      "file": "src\\components\\HeroSection.jsx",
+      "line": 448,
+      "tag": "span",
+      "attr": ""
+    },
+    {
+      "key": "LOGIN",
+      "text": "Login",
+      "file": "src\\components\\HeroSection.jsx",
+      "line": 485,
+      "tag": "link",
+      "attr": ""
+    },
+    {
+      "key": "LOGIN",
+      "text": "Login",
+      "file": "src\\components\\HeroSection.jsx",
+      "line": 508,
+      "tag": "link",
+      "attr": ""
+    },
+    {
+      "key": "MY_PROFILE",
+      "text": "My Profile",
+      "file": "src\\components\\HeroSection.jsx",
+      "line": 512,
+      "tag": "link",
+      "attr": ""
+    },
+    {
+      "key": "EXPLORE_LIBRARY",
+      "text": "Explore Library",
+      "file": "src\\components\\HeroSection.jsx",
+      "line": 565,
+      "tag": "link",
+      "attr": ""
+    },
+    {
+      "key": "MY_LESSONS",
+      "text": "My Lessons",
+      "file": "src\\components\\HeroSection.jsx",
+      "line": 570,
+      "tag": "link",
+      "attr": ""
+    },
+    {
+      "key": "CREATE_A_LESSON",
+      "text": "Create a Lesson",
+      "file": "src\\components\\HeroSection.jsx",
+      "line": 574,
+      "tag": "link",
+      "attr": ""
+    },
+    {
+      "key": "SELECT_GRADE_2",
+      "text": "Select Grade",
+      "file": "src\\components\\HeroSection.jsx",
+      "line": 577,
+      "tag": "button",
+      "attr": ""
+    },
+    {
+      "key": "SELECT_SUBJECT_2",
+      "text": "Select Subject",
+      "file": "src\\components\\HeroSection.jsx",
+      "line": 578,
+      "tag": "button",
+      "attr": ""
+    },
+    {
+      "key": "LOGIN",
+      "text": "Login",
+      "file": "src\\components\\HeroSection.jsx",
+      "line": 583,
+      "tag": "link",
+      "attr": ""
+    },
+    {
+      "key": "MY_PROFILE",
+      "text": "My Profile",
+      "file": "src\\components\\HeroSection.jsx",
+      "line": 588,
+      "tag": "link",
+      "attr": ""
+    },
+    {
+      "key": "MY_LIBRARY",
+      "text": "My Library",
+      "file": "src\\components\\HeroSection.jsx",
+      "line": 591,
+      "tag": "link",
+      "attr": ""
+    },
+    {
+      "key": "PRICING_SUBSCRIPTION",
+      "text": "Pricing & Subscription",
+      "file": "src\\components\\HeroSection.jsx",
+      "line": 594,
+      "tag": "link",
+      "attr": ""
+    },
+    {
+      "key": "HELP",
+      "text": "HELP",
+      "file": "src\\components\\HeroSection.jsx",
+      "line": 608,
+      "tag": "button",
+      "attr": ""
+    },
+    {
+      "key": "YOUR_NEXT_GREAT_LESSN_STARTS_HERE",
+      "text": "Your next great Lessn starts here.",
+      "file": "src\\components\\HeroSection.jsx",
+      "line": 642,
+      "tag": "h1",
+      "attr": ""
+    },
+    {
+      "key": "BUILD_AND_EXPLORE_STANDARDS_BASED_AI_DRIVEN_LESSONS",
+      "text": "Build and explore standards-based, AI-driven lessons",
+      "file": "src\\components\\HeroSection.jsx",
+      "line": 645,
+      "tag": "p",
+      "attr": ""
+    },
+    {
+      "key": "SEARCH_E_G_ENGLISH_COLONIES_UNIT_RATES",
+      "text": "Search e.g. English colonies, unit rates",
+      "file": "src\\components\\HeroSection.jsx",
+      "line": 670,
+      "tag": "input",
+      "attr": "placeholder"
+    },
+    {
+      "key": "SEARCH",
+      "text": "Search",
+      "file": "src\\components\\HeroSection.jsx",
+      "line": 684,
+      "tag": "button",
+      "attr": ""
+    },
+    {
+      "key": "SEE_ALL_RESULTS",
+      "text": "See all results",
+      "file": "src\\components\\HeroSection.jsx",
+      "line": 748,
+      "tag": "button",
+      "attr": ""
+    },
+    {
+      "key": "GENERATE_A_NEW_LESSON",
+      "text": "Generate a new lesson",
+      "file": "src\\components\\HeroSection.jsx",
+      "line": 762,
+      "tag": "link",
+      "attr": ""
+    },
+    {
+      "key": "PREV",
+      "text": "Prev",
+      "file": "src\\components\\Paginator.jsx",
+      "line": 10,
+      "tag": "button",
+      "attr": ""
+    },
+    {
+      "key": "NEXT",
+      "text": "Next",
+      "file": "src\\components\\Paginator.jsx",
+      "line": 21,
+      "tag": "button",
+      "attr": ""
+    },
+    {
+      "key": "SPEND_MORE_TIME_WITH_YOUR_STUDENTS_LESS_ON_YOUR_PLANNING",
+      "text": "Spend more time with your students, less on your planning",
+      "file": "src\\components\\PlanningSection.jsx",
+      "line": 6,
+      "tag": "h2",
+      "attr": ""
+    },
+    {
+      "key": "GENERATE_STANDARDS_BASED_AI_DRIVEN_LESSONS_THAT_PROVIDE_A_S",
+      "text": "Generate standards-based, AI-driven lessons that provide a solid foundation for your lectures.",
+      "file": "src\\components\\PlanningSection.jsx",
+      "line": 9,
+      "tag": "p",
+      "attr": ""
+    },
+    {
+      "key": "LEVERAGE_THE_LESSON_LIBRARY_WITH_MORE_THAN_10K_EXPERT_CRAFTE",
+      "text": "Leverage the lesson library with more than 10K expert-crafted lessons.",
+      "file": "src\\components\\PlanningSection.jsx",
+      "line": 13,
+      "tag": "p",
+      "attr": ""
+    },
+    {
+      "key": "VIEW_PRESENTATION",
+      "text": "View Presentation",
+      "file": "src\\components\\PresentationCard.jsx",
+      "line": 271,
+      "tag": "span",
+      "attr": ""
+    },
+    {
+      "key": "MY_PROFILE",
+      "text": "My Profile",
+      "file": "src\\components\\ProfileDropdown.jsx",
+      "line": 70,
+      "tag": "link",
+      "attr": ""
+    },
+    {
+      "key": "MY_LIBRARY",
+      "text": "My Library",
+      "file": "src\\components\\ProfileDropdown.jsx",
+      "line": 73,
+      "tag": "link",
+      "attr": ""
+    },
+    {
+      "key": "PRICING_SUBSCRIPTION",
+      "text": "Pricing & Subscription",
+      "file": "src\\components\\ProfileDropdown.jsx",
+      "line": 76,
+      "tag": "link",
+      "attr": ""
+    },
+    {
+      "key": "LOG_OUT",
+      "text": "Log out",
+      "file": "src\\components\\ProfileDropdown.jsx",
+      "line": 84,
+      "tag": "button",
+      "attr": ""
+    },
+    {
+      "key": "TEACHERS_LOVE_THESE",
+      "text": "Teachers love these",
+      "file": "src\\components\\TeacherSectionClient.jsx",
+      "line": 36,
+      "tag": "param",
+      "attr": "title"
+    },
+    {
+      "key": "EXPLORE_LESSN_LIBRARY",
+      "text": "Explore Lessn Library",
+      "file": "src\\components\\TeacherSectionClient.jsx",
+      "line": 39,
+      "tag": "param",
+      "attr": "ctaLabel"
+    },
+    {
+      "key": "TEACHERS_LOVE_THESE_2",
+      "text": "Teachers love these",
+      "file": "src\\components\\TeacherSectionClient.jsx",
+      "line": 36,
+      "tag": "prop",
+      "attr": "title"
+    },
+    {
+      "key": "EXPLORE_LESSN_LIBRARY_2",
+      "text": "Explore Lessn Library",
+      "file": "src\\components\\TeacherSectionClient.jsx",
+      "line": 39,
+      "tag": "prop",
+      "attr": "ctaLabel"
+    },
+    {
+      "key": "AS_A_MATH_TEACHER_I_TRULY_VALUE_THE_QUALITY_AND_VARIETY_OF",
+      "text": "As a math teacher, I truly value the quality and variety of these presentations. They break down complex concepts effectively and positively impact my students overall performance!",
+      "file": "src\\components\\TestimonialsSection.jsx",
+      "line": 9,
+      "tag": "prop",
+      "attr": "quote"
+    },
+    {
+      "key": "MATH_TEACHER",
+      "text": "Math Teacher",
+      "file": "src\\components\\TestimonialsSection.jsx",
+      "line": 11,
+      "tag": "prop",
+      "attr": "author"
+    },
+    {
+      "key": "BEING_ABLE_TO_QUICKLY_GENERATE_STANDARDS_BASED_LESSONS_HAS_B",
+      "text": "Being able to quickly generate standards-based lessons has been a game changer for my classroom. Lessnos library helps me stay organized and saves me precious planning time.",
+      "file": "src\\components\\TestimonialsSection.jsx",
+      "line": 14,
+      "tag": "prop",
+      "attr": "quote"
+    },
+    {
+      "key": "JOHN_BORTHWICK",
+      "text": "John Borthwick",
+      "file": "src\\components\\TestimonialsSection.jsx",
+      "line": 16,
+      "tag": "prop",
+      "attr": "author"
+    },
+    {
+      "key": "THE_LESSN_EFFECT",
+      "text": "The Lessn effect",
+      "file": "src\\components\\TestimonialsSection.jsx",
+      "line": 67,
+      "tag": "h2",
+      "attr": ""
+    },
+    {
+      "key": "YOUR_SECRET_WEAPON_FOR_IMPACTFUL_INSTANT_LESSONS",
+      "text": "Your secret weapon for impactful, instant lessons",
+      "file": "src\\components\\WeaponSection.jsx",
+      "line": 33,
+      "tag": "h2",
+      "attr": ""
+    },
+    {
+      "key": "WELCOME_START_EXPLORING_LESSONS",
+      "text": "Welcome, ! Start exploring lessons:",
+      "file": "src\\lib\\email-templates.js",
+      "line": 5,
+      "tag": "prop",
+      "attr": "text"
+    },
+    {
+      "key": "RESET_YOUR_PASSWORD",
+      "text": "Reset your password:",
+      "file": "src\\lib\\email-templates.js",
+      "line": 18,
+      "tag": "prop",
+      "attr": "text"
+    },
+    {
+      "key": "EXPLORE_LESSN_LIBRARY_3",
+      "text": "Explore Lessn Library",
+      "file": "src\\app\\explore-library\\page.js",
+      "line": 62,
+      "tag": "prop",
+      "attr": "title"
+    },
+    {
+      "key": "SEARCH_AND_FILTER_LESSONS_BY_SUBJECT_GRADE_AND_TOPIC",
+      "text": "Search and filter lessons by subject, grade, and topic.",
+      "file": "src\\app\\explore-library\\page.js",
+      "line": 63,
+      "tag": "prop",
+      "attr": "description"
+    },
+    {
+      "key": "EXPLORE_LESSN_LIBRARY_4",
+      "text": "Explore Lessn Library",
+      "file": "src\\app\\explore-library\\page.js",
+      "line": 99,
+      "tag": "h1",
+      "attr": ""
+    },
+    {
+      "key": "FORGOT_PASSWORD",
+      "text": "Forgot password",
+      "file": "src\\app\\forgot-password\\page.js",
+      "line": 27,
+      "tag": "h2",
+      "attr": ""
+    },
+    {
+      "key": "ENTER_THE_EMAIL_FOR_YOUR_LESSN_ACCOUNT_YOU_LL_RECEIVE_A_RES",
+      "text": "Enter the email for your Lessn account. You'll receive a reset link.",
+      "file": "src\\app\\forgot-password\\page.js",
+      "line": 28,
+      "tag": "p",
+      "attr": ""
+    },
+    {
+      "key": "ENTER_USER_EMAIL",
+      "text": "Enter User Email",
+      "file": "src\\app\\forgot-password\\page.js",
+      "line": 34,
+      "tag": "label",
+      "attr": ""
+    },
+    {
+      "key": "ENTER_YOUR_EMAIL",
+      "text": "Enter your email",
+      "file": "src\\app\\forgot-password\\page.js",
+      "line": 39,
+      "tag": "input",
+      "attr": "placeholder"
+    },
+    {
+      "key": "RESET_PASSWORD",
+      "text": "Reset Password",
+      "file": "src\\app\\forgot-password\\page.js",
+      "line": 48,
+      "tag": "button",
+      "attr": ""
+    },
+    {
+      "key": "BACK_TO_LOGIN",
+      "text": "Back to login",
+      "file": "src\\app\\forgot-password\\page.js",
+      "line": 55,
+      "tag": "a",
+      "attr": ""
+    },
+    {
+      "key": "MY_LIBRARY_2",
+      "text": "My Library",
+      "file": "src\\app\\library\\page.js",
+      "line": 9,
+      "tag": "h1",
+      "attr": ""
+    },
+    {
+      "key": "LOG_IN_TO_YOUR_ACCOUNT",
+      "text": "Log in to your account",
+      "file": "src\\app\\login\\page.js",
+      "line": 54,
+      "tag": "h2",
+      "attr": ""
+    },
+    {
+      "key": "SIGN_IN_WITH_GOOGLE_COMING_SOON",
+      "text": "Sign in with Google (coming soon)",
+      "file": "src\\app\\login\\page.js",
+      "line": 59,
+      "tag": "button",
+      "attr": ""
+    },
+    {
+      "key": "SIGN_IN_WITH_MICROSOFT_COMING_SOON",
+      "text": "Sign in with Microsoft (coming soon)",
+      "file": "src\\app\\login\\page.js",
+      "line": 63,
+      "tag": "button",
+      "attr": ""
+    },
+    {
+      "key": "REMEMBER_ME",
+      "text": "Remember me",
+      "file": "src\\app\\login\\page.js",
+      "line": 105,
+      "tag": "label",
+      "attr": ""
+    },
+    {
+      "key": "FORGOT_PASSWORD_2",
+      "text": "Forgot password?",
+      "file": "src\\app\\login\\page.js",
+      "line": 108,
+      "tag": "a",
+      "attr": ""
+    },
+    {
+      "key": "SIGN_UP_FOR_FREE",
+      "text": "Sign up for free",
+      "file": "src\\app\\login\\page.js",
+      "line": 126,
+      "tag": "a",
+      "attr": ""
+    },
+    {
+      "key": "MY_LESSONS_2",
+      "text": "My Lessons",
+      "file": "src\\app\\my-lessons\\page.jsx",
+      "line": 52,
+      "tag": "h1",
+      "attr": ""
+    },
+    {
+      "key": "PLEASE_LOG_IN_TO_USE_THIS_FEATURE_ONCE_YOU_ARE_LOGGED_IN_AN",
+      "text": "Please log in to use this feature.Once you are logged in, any saved presentations will appear here.",
+      "file": "src\\app\\my-lessons\\page.jsx",
+      "line": 53,
+      "tag": "p",
+      "attr": ""
+    },
+    {
+      "key": "LOGIN",
+      "text": "Login",
+      "file": "src\\app\\my-lessons\\page.jsx",
+      "line": 57,
+      "tag": "link",
+      "attr": ""
+    },
+    {
+      "key": "REGISTER",
+      "text": "Register",
+      "file": "src\\app\\my-lessons\\page.jsx",
+      "line": 60,
+      "tag": "link",
+      "attr": ""
+    },
+    {
+      "key": "MY_LESSONS_2",
+      "text": "My Lessons",
+      "file": "src\\app\\my-lessons\\page.jsx",
+      "line": 76,
+      "tag": "h1",
+      "attr": ""
+    },
+    {
+      "key": "LIBRARY",
+      "text": "library",
+      "file": "src\\app\\my-lessons\\page.jsx",
+      "line": 82,
+      "tag": "link",
+      "attr": ""
+    },
+    {
+      "key": "PRICING_SUBSCRIPTION_2",
+      "text": "Pricing & Subscription",
+      "file": "src\\app\\pricing\\page.js",
+      "line": 9,
+      "tag": "h1",
+      "attr": ""
+    },
+    {
+      "key": "SHOW_YOUR_PLANS_HERE",
+      "text": "Show your plans here.",
+      "file": "src\\app\\pricing\\page.js",
+      "line": 10,
+      "tag": "p",
+      "attr": ""
+    },
+    {
+      "key": "CREATE_AN_ACCOUNT",
+      "text": "Create an account",
+      "file": "src\\app\\register\\page.js",
+      "line": 71,
+      "tag": "h2",
+      "attr": ""
+    },
+    {
+      "key": "SIGN_UP_WITH_GOOGLE_COMING_SOON",
+      "text": "Sign up with Google (coming soon)",
+      "file": "src\\app\\register\\page.js",
+      "line": 76,
+      "tag": "button",
+      "attr": ""
+    },
+    {
+      "key": "SIGN_UP_WITH_MICROSOFT_COMING_SOON",
+      "text": "Sign up with Microsoft (coming soon)",
+      "file": "src\\app\\register\\page.js",
+      "line": 80,
+      "tag": "button",
+      "attr": ""
+    },
+    {
+      "key": "FIRST_NAME",
+      "text": "First Name",
+      "file": "src\\app\\register\\page.js",
+      "line": 95,
+      "tag": "input",
+      "attr": "placeholder"
+    },
+    {
+      "key": "PASSWORD_MIN_6_CHARS",
+      "text": "Password (min 6 chars)",
+      "file": "src\\app\\register\\page.js",
+      "line": 121,
+      "tag": "input",
+      "attr": "placeholder"
+    },
+    {
+      "key": "BY_SIGNING_UP_YOU_AGREE_TO_OUR",
+      "text": "By signing up you agree to our",
+      "file": "src\\app\\register\\page.js",
+      "line": 132,
+      "tag": "p",
+      "attr": ""
+    },
+    {
+      "key": "PRIVACY_POLICY_2",
+      "text": "Privacy Policy",
+      "file": "src\\app\\register\\page.js",
+      "line": 134,
+      "tag": "a",
+      "attr": ""
+    },
+    {
+      "key": "TERMS",
+      "text": "Terms",
+      "file": "src\\app\\register\\page.js",
+      "line": 135,
+      "tag": "a",
+      "attr": ""
+    },
+    {
+      "key": "ALREADY_HAVE_AN_ACCOUNT_LOG_IN",
+      "text": "Already have an account? Log in",
+      "file": "src\\app\\register\\page.js",
+      "line": 151,
+      "tag": "a",
+      "attr": ""
+    },
+    {
+      "key": "MY_PROFILE_2",
+      "text": "My Profile",
+      "file": "src\\app\\profile\\page.js",
+      "line": 13,
+      "tag": "h1",
+      "attr": ""
+    },
+    {
+      "key": "LOG_IN",
+      "text": "log in",
+      "file": "src\\app\\profile\\page.js",
+      "line": 26,
+      "tag": "a",
+      "attr": ""
+    },
+    {
+      "key": "SEARCH_RESULTS",
+      "text": "Search results",
+      "file": "src\\app\\see-all-results\\page.js",
+      "line": 5,
+      "tag": "prop",
+      "attr": "title"
+    },
+    {
+      "key": "SEE_ALL_MATCHING_PRESENTATIONS",
+      "text": "See all matching presentations",
+      "file": "src\\app\\see-all-results\\page.js",
+      "line": 6,
+      "tag": "prop",
+      "attr": "description"
+    },
+    {
+      "key": "RESULTS_FOR",
+      "text": "Results for:",
+      "file": "src\\app\\see-all-results\\page.js",
+      "line": 18,
+      "tag": "h1",
+      "attr": ""
+    },
+    {
+      "key": "SCROLL_TO_LOAD_MORE_PRESENTATIONS_RELATED_TO_YOUR_SEARCH",
+      "text": "Scroll to load more presentations related to your search.",
+      "file": "src\\app\\see-all-results\\page.js",
+      "line": 21,
+      "tag": "p",
+      "attr": ""
+    },
+    {
+      "key": "PLEASE_SIGN_IN",
+      "text": "Please sign in",
+      "file": "src\\app\\create-lesson\\feature\\AccessGate.jsx",
+      "line": 58,
+      "tag": "span",
+      "attr": ""
+    },
+    {
+      "key": "YOU_NEED_TO_LOG_IN_OR_CREATE_AN_ACCOUNT_TO_ACCESS_THE_LESSON",
+      "text": "You need to log in or create an account to access the lesson builder.",
+      "file": "src\\app\\create-lesson\\feature\\AccessGate.jsx",
+      "line": 62,
+      "tag": "p",
+      "attr": ""
+    },
+    {
+      "key": "LOG_IN_2",
+      "text": "Log in",
+      "file": "src\\app\\create-lesson\\feature\\AccessGate.jsx",
+      "line": 98,
+      "tag": "link",
+      "attr": ""
+    },
+    {
+      "key": "CREATE_ACCOUNT",
+      "text": "Create account",
+      "file": "src\\app\\create-lesson\\feature\\AccessGate.jsx",
+      "line": 106,
+      "tag": "link",
+      "attr": ""
+    },
+    {
+      "key": "BY_CONTINUING_YOU_AGREE_TO_OUR_TERMS_AND_ACKNOWLEDGE_OUR_PR",
+      "text": "By continuing, you agree to our Terms and acknowledge our Privacy Policy.",
+      "file": "src\\app\\create-lesson\\feature\\AccessGate.jsx",
+      "line": 113,
+      "tag": "p",
+      "attr": ""
+    },
+    {
+      "key": "PRESENTATION_PREVIEW_IS_NOT_AVAILABLE",
+      "text": "Presentation preview is not available.",
+      "file": "src\\app\\presentations\\[slug]\\page.jsx",
+      "line": 200,
+      "tag": "p",
+      "attr": ""
+    },
+    {
+      "key": "TO_DOWNLOAD_THE_PRESENTATION_ACCESS_IS_AVAILABLE_TO_REGISTE",
+      "text": "to download the presentation. Access is available to registered users only.",
+      "file": "src\\app\\presentations\\[slug]\\page.jsx",
+      "line": 214,
+      "tag": "p",
+      "attr": ""
+    },
+    {
+      "key": "LOG_IN_3",
+      "text": "LOG IN",
+      "file": "src\\app\\presentations\\[slug]\\page.jsx",
+      "line": 212,
+      "tag": "a",
+      "attr": ""
+    },
+    {
+      "key": "DOWNLOAD_PDF",
+      "text": "Download PDF",
+      "file": "src\\app\\presentations\\[slug]\\page.jsx",
+      "line": 224,
+      "tag": "a",
+      "attr": ""
+    },
+    {
+      "key": "EXPORT_TO_SLIDES",
+      "text": "Export to Slides",
+      "file": "src\\app\\presentations\\[slug]\\page.jsx",
+      "line": 234,
+      "tag": "a",
+      "attr": ""
+    },
+    {
+      "key": "DOWNLOAD_PPT",
+      "text": "Download PPT",
+      "file": "src\\app\\presentations\\[slug]\\page.jsx",
+      "line": 242,
+      "tag": "a",
+      "attr": ""
+    },
+    {
+      "key": "VIEW_MORE_CONTENT",
+      "text": "View More Content",
+      "file": "src\\app\\presentations\\[slug]\\page.jsx",
+      "line": 260,
+      "tag": "teachersectionclient",
+      "attr": "title"
+    },
+    {
+      "key": "SHOW_DETAILS",
+      "text": "Show Details",
+      "file": "src\\app\\presentations\\[slug]\\page.jsx",
+      "line": 267,
+      "tag": "summary",
+      "attr": ""
+    },
+    {
+      "key": "SET_A_NEW_PASSWORD",
+      "text": "Set a new password",
+      "file": "src\\app\\reset-password\\[token]\\page.js",
+      "line": 46,
+      "tag": "h2",
+      "attr": ""
+    },
+    {
+      "key": "NEW_PASSWORD",
+      "text": "New password",
+      "file": "src\\app\\reset-password\\[token]\\page.js",
+      "line": 51,
+      "tag": "input",
+      "attr": "placeholder"
+    },
+    {
+      "key": "CONFIRM_PASSWORD",
+      "text": "Confirm password",
+      "file": "src\\app\\reset-password\\[token]\\page.js",
+      "line": 58,
+      "tag": "input",
+      "attr": "placeholder"
+    },
+    {
+      "key": "RESOURCE_LIMIT_REACHED",
+      "text": "Resource Limit Reached",
+      "file": "src\\app\\create-lesson\\feature\\Layout\\index.jsx",
+      "line": 58,
+      "tag": "p",
+      "attr": ""
+    },
+    {
+      "key": "THE_SERVER_IS_CURRENTLY_OVERLOADED_AND_CANNOT_PROCESS_YOUR_R",
+      "text": "The server is currently overloaded and cannot process your request.",
+      "file": "src\\app\\create-lesson\\feature\\Layout\\index.jsx",
+      "line": 61,
+      "tag": "p",
+      "attr": ""
+    },
+    {
+      "key": "PRESENTATION_COMPLETED_SUCCESSFULLY",
+      "text": "Presentation Completed Successfully",
+      "file": "src\\app\\create-lesson\\feature\\Loaders\\index.jsx",
+      "line": 77,
+      "tag": "h2",
+      "attr": ""
+    },
+    {
+      "key": "SMTP_TEST_OK",
+      "text": "SMTP test OK",
+      "file": "src\\app\\api\\_debug\\send-test-email\\route.js",
+      "line": 15,
+      "tag": "prop",
+      "attr": "text"
+    },
+    {
+      "key": "TOPIC_GRADE_SUBJECT",
+      "text": "Topic: , Grade: , Subject:",
+      "file": "src\\app\\create-lesson\\feature\\Pages\\MainPage\\index.jsx",
+      "line": 61,
+      "tag": "prop",
+      "attr": "label"
+    },
+    {
+      "key": "CREATE_A_LESSON_2",
+      "text": "Create a Lesson",
+      "file": "src\\app\\create-lesson\\feature\\Pages\\MainPage\\index.jsx",
+      "line": 86,
+      "tag": "h1",
+      "attr": ""
+    },
+    {
+      "key": "CREATE_INTERACTIVE_ACCURATE_AI_POWERED_LESSONS_FOR_ENGAGED",
+      "text": "Create interactive, accurate AI-powered lessons for engaged classrooms",
+      "file": "src\\app\\create-lesson\\feature\\Pages\\MainPage\\index.jsx",
+      "line": 90,
+      "tag": "p",
+      "attr": ""
+    },
+    {
+      "key": "PROFILE",
+      "text": "Profile",
+      "file": "src\\app\\create-lesson\\feature\\Layout\\Components\\DropDown.jsx",
+      "line": 10,
+      "tag": "a",
+      "attr": ""
+    },
+    {
+      "key": "SETTINGS",
+      "text": "Settings",
+      "file": "src\\app\\create-lesson\\feature\\Layout\\Components\\DropDown.jsx",
+      "line": 11,
+      "tag": "a",
+      "attr": ""
+    },
+    {
+      "key": "LOGOUT",
+      "text": "Logout",
+      "file": "src\\app\\create-lesson\\feature\\Layout\\Components\\DropDown.jsx",
+      "line": 12,
+      "tag": "a",
+      "attr": ""
+    },
+    {
+      "key": "OUR_SUPPORT",
+      "text": "Our Support",
+      "file": "src\\app\\create-lesson\\feature\\Layout\\Components\\GuruPopup.jsx",
+      "line": 40,
+      "tag": "p",
+      "attr": ""
+    },
+    {
+      "key": "VIDEO_CONFERENCE_2",
+      "text": "Video Conference",
+      "file": "src\\app\\create-lesson\\feature\\Layout\\Components\\GuruPopup.jsx",
+      "line": 54,
+      "tag": "p",
+      "attr": ""
+    },
+    {
+      "key": "AUDIO_CONFERENCE",
+      "text": "Audio Conference",
+      "file": "src\\app\\create-lesson\\feature\\Layout\\Components\\GuruPopup.jsx",
+      "line": 62,
+      "tag": "p",
+      "attr": ""
+    },
+    {
+      "key": "FREE_UNLIMITED",
+      "text": "Free, unlimited",
+      "file": "src\\app\\create-lesson\\feature\\Layout\\Components\\GuruPopup.jsx",
+      "line": 72,
+      "tag": "p",
+      "attr": ""
+    },
+    {
+      "key": "HELP_TRAINING",
+      "text": "help & training",
+      "file": "src\\app\\create-lesson\\feature\\Layout\\Components\\GuruPopup.jsx",
+      "line": 75,
+      "tag": "p",
+      "attr": ""
+    },
+    {
+      "key": "NOW_ON_DESKTOP_MOBILE",
+      "text": "Now on desktop & mobile",
+      "file": "src\\app\\create-lesson\\feature\\Layout\\Components\\GuruPopup.jsx",
+      "line": 80,
+      "tag": "p",
+      "attr": ""
+    },
+    {
+      "key": "WE_CAN_HELP_NOW_ON_VIDEO_AUDIO_OR_CHAT_2",
+      "text": "We can help now on video, audio or chat.",
+      "file": "src\\app\\create-lesson\\feature\\Layout\\Components\\GuruPopup.jsx",
+      "line": 88,
+      "tag": "p",
+      "attr": ""
+    },
+    {
+      "key": "ALSO_AVAILABLE_VIA_EMAIL",
+      "text": "Also available via email:",
+      "file": "src\\app\\create-lesson\\feature\\Layout\\Components\\GuruPopup.jsx",
+      "line": 98,
+      "tag": "p",
+      "attr": ""
+    },
+    {
+      "key": "HOME",
+      "text": "Home",
+      "file": "src\\app\\create-lesson\\feature\\Layout\\Components\\SideMenu.jsx",
+      "line": 28,
+      "tag": "a",
+      "attr": ""
+    },
+    {
+      "key": "CREATE_LESSON",
+      "text": "Create Lesson",
+      "file": "src\\app\\create-lesson\\feature\\Layout\\Components\\SideMenu.jsx",
+      "line": 29,
+      "tag": "a",
+      "attr": ""
+    },
+    {
+      "key": "EXPLORE_LIBRARY_2",
+      "text": "Explore Library",
+      "file": "src\\app\\create-lesson\\feature\\Layout\\Components\\SideMenu.jsx",
+      "line": 30,
+      "tag": "a",
+      "attr": ""
+    },
+    {
+      "key": "CREATE_A_LESSN",
+      "text": "Create a Lessn",
+      "file": "src\\app\\create-lesson\\feature\\Pages\\OutlinePage\\index.jsx",
+      "line": 148,
+      "tag": "h1",
+      "attr": ""
+    },
+    {
+      "key": "CREATE_INTERACTIVE_ACCURATE_AI_POWERED_LESSON_FOR_ENGAGED_C",
+      "text": "Create interactive, accurate AI-powered lesson for engaged classrooms.",
+      "file": "src\\app\\create-lesson\\feature\\Pages\\OutlinePage\\index.jsx",
+      "line": 151,
+      "tag": "p",
+      "attr": ""
+    },
+    {
+      "key": "OUTLINE_PREVIEW",
+      "text": "Outline Preview",
+      "file": "src\\app\\create-lesson\\feature\\Pages\\OutlinePage\\index.jsx",
+      "line": 158,
+      "tag": "h2",
+      "attr": ""
+    },
+    {
+      "key": "BACK_TO_OUTLINE",
+      "text": "Back to outline",
+      "file": "src\\app\\create-lesson\\feature\\Pages\\SlidesPreview\\index.jsx",
+      "line": 231,
+      "tag": "button",
+      "attr": "title"
+    },
+    {
+      "key": "CANCEL",
+      "text": "Cancel",
+      "file": "src\\app\\create-lesson\\feature\\Pages\\OutlinePage\\Components\\ButtonGroup.jsx",
+      "line": 24,
+      "tag": "link",
+      "attr": ""
+    },
+    {
+      "key": "REGENERATE_SLIDES",
+      "text": "Regenerate Slides",
+      "file": "src\\app\\create-lesson\\feature\\Pages\\OutlinePage\\Components\\ButtonGroup.jsx",
+      "line": 37,
+      "tag": "button",
+      "attr": ""
+    },
+    {
+      "key": "GENERATE_SLIDES",
+      "text": "Generate Slides",
+      "file": "src\\app\\create-lesson\\feature\\Pages\\OutlinePage\\Components\\ButtonGroup.jsx",
+      "line": 49,
+      "tag": "button",
+      "attr": ""
+    },
+    {
+      "key": "INSERT_BULLET_BELOW",
+      "text": "Insert bullet below",
+      "file": "src\\app\\create-lesson\\feature\\Pages\\OutlinePage\\Components\\LiPoint.jsx",
+      "line": 77,
+      "tag": "button",
+      "attr": "title"
+    },
+    {
+      "key": "REORDER_BULLET",
+      "text": "Reorder bullet",
+      "file": "src\\app\\create-lesson\\feature\\Pages\\OutlinePage\\Components\\LiPoint.jsx",
+      "line": 87,
+      "tag": "button",
+      "attr": "title"
+    },
+    {
+      "key": "DELETE_BULLET",
+      "text": "Delete bullet",
+      "file": "src\\app\\create-lesson\\feature\\Pages\\OutlinePage\\Components\\LiPoint.jsx",
+      "line": 100,
+      "tag": "button",
+      "attr": "title"
+    },
+    {
+      "key": "ADD_SLIDE_BELOW",
+      "text": "Add slide below",
+      "file": "src\\app\\create-lesson\\feature\\Pages\\OutlinePage\\Components\\SlideButtonGroup.jsx",
+      "line": 18,
+      "tag": "button",
+      "attr": "title"
+    },
+    {
+      "key": "ADD_SLIDE_ABOVE",
+      "text": "Add slide above",
+      "file": "src\\app\\create-lesson\\feature\\Pages\\OutlinePage\\Components\\SlideButtonGroup.jsx",
+      "line": 39,
+      "tag": "button",
+      "attr": "title"
+    },
+    {
+      "key": "DELETE_SLIDE",
+      "text": "Delete slide",
+      "file": "src\\app\\create-lesson\\feature\\Pages\\OutlinePage\\Components\\SlideButtonGroup.jsx",
+      "line": 60,
+      "tag": "button",
+      "attr": "title"
+    },
+    {
+      "key": "ADD_BULLET",
+      "text": "Add bullet",
+      "file": "src\\app\\create-lesson\\feature\\Pages\\OutlinePage\\Components\\SlideButtonGroup.jsx",
+      "line": 70,
+      "tag": "button",
+      "attr": "title"
+    },
+    {
+      "key": "DELETE_SLIDE",
+      "text": "Delete slide",
+      "file": "src\\app\\create-lesson\\feature\\Pages\\OutlinePage\\Components\\SlideComponent.jsx",
+      "line": 88,
+      "tag": "button",
+      "attr": "title"
+    },
+    {
+      "key": "SLIDE_TITLE",
+      "text": "Slide title",
+      "file": "src\\app\\create-lesson\\feature\\Pages\\OutlinePage\\Components\\SlideComponent.jsx",
+      "line": 97,
+      "tag": "input",
+      "attr": "placeholder"
+    },
+    {
+      "key": "ADD_A_SLIDE",
+      "text": "Add a slide",
+      "file": "src\\app\\create-lesson\\feature\\Pages\\OutlinePage\\Components\\SlideComponent.jsx",
+      "line": 138,
+      "tag": "button",
+      "attr": ""
+    },
+    {
+      "key": "OUTLINE_FOR_THE_TOPIC",
+      "text": "Outline for the Topic",
+      "file": "src\\app\\create-lesson\\feature\\Pages\\OutlinePage\\Components\\TopText.jsx",
+      "line": 25,
+      "tag": "p",
+      "attr": ""
+    },
+    {
+      "key": "SUBJECT",
+      "text": ", subject",
+      "file": "src\\app\\create-lesson\\feature\\Pages\\OutlinePage\\Components\\TopText.jsx",
+      "line": 31,
+      "tag": "p",
+      "attr": ""
+    },
+    {
+      "key": "SELECT_SUBJECT_3",
+      "text": "Select Subject",
+      "file": "src\\app\\create-lesson\\feature\\Pages\\MainPage\\Components\\Form.jsx",
+      "line": 202,
+      "tag": "formselect",
+      "attr": "label"
+    },
+    {
+      "key": "ENTER_TOPIC",
+      "text": "Enter Topic",
+      "file": "src\\app\\create-lesson\\feature\\Pages\\MainPage\\Components\\Form.jsx",
+      "line": 215,
+      "tag": "forminput",
+      "attr": "label"
+    },
+    {
+      "key": "BIG_BANG_THEORY",
+      "text": "Big Bang Theory",
+      "file": "src\\app\\create-lesson\\feature\\Pages\\MainPage\\Components\\Form.jsx",
+      "line": 217,
+      "tag": "forminput",
+      "attr": "placeholder"
+    },
+    {
+      "key": "GENERATE_OUTLINE",
+      "text": "Generate Outline",
+      "file": "src\\app\\create-lesson\\feature\\Pages\\MainPage\\Components\\Form.jsx",
+      "line": 236,
+      "tag": "button",
+      "attr": ""
+    },
+    {
+      "key": "ILLUSTRATION_OF_MAN",
+      "text": "Illustration of man",
+      "file": "src\\app\\create-lesson\\feature\\Pages\\MainPage\\Components\\Image.jsx",
+      "line": 12,
+      "tag": "nextimage",
+      "attr": "alt"
+    },
+    {
+      "key": "CREATE_INTERACTIVE_ACCURATE_AI_POWERED_LESSONS_FOR_ENGAGED",
+      "text": "Create interactive, accurate AI-powered lessons for engaged classrooms",
+      "file": "src\\app\\create-lesson\\feature\\Pages\\MainPage\\Components\\SideText.jsx",
+      "line": 7,
+      "tag": "p",
+      "attr": ""
+    },
+    {
+      "key": "MICROSOFT_POWERPOINT_DOCUMENT",
+      "text": "Microsoft PowerPoint document",
+      "file": "src\\app\\create-lesson\\feature\\Pages\\SlidesPreview\\Components\\DownloadMenu.jsx",
+      "line": 141,
+      "tag": "span",
+      "attr": ""
+    },
+    {
+      "key": "GOOGLE_SLIDES",
+      "text": "Google Slides",
+      "file": "src\\app\\create-lesson\\feature\\Pages\\SlidesPreview\\Components\\DownloadMenu.jsx",
+      "line": 165,
+      "tag": "span",
+      "attr": ""
+    },
+    {
+      "key": "TABLE_OF_CONTENTS",
+      "text": "Table of Contents",
+      "file": "src\\app\\create-lesson\\feature\\Pages\\SlidesPreview\\Components\\SmallTable.jsx",
+      "line": 31,
+      "tag": "h1",
+      "attr": ""
+    }
+  ]
+}

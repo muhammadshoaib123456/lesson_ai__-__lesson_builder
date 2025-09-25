@@ -7,12 +7,12 @@ import React, { useState } from "react";
 const testimonials = [
   {
     quote:
-      "As a math teacher, I truly value the quality and variety of these presentations. They break down complex concepts effectively and positively impact my students’ overall performance!",
+      "As a math teacher, I truly value the quality and variety of these presentations. They break down complex concepts effectively and positively impact my students overall performance!",
     author: "Math Teacher",
   },
   {
     quote:
-      "Being able to quickly generate standards-based lessons has been a game changer for my classroom. Lessn’s library helps me stay organized and saves me precious planning time.",
+      "Being able to quickly generate standards-based lessons has been a game changer for my classroom. Lessnos library helps me stay organized and saves me precious planning time.",
     author: "John Borthwick",
   },
 ];

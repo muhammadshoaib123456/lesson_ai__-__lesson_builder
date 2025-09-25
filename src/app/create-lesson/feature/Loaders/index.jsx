@@ -59,67 +59,26 @@ export function FinalModal({ setFinalModal }) {
         }
       }}
     >
-      <div className="relative z-20 max-w-lg w-[90%] sm:w-[75%] md:w-[60%] bg-white rounded-2xl shadow-xl p-6 sm:p-8 flex flex-col items-center">
-        {/* Success icon and message */}
-        <svg
-          className="w-16 h-16 sm:w-20 sm:h-20 mb-4"
-          viewBox="0 0 160 160"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M160.5 80C160.5 124.183 124.683 160 80.5 160C36.3171 160 0.5 124.183 0.5 80C0.5 35.8171 36.3171 0 80.5 0C124.683 0 160.5 35.8171 160.5 80ZM71.2464 122.359L130.601 63.0045C132.617 60.989 132.617 57.721 130.601 55.7055L123.302 48.4064C121.287 46.3906 118.019 46.3906 116.003 48.4064L67.5968 96.8123L44.9971 74.2126C42.9816 72.1971 39.7135 72.1971 37.6977 74.2126L30.3987 81.5116C28.3832 83.5271 28.3832 86.7952 30.3987 88.8106L63.9471 122.359C65.9629 124.375 69.2306 124.375 71.2464 122.359Z"
-            fill="#7DC243"
-          />
-        </svg>
-        <h2 className="text-green-primary text-center text-lg sm:text-xl font-semibold mb-6">
-          Presentation Completed Successfully
-        </h2>
-        {/* Buttons row */}
-        <div className="grid grid-cols-2 gap-4 w-full">
-          {loading2 ? (
-            <button
-              disabled
-              onClick={downloadSlides}
-              className="flex items-center justify-center px-4 py-2 border-2 border-orange-600 bg-orange-100 rounded-lg text-orange-700 cursor-not-allowed"
-            >
-              <span className="animate-spin border border-orange-600 border-t-transparent rounded-full w-4 h-4 mr-2"></span>
-              <PowerPointSVG />
-              <span className="ml-2 text-sm">Download Slides</span>
-            </button>
-          ) : (
-            <button
-              onClick={downloadSlides}
-              className="flex items-center justify-center px-4 py-2 border-2 border-orange-600 bg-orange-100 rounded-lg text-orange-700 hover:bg-orange-200 transition-colors"
-            >
-              <PowerPointSVG />
-              <span className="ml-2 text-sm">Download Slides</span>
-            </button>
-          )}
-          <a
-            href={typeof window !== 'undefined' ? localStorage.getItem('url') || '#' : '#'}
-            target="_blank"
-            className="flex items-center justify-center px-4 py-2 border-2 border-gray-400 bg-gray-500 rounded-lg text-white hover:bg-gray-600 transition-colors"
-          >
-            <GoogleSlidesSVG />
-            <span className="ml-2 text-sm">Upload Slides</span>
-          </a>
-        </div>
-        {/* Close/back button */}
-        <a
-          href="/"
-          className="absolute top-2 right-2 w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-green-primary hover:bg-green-600 flex items-center justify-center"
-        >
-          <svg
-            fill="#000000"
-            className="w-5 h-5"
-            viewBox="0 0 489.533 489.533"
-            aria-hidden
-          >
-            <path d="M268.175,488.161c98.2-11,176.9-89.5,188.1-187.7c14.7-128.4-85.1-237.7-210.2-239.1v-57.6c0-3.2-4-4.9-6.7-2.9 l-118.6,87.1c-2,1.5-2,4.4,0,5.9l118.6,87.1c2.7,2,6.7,0.2,6.7-2.9v-57.5c87.9,1.4,158.3,76.2,152.3,165.6 c-5.1,76.9-67.8,139.3-144.7,144.2c-81.5,5.2-150.8-53-163.2-130c-2.3-14.3-14.8-24.7-29.2-24.7c-17.9,0-31.9,15.9-29.1,33.6 C49.575,418.961,150.875,501.261,268.175,488.161z" />
-          </svg>
-        </a>
-      </div>
+    <div className="relative z-20 max-w-lg w-[90%] sm:w-[75%] md:w-[60%] bg-white rounded-2xl shadow-xl p-6 sm:p-8 flex flex-col items-center">
+  {/* Success icon */}
+  <svg
+    className="w-16 h-16 sm:w-20 sm:h-20 mb-4"
+    viewBox="0 0 160 160"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M160.5 80C160.5 124.183 124.683 160 80.5 160C36.3171 160 0.5 124.183 0.5 80C0.5 35.8171 36.3171 0 80.5 0C124.683 0 160.5 35.8171 160.5 80ZM71.2464 122.359L130.601 63.0045C132.617 60.989 132.617 57.721 130.601 55.7055L123.302 48.4064C121.287 46.3906 118.019 46.3906 116.003 48.4064L67.5968 96.8123L44.9971 74.2126C42.9816 72.1971 39.7135 72.1971 37.6977 74.2126L30.3987 81.5116C28.3832 83.5271 28.3832 86.7952 30.3987 88.8106L63.9471 122.359C65.9629 124.375 69.2306 124.375 71.2464 122.359Z"
+      fill="#7DC243"
+    />
+  </svg>
+
+  {/* Success message */}
+  <h2 className="text-green-primary text-center text-lg sm:text-xl font-semibold">
+    Presentation Completed Successfully
+  </h2>
+</div>
+
       {/* Backdrop behind modal */}
       <div className="absolute inset-0 bg-black opacity-50 z-10 modals-backdrop"></div>
     </div>

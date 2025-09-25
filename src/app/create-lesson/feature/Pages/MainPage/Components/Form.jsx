@@ -1,15 +1,10 @@
-// form.jsx
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import FormSelectDisabled, { FormInput, FormSelect } from "./FormComponents.jsx";
+import { FormInput, FormSelect } from "./FormComponents.jsx";
 import { useSelector } from "react-redux";
 
-/**
- * Fetch JSON with timeout + one retry on transient failures.
- * If the response isn't JSON, return an object { _nonJSON, status, contentType }.
- * DO NOT attempt JSON.parse on non-JSON here.
- */
+// fetchJSONWithTimeout and fetchSubjectsForGrade remain unchanged
 async function fetchJSONWithTimeout(
   url,
   { timeoutMs = 8000, headers, signal, ...init } = {},
@@ -32,7 +27,9 @@ async function fetchJSONWithTimeout(
 
     if (!res.ok) {
       const txt = await res.text().catch(() => "");
-      const err = new Error(`HTTP ${res.status}${txt ? `: ${txt.slice(0, 200)}` : ""}`);
+      const err = new Error(
+        `HTTP ${res.status}${txt ? `: ${txt.slice(0, 200)}` : ""}`
+      );
       err.status = res.status;
       err.body = txt;
       throw err;
@@ -40,52 +37,50 @@ async function fetchJSONWithTimeout(
 
     if (isJSON) return res.json();
 
-    // Non-JSON: return raw text and let the caller decide.
     const raw = await res.text();
     return { _nonJSON: raw, status: res.status, contentType };
   } catch (err) {
     clearTimeout(timer);
     const transient =
       err?.name === "AbortError" ||
-      (typeof err?.message === "string" && /network|timeout|fetch failed/i.test(err.message));
+      (typeof err?.message === "string" &&
+        /network|timeout|fetch failed/i.test(err.message));
     if (retry && transient) {
-      return fetchJSONWithTimeout(url, { timeoutMs, headers, signal, ...init }, false);
+      return fetchJSONWithTimeout(
+        url,
+        { timeoutMs, headers, signal, ...init },
+        false
+      );
     }
     throw err;
   }
 }
 
-/**
- * Some backends require grade to be quoted: grade="<VALUE>"
- * Try without quotes first; if non-JSON or 'fail', retry with quotes.
- */
 async function fetchSubjectsForGrade(BACKEND, selectedGrade) {
   const enc = encodeURIComponent(selectedGrade);
-
-  // 1) Try without quotes
-  const res1 = await fetchJSONWithTimeout(`${BACKEND}/get_subject?grade=${enc}`, { timeoutMs: 8000 });
-  if (!res1?._nonJSON) return res1; // got JSON → done
+  const res1 = await fetchJSONWithTimeout(
+    `${BACKEND}/get_subject?grade=${enc}`,
+    { timeoutMs: 8000 }
+  );
+  if (!res1?._nonJSON) return res1;
 
   const txt1 = (res1._nonJSON || "").trim().toLowerCase();
-  if (txt1 && txt1 !== "fail") {
-    // Non-JSON but not the known "fail" sentinel; return as-is so caller can decide.
-    return res1;
-  }
+  if (txt1 && txt1 !== "fail") return res1;
 
-  // 2) Retry with quotes
-  const res2 = await fetchJSONWithTimeout(`${BACKEND}/get_subject?grade="${enc}"`, { timeoutMs: 8000 });
+  const res2 = await fetchJSONWithTimeout(
+    `${BACKEND}/get_subject?grade="${enc}"`,
+    { timeoutMs: 8000 }
+  );
   return res2;
 }
 
-export default function Form({ handleSubmit, register, errors }) {
+export default function Form({ handleSubmit, register }) {
   const { socketId } = useSelector((state) => state.socket);
 
   const [selectedGrade, setSelectedGrade] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("");
   const [selectedTopic, setSelectedTopic] = useState("");
-  const [refresh, setRefresh] = useState(false);
 
-  // Grade order preserved
   const gradeOrder = useMemo(
     () => [
       "Pre-K",
@@ -103,28 +98,32 @@ export default function Form({ handleSubmit, register, errors }) {
     []
   );
 
-  const BACKEND = process.env.NEXT_PUBLIC_SERVER_URL; // e.g., https://builder.lessn.ai:8085
+  const BACKEND = process.env.NEXT_PUBLIC_SERVER_URL;
 
   const handleGradeChange = (value) => {
-    setRefresh(true);
     setSelectedGrade(value?.value ?? "");
     setSelectedSubject("");
     setSelectedTopic("");
   };
-  const handleSubjectChange = (value) => setSelectedSubject(value?.value ?? "");
+  const handleSubjectChange = (value) => {
+    setSelectedSubject(value?.value ?? "");
+    setSelectedTopic("");
+  };
   const handleTopicChange = (value) => setSelectedTopic(value ?? "");
 
-  const isFormIncomplete = () => !selectedGrade || !selectedSubject || !selectedTopic;
+  const isFormIncomplete = () =>
+    !selectedGrade || !selectedSubject || !selectedTopic;
 
   const normalizeGrades = (data) => {
-    // Accept several shapes; ignore non-JSON
     let gradesArray = [];
     if (data && !data._nonJSON) {
       if (Array.isArray(data)) gradesArray = data;
       else if (Array.isArray(data.grade)) gradesArray = data.grade;
       else if (Array.isArray(data.grades)) gradesArray = data.grades;
     }
-    return gradesArray.map((g) => (typeof g === "string" ? { grade: g } : g)).filter(Boolean);
+    return gradesArray
+      .map((g) => (typeof g === "string" ? { grade: g } : g))
+      .filter(Boolean);
   };
 
   const normalizeSubjects = (data) => {
@@ -133,7 +132,7 @@ export default function Form({ handleSubmit, register, errors }) {
       if (Array.isArray(data)) arr = data;
       else if (Array.isArray(data.subjects)) arr = data.subjects;
       else if (Array.isArray(data.subject)) arr = data.subject;
-      else if (Array.isArray(data.topics)) arr = data.topics; // lenient
+      else if (Array.isArray(data.topics)) arr = data.topics;
     }
     return arr
       .map((s) => (typeof s === "string" ? s : s?.subject))
@@ -149,17 +148,12 @@ export default function Form({ handleSubmit, register, errors }) {
 
       switch (field) {
         case "grade": {
-          const data = await fetchJSONWithTimeout(`${BACKEND}/get_grades`, { timeoutMs: 8000 });
-
-          if (data?._nonJSON) {
-            // backend returned plain text (e.g., "fail" or HTML) → no options
-            console.warn("Grades: backend returned non-JSON:", data._nonJSON.slice(0, 200));
-            return [];
-          }
-
+          const data = await fetchJSONWithTimeout(`${BACKEND}/get_grades`, {
+            timeoutMs: 8000,
+          });
+          if (data?._nonJSON) return [];
           const normalized = normalizeGrades(data);
-
-          const sorted = normalized
+          return normalized
             .slice()
             .sort((a, b) => {
               const ia = gradeOrder.indexOf(a?.grade ?? "");
@@ -170,24 +164,14 @@ export default function Form({ handleSubmit, register, errors }) {
             })
             .map((g) => ({ value: g.grade, label: g.grade }))
             .filter((g) => g.value);
-
-          return sorted;
         }
-
         case "subject": {
           if (!selectedGrade) return [];
-
           const data2 = await fetchSubjectsForGrade(BACKEND, selectedGrade);
-
-          if (data2?._nonJSON) {
-            console.warn("Subjects: backend returned non-JSON:", data2._nonJSON.slice(0, 200));
-            return [];
-          }
-
+          if (data2?._nonJSON) return [];
           const subjects = normalizeSubjects(data2);
           return subjects.map((subject) => ({ value: subject, label: subject }));
         }
-
         default:
           return [];
       }
@@ -197,13 +181,10 @@ export default function Form({ handleSubmit, register, errors }) {
     }
   };
 
-  useEffect(() => {
-    setRefresh(false);
-  }, [selectedGrade]);
-
   return (
     <div className="object-contain flex-shrink max-h-full flex-2 flex flex-col sm:justify-center">
       <form onSubmit={handleSubmit} className="h-full">
+        {/* Always show Grade */}
         <FormSelect
           label="Grade"
           name="grade"
@@ -214,7 +195,8 @@ export default function Form({ handleSubmit, register, errors }) {
           required
         />
 
-        {!refresh && selectedGrade && (
+        {/* Show Subject only after Grade is picked */}
+        {selectedGrade && (
           <FormSelect
             placeholder="Select..."
             label="Select Subject"
@@ -227,31 +209,37 @@ export default function Form({ handleSubmit, register, errors }) {
           />
         )}
 
+        {/* Show Topic only after Subject is picked */}
         {selectedSubject && (
           <FormInput
             label="Enter Topic"
             name="topic"
-            placeholder={"Big Bang Theory"}
+            placeholder="Big Bang Theory"
             value={selectedTopic}
             onChange={(e) => handleTopicChange(e.target.value)}
             register={register}
             required
+            className="rounded-3xl border-purple-600 focus:border-purple-700 focus:ring-2 focus:ring-purple-700 hover:border-purple-600" // hover style locked (no change on hover)
           />
         )}
 
-       <button
-  className="btn btn-primary btn-md rounded-2xl"
-  type="submit"
-  disabled={!socketId || isFormIncomplete()}
->
-  Generate Outline
-</button>
+        {/* Always show button but style changes with state */}
+        <button
+          className={`mt-4 rounded-2xl px-4 py-2 font-medium shadow transition 
+            ${
+              isFormIncomplete()
+                ? "bg-gray-300 text-gray-500 cursor-not-allowed opacity-60"
+                : "bg-black text-white hover:bg-gray-800 cursor-pointer opacity-100"
+            }`}
+          type="submit"
+          disabled={!socketId || isFormIncomplete()}
+        >
+          Generate Outline
+        </button>
       </form>
     </div>
   );
 }
-
-
 
 
 

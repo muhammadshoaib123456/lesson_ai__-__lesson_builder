@@ -31,6 +31,9 @@ model Presentation {
   createdAt                  DateTime @default(now())
   updatedAt                  DateTime @updatedAt
 
+  // NEW: reverse relation
+  savedBy                    SavedPresentation[]
+
   @@index([subject])
   @@index([grade])
   @@index([topic])
@@ -48,11 +51,11 @@ model User {
   
   // NEW FIELDS FOR CREATE-LESSON FUNCTIONALITY
   slidesCreated      Int       @default(0)
-  subscriptionType   String?   @default("free") // 'free', 'pro', 'premium'
+  subscriptionType   String?   @default("free")
   subscriptionActive Boolean   @default(false)
   subscriptionEnds   DateTime?
-  planId             String?   // For tracking which plan they have
-  lastSlideCreated   DateTime? // Track when last slide was created
+  planId             String?
+  lastSlideCreated   DateTime?
   
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
@@ -60,7 +63,10 @@ model User {
   accounts           Account[]
   sessions           Session[]
   resetTokens        PasswordResetToken[]
-  createdLessons     CreatedLesson[] // Track user's created lessons
+  createdLessons     CreatedLesson[]
+
+  // NEW: saved lessons relation
+  savedPresentations SavedPresentation[]
 }
 
 model Account {
@@ -118,11 +124,11 @@ model CreatedLesson {
   subject        String
   grade          String
   slideCount     Int      @default(9)
-  outline        String?  @db.Text // JSON string of the outline
-  slides         String?  @db.Text // JSON string of generated slides
+  outline        String?  @db.Text
+  slides         String?  @db.Text
   downloadCount  Int      @default(0)
-  jobId          String?  // Track the processing job
-  status         String   @default("processing") // 'processing', 'completed', 'failed'
+  jobId          String?
+  status         String   @default("processing")
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
@@ -130,4 +136,17 @@ model CreatedLesson {
 
   @@index([userId])
   @@index([status])
+}
+
+/* ===================== NEW ===================== */
+model SavedPresentation {
+  userId         String
+  presentationId Int
+  createdAt      DateTime @default(now())
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  presentation Presentation @relation(fields: [presentationId], references: [id], onDelete: Cascade)
+
+  @@id([userId, presentationId])
+  @@index([presentationId])
 }

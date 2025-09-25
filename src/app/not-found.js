@@ -21,7 +21,7 @@ export default function NotFound() {
       </h1>
 
       {/* Message */}
-      <p className="text-2xl mt-4 font-semibold">Oops! Lost in Space 🚀</p>
+      <p className="text-2xl mt-4 font-semibold">Oops! Lost in Space</p>
       <p className="text-gray-300 mt-2 max-w-lg">
         This page wandered off somewhere. Even our emoji is sad about it.
         But hey, you can still head back safely!

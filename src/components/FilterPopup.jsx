@@ -450,7 +450,7 @@ export default function FilterPopup({ isOpen, onClose, defaults = {}, onApply })
               <input
                 value={topicSearch}
                 onChange={(e) => setTopicSearch(e.target.value)}
-                placeholder="Search topics…"
+                placeholder="Search topic"
                 className="w-full mb-2 border border-gray-300 rounded-md px-2 py-1"
               />
 
@@ -465,7 +465,7 @@ export default function FilterPopup({ isOpen, onClose, defaults = {}, onApply })
                       <span className="truncate max-w-[180px]">{t.name}</span>
                       <button
                         type="button"
-                        aria-label={`Remove ${t.name}`}
+                        aria-label={`Remove${t.name}`}
                         onClick={(e) => { e.stopPropagation(); removeTopic(t.id); }}
                         className="ml-1 inline-flex h-5 w-5 items-center justify-center rounded-full bg-purple-600 text-white hover:bg-purple-700
                                    focus:outline-none focus:ring-2 focus:ring-purple-300 focus:ring-offset-1 transition-colors"
@@ -509,7 +509,7 @@ export default function FilterPopup({ isOpen, onClose, defaults = {}, onApply })
               <input
                 value={subTopicSearch}
                 onChange={(e) => setSubTopicSearch(e.target.value)}
-                placeholder="Search sub-topics…"
+                placeholder="Search sub-topics"
                 className="w-full mb-2 border border-gray-300 rounded-md px-2 py-1"
               />
 

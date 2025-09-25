@@ -38,6 +38,7 @@ export default {
         primary: ["Inter", "system-ui", "sans-serif"],
         wide: ["Inter", "system-ui", "sans-serif"],
         superBlack: ["Inter", "system-ui", "sans-serif"],
+        mulish: ["Mulish", "sans-serif"], // ✅ Added Mulish here
       },
       // optional: add even larger corner sizes
       borderRadius: {
@@ -64,7 +65,6 @@ export default {
     ],
   },
 };
-
 
 
 

@@ -1,34 +1,40 @@
-"use client";
+"use client"; // keep this in Next.js; remove it in plain React
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 export default function ScrollableText({ children, maxHeight = 70 }) {
+  const containerRef = useRef(null);
   const [isOverflowing, setIsOverflowing] = useState(false);
-  const textAreaRef = useRef(null);
+
+  const checkOverflow = () => {
+    const el = containerRef.current;
+    if (!el) return;
+    setIsOverflowing(el.scrollHeight > el.clientHeight);
+  };
 
   useEffect(() => {
-    const element = textAreaRef.current;
-    if (element) {
-      setIsOverflowing(element.scrollHeight > element.clientHeight);
-    }
-  }, [children]);
+    checkOverflow();
+  }, [children, maxHeight]);
 
-  const handleScroll = () => {
-    if (!textAreaRef.current) return;
-    setIsOverflowing(
-      textAreaRef.current.scrollHeight > textAreaRef.current.clientHeight
-    );
-  };
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    // Recalculate when the container size or content changes
+    const ro = new ResizeObserver(checkOverflow);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   return (
     <div
+      ref={containerRef}
       className={`scrollable-text ${isOverflowing ? "overflowing" : ""}`}
-      style={{ width: "100%", maxHeight: `${maxHeight}px`, overflow: "auto" }}
+      style={{ width: "100%", maxHeight: `${maxHeight}px`, overflowY: "auto" }}
+      onScroll={checkOverflow}
     >
-      <div ref={textAreaRef} onScroll={handleScroll}>
-        {children}
-      </div>
-      {isOverflowing && <div className="scrollbar"></div>}
+      {children}
+      {isOverflowing && <div className="scrollbar" />}
     </div>
   );
 }

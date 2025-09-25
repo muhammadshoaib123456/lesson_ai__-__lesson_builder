@@ -207,7 +207,7 @@ function TeacherSectionClient({
         data-card
         className="rounded-xl border border-slate-200 bg-slate-50 animate-pulse"
         style={{ height: cardHeight }}
-        title={`Loading #${abs}`}
+        title={`Loading#${abs}`}
       />
     );
   };
