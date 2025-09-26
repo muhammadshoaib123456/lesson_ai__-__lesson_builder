@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -14,23 +14,31 @@ import { useUsageLimit } from "../../hooks/useUsageLimit.js";
 import Header from "@/components/Header.jsx";
 import Footer from "@/components/Footer.jsx";
 
-/**
- * MainPage
- *
- * Presents the initial form for generating a lesson. The layout has been
- * adjusted so that the header, main content and footer share a consistent
- * page width and height with other pages. The middle section includes top
- * and bottom margins (at least 20 units) to prevent global page scrolling.
- */
 export default function MainPage({ setLoading, setGenSlides, setFinalModal }) {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
+  const { register, handleSubmit, formState: { errors } } = useForm();
   const dispatch = useDispatch();
   const router = useRouter();
   const { canCreateSlides, showLimitReached, showLimitWarning } = useUsageLimit();
+
+  // ---- Soft gate (inline) ----
+  const [checkingGate, setCheckingGate] = useState(true);
+  const [blocked, setBlocked] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const res = await fetch("/api/profile", { cache: "no-store" });
+        const p = res.ok ? await res.json() : null;
+        if (mounted) setBlocked(!p?.profileComplete);
+      } catch {
+        if (mounted) setBlocked(false);
+      } finally {
+        if (mounted) setCheckingGate(false);
+      }
+    })();
+    return () => { mounted = false; };
+  }, []);
 
   useEffect(() => {
     setLoading(false);
@@ -51,7 +59,9 @@ export default function MainPage({ setLoading, setGenSlides, setFinalModal }) {
     const grade = data.grade;
     const slides = 10;
     const subject = data.subject;
+
     dispatch(setForm({ reqPrompt, grade, slides, subject }));
+
     if (typeof window !== "undefined") {
       try {
         const ReactGA = (await import("react-ga4")).default;
@@ -78,21 +88,48 @@ export default function MainPage({ setLoading, setGenSlides, setFinalModal }) {
     router.push("/create-lesson/outline");
   }
 
+  const next = "/create-lesson";
+
   return (
     <div className="min-h-screen w-full overflow-hidden bg-white flex flex-col">
       <Header />
+
+      {/* Soft gate modal (only when profile incomplete). We still render page underneath. */}
+      {!checkingGate && blocked && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+          <div className="relative z-[101] bg-white text-black w-[92%] max-w-md rounded-2xl shadow-xl border p-6">
+            <h3 className="text-xl font-semibold mb-2">Complete your profile</h3>
+            <p className="text-gray-700 mb-4">
+              Please complete your profile first to access <span className="font-medium">Create a Lesson</span>.
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => router.back()}
+                className="px-4 py-2 rounded-full border border-gray-300 text-gray-700"
+              >
+                Go back
+              </button>
+              <button
+                onClick={() => router.push(`/register?next=${encodeURIComponent(next)}`)}
+                className="px-5 py-2 rounded-full bg-purple-600 text-white hover:bg-purple-700"
+              >
+                Continue onboarding
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <main className="flex-1 flex flex-col items-center justify-start px-6 mt-10 mb-10 overflow-hidden">
-        {/* Title */}
         <h1 className="mt-2 text-center text-4xl md:text-5xl font-normal text-black">
           Create a Lesson
         </h1>
-        {/* Tagline */}
         <p className="mt-4 text-center text-lg text-purple-700">
           Create interactive, accurate AI-powered lessons for engaged classrooms
         </p>
-        {/* Content */}
-        <div className="mt-5 grid flex-1 items-center gap-8 lg:grid-cols-2 w-full max-w-6xl">
-          {/* Left: Form */}
+
+        <div className={`mt-5 grid flex-1 items-center gap-8 lg:grid-cols-2 w-full max-w-6xl ${blocked ? "pointer-events-none select-none opacity-60" : ""}`}>
           <div className="flex flex-col items-start justify-center">
             <div className="w-full max-w-md">
               <Form
@@ -102,7 +139,6 @@ export default function MainPage({ setLoading, setGenSlides, setFinalModal }) {
               />
             </div>
           </div>
-          {/* Right: Illustration */}
           <div className="flex items-center justify-center">
             <Image />
           </div>

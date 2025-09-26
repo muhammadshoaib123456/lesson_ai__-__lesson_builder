@@ -72,23 +72,18 @@ export default function SlideComponent({
 
   return (
     <li
-      className="w-full bg-[#FAF5FF] border border-gray-200 rounded-2xl p-5 shadow-sm"
-      // Each slide is a white card with a light grey border and subtle shadow.
-      // To change the border radius, adjust rounded-2xl. For a darker border,
-      // modify border-gray-200. Increase/decrease p-5 to change padding.
+      className="w-full bg-[#FAF5FF] border border-gray-200 rounded-2xl p-5 shadow-sm scroll-smooth overflow-y-auto"
+      // Added scroll-smooth and overflow-y-auto to optimize scrolling
     >
       {/* Slide title area */}
       <div
         className="relative flex items-center justify-center mb-4"
-        // The title area centers the input and positions the delete button on the left.
       >
         <button
           type="button"
           onClick={() => DeleteSlide(index)}
           title="Delete slide"
           className="absolute left-0 flex items-center justify-center w-7 h-7 rounded-full bg-red-100 hover:bg-red-200 text-red-500 transition-colors"
-          // Red delete icon for the slide. Adjust sizes via w-7/h-7 and change
-          // colours via bg-red-*/text-red-* utilities.
         >
           <span className="text-xl font-bold">×</span>
         </button>
@@ -105,9 +100,6 @@ export default function SlideComponent({
             });
           }}
           className="w-3/4 mx-auto text-center text-lg font-semibold placeholder-gray-500 bg-transparent rounded-md border-0 focus:outline-none focus:border-black focus:bg-white focus:text-black py-2 px-3"
-          // The slide title input. The border-0 removes default borders. Use
-          // focus:border-black to add a border on focus. Adjust w-3/4 to change
-          // how wide the title field is relative to the card.
         />
       </div>
       {/* Bullets */}
@@ -131,11 +123,11 @@ export default function SlideComponent({
       <button
         type="button"
         onClick={() => addSlideBelow(index)}
-        className=" flex items-center justify-center px-4 py-2 rounded-full bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium transition-colors"
-        // Button to insert a new slide below this one. Modify bg-purple-600 to
-        // change the fill colour. px-4/py-2 control the size.
+        className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium transition-colors space-x-2"
+        // Changed to inline-flex, added space-x-2, wrapped text in span
       >
-        <span className="mr-2 text-lg leading-none">+</span> Add a slide
+        <span className="text-lg font-bold">+</span>
+        <span>Add a slide</span>
       </button>
     </li>
   );

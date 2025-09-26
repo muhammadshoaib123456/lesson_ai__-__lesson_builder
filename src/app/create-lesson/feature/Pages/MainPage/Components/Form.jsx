@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 import { FormInput, FormSelect } from "./FormComponents.jsx";
 import { useSelector } from "react-redux";
 
-// fetchJSONWithTimeout and fetchSubjectsForGrade remain unchanged
+// --- helpers (same retry/timeout behavior as your original) ---
 async function fetchJSONWithTimeout(
   url,
   { timeoutMs = 8000, headers, signal, ...init } = {},
@@ -27,9 +27,7 @@ async function fetchJSONWithTimeout(
 
     if (!res.ok) {
       const txt = await res.text().catch(() => "");
-      const err = new Error(
-        `HTTP ${res.status}${txt ? `: ${txt.slice(0, 200)}` : ""}`
-      );
+      const err = new Error(`HTTP ${res.status}${txt ? `: ${txt.slice(0, 200)}` : ""}`);
       err.status = res.status;
       err.body = txt;
       throw err;
@@ -43,14 +41,9 @@ async function fetchJSONWithTimeout(
     clearTimeout(timer);
     const transient =
       err?.name === "AbortError" ||
-      (typeof err?.message === "string" &&
-        /network|timeout|fetch failed/i.test(err.message));
+      (typeof err?.message === "string" && /network|timeout|fetch failed/i.test(err.message));
     if (retry && transient) {
-      return fetchJSONWithTimeout(
-        url,
-        { timeoutMs, headers, signal, ...init },
-        false
-      );
+      return fetchJSONWithTimeout(url, { timeoutMs, headers, signal, ...init }, false);
     }
     throw err;
   }
@@ -58,19 +51,9 @@ async function fetchJSONWithTimeout(
 
 async function fetchSubjectsForGrade(BACKEND, selectedGrade) {
   const enc = encodeURIComponent(selectedGrade);
-  const res1 = await fetchJSONWithTimeout(
-    `${BACKEND}/get_subject?grade=${enc}`,
-    { timeoutMs: 8000 }
-  );
+  const res1 = await fetchJSONWithTimeout(`${BACKEND}/get_subject?grade=${enc}`, { timeoutMs: 8000 });
   if (!res1?._nonJSON) return res1;
-
-  const txt1 = (res1._nonJSON || "").trim().toLowerCase();
-  if (txt1 && txt1 !== "fail") return res1;
-
-  const res2 = await fetchJSONWithTimeout(
-    `${BACKEND}/get_subject?grade="${enc}"`,
-    { timeoutMs: 8000 }
-  );
+  const res2 = await fetchJSONWithTimeout(`${BACKEND}/get_subject?grade="${enc}"`, { timeoutMs: 8000 });
   return res2;
 }
 
@@ -81,24 +64,30 @@ export default function Form({ handleSubmit, register }) {
   const [selectedSubject, setSelectedSubject] = useState("");
   const [selectedTopic, setSelectedTopic] = useState("");
 
+  // NEW: profile defaults
+  const [profile, setProfile] = useState(null);
+
   const gradeOrder = useMemo(
     () => [
-      "Pre-K",
-      "Kindergarten",
-      "First Grade",
-      "Second Grade",
-      "Third Grade",
-      "Fourth Grade",
-      "Fifth Grade",
-      "Sixth Grade",
-      "Seventh Grade",
-      "Eighth Grade",
-      "High school",
+      "Pre-K","Kindergarten","First Grade","Second Grade","Third Grade",
+      "Fourth Grade","Fifth Grade","Sixth Grade","Seventh Grade","Eighth Grade","High school",
     ],
     []
   );
 
   const BACKEND = process.env.NEXT_PUBLIC_SERVER_URL;
+
+  // Prefill from profile
+  useEffect(() => {
+    (async () => {
+      try {
+        const p = await fetch("/api/profile", { cache: "no-store" }).then(r => r.ok ? r.json() : null);
+        setProfile(p);
+        if (p?.defaultGrade) setSelectedGrade(p.defaultGrade);
+        if (p?.defaultSubject) setSelectedSubject(p.defaultSubject);
+      } catch {}
+    })();
+  }, []);
 
   const handleGradeChange = (value) => {
     setSelectedGrade(value?.value ?? "");
@@ -111,8 +100,7 @@ export default function Form({ handleSubmit, register }) {
   };
   const handleTopicChange = (value) => setSelectedTopic(value ?? "");
 
-  const isFormIncomplete = () =>
-    !selectedGrade || !selectedSubject || !selectedTopic;
+  const isFormIncomplete = () => !selectedGrade || !selectedSubject || !selectedTopic;
 
   const normalizeGrades = (data) => {
     let gradesArray = [];
@@ -148,9 +136,7 @@ export default function Form({ handleSubmit, register }) {
 
       switch (field) {
         case "grade": {
-          const data = await fetchJSONWithTimeout(`${BACKEND}/get_grades`, {
-            timeoutMs: 8000,
-          });
+          const data = await fetchJSONWithTimeout(`${BACKEND}/get_grades`, { timeoutMs: 8000 });
           if (data?._nonJSON) return [];
           const normalized = normalizeGrades(data);
           return normalized
@@ -181,10 +167,22 @@ export default function Form({ handleSubmit, register }) {
     }
   };
 
+  // Helpers to use/save defaults
+  async function saveAsDefault() {
+    await fetch("/api/profile", {
+      method: "PUT",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        defaultGrade: selectedGrade || null,
+        defaultSubject: selectedSubject || null,
+      }),
+    });
+    setProfile(p => ({ ...(p||{}), defaultGrade: selectedGrade, defaultSubject: selectedSubject }));
+  }
+
   return (
     <div className="object-contain flex-shrink max-h-full flex-2 flex flex-col sm:justify-center">
       <form onSubmit={handleSubmit} className="h-full">
-        {/* Always show Grade */}
         <FormSelect
           label="Grade"
           name="grade"
@@ -195,7 +193,6 @@ export default function Form({ handleSubmit, register }) {
           required
         />
 
-        {/* Show Subject only after Grade is picked */}
         {selectedGrade && (
           <FormSelect
             placeholder="Select..."
@@ -209,7 +206,6 @@ export default function Form({ handleSubmit, register }) {
           />
         )}
 
-        {/* Show Topic only after Subject is picked */}
         {selectedSubject && (
           <FormInput
             label="Enter Topic"
@@ -219,18 +215,38 @@ export default function Form({ handleSubmit, register }) {
             onChange={(e) => handleTopicChange(e.target.value)}
             register={register}
             required
-            className="rounded-3xl border-purple-600 focus:border-purple-700 focus:ring-2 focus:ring-purple-700 hover:border-purple-600" // hover style locked (no change on hover)
+            className="rounded-3xl border-purple-600 focus:border-purple-700 focus:ring-2 focus:ring-purple-700 hover:border-purple-600"
           />
         )}
 
-        {/* Always show button but style changes with state */}
+        {/* Defaults helpers */}
+        {profile && (
+          <div className="flex items-center gap-4 mt-2">
+            <button
+              type="button"
+              className="text-sm underline text-purple-700"
+              onClick={() => {
+                setSelectedGrade(profile.defaultGrade || "");
+                setSelectedSubject(profile.defaultSubject || "");
+              }}
+            >
+              Use my defaults
+            </button>
+            <button
+              type="button"
+              className="text-sm underline text-gray-700"
+              onClick={saveAsDefault}
+            >
+              Save as my default
+            </button>
+          </div>
+        )}
+
         <button
           className={`mt-4 rounded-2xl px-4 py-2 font-medium shadow transition 
-            ${
-              isFormIncomplete()
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed opacity-60"
-                : "bg-black text-white hover:bg-gray-800 cursor-pointer opacity-100"
-            }`}
+            ${isFormIncomplete()
+              ? "bg-gray-300 text-gray-500 cursor-not-allowed opacity-60"
+              : "bg-black text-white hover:bg-gray-800 cursor-pointer opacity-100"}`}
           type="submit"
           disabled={!socketId || isFormIncomplete()}
         >

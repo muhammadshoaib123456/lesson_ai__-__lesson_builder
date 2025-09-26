@@ -104,9 +104,9 @@ export default function Login() {
                 textAlign: "center",
               }}
             >
-              Already have an account?{" "}
-              <a href="/login" style={{ color: "#9500DE", marginLeft: 4 }}>
-                Log in
+              Dont Have an Account?{" "}
+              <a href="/register" style={{ color: "#9500DE", marginLeft: 4 }}>
+                Register
               </a>
             </p>
           </div>

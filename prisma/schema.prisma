@@ -31,7 +31,7 @@ model Presentation {
   createdAt                  DateTime @default(now())
   updatedAt                  DateTime @updatedAt
 
-  // NEW: reverse relation
+  // reverse relation
   savedBy                    SavedPresentation[]
 
   @@index([subject])
@@ -48,15 +48,23 @@ model User {
   emailVerified      DateTime?
   image              String?
   passwordHash       String?
-  
-  // NEW FIELDS FOR CREATE-LESSON FUNCTIONALITY
+
+  // For create-lesson / usage
   slidesCreated      Int       @default(0)
   subscriptionType   String?   @default("free")
   subscriptionActive Boolean   @default(false)
   subscriptionEnds   DateTime?
   planId             String?
   lastSlideCreated   DateTime?
-  
+
+  // ✅ Profile defaults & onboarding
+  role               String?             // "student" | "teacher"
+  defaultGrade       String?
+  defaultSubject     String?
+  defaultStandard    String?
+  profileComplete    Boolean   @default(false)
+  onboardingStep     Int       @default(1) // resume point (1..2)
+
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
 
@@ -64,8 +72,6 @@ model User {
   sessions           Session[]
   resetTokens        PasswordResetToken[]
   createdLessons     CreatedLesson[]
-
-  // NEW: saved lessons relation
   savedPresentations SavedPresentation[]
 }
 
@@ -116,7 +122,7 @@ model PasswordResetToken {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-// NEW MODEL FOR TRACKING CREATED LESSONS
+// Tracking created lessons
 model CreatedLesson {
   id             String   @id @default(cuid())
   userId         String
@@ -138,7 +144,7 @@ model CreatedLesson {
   @@index([status])
 }
 
-/* ===================== NEW ===================== */
+// Saved lessons
 model SavedPresentation {
   userId         String
   presentationId Int
