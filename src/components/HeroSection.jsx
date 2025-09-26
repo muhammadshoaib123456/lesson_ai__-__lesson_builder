@@ -1,31 +1,12 @@
-
-
-
-
-
 // components/HeroSection.jsx
 "use client";
 
 /**
- * ✅ WHAT THIS FILE DOES
- * A fully client-side Hero/Header section with:
- * - Top navigation (logo, Explore, Create, Select Grade/Subject dropdowns)
- * - Login/Profile area + Help popup
- * - Mobile slide-in menu
- * - Hero search box with debounced suggestions + keyboard "Enter" to search
- * - Left/Right decorative images
- *
- * 🔧 WHERE TO CUSTOMIZE (quick map)
- * Colors / Hover states .......... Tailwind classes in JSX (e.g., bg-[#9500DE], text-white, hover:bg-*)
- * Width / Height of elements ..... Tailwind sizing classes (w-*, h-*, max-w-*, px-*, py-*)
- * UI Text (labels, placeholders) . Inline strings (e.g., "Explore Library", "Search", placeholders)
- * Search behavior ................. Debounce timing, fetch URL (/api/search/suggest), result scoring, max items
- * Images (left/right/logo/help) ... <img src="/leftimg.svg" />, <img src="/rightimg.svg" />, <img src="/lessnlogo.svg" />
- * Dropdown items (grades/subjects) Session-cached values from /api/meta/filters (fallback arrays below)
- *
- * 🧩 Tailwind tip
- * Most CSS tweaks (color, border, spacing, hover) can be done by editing tailwind
- * classNames directly where you see them in the markup.
+ * Optimizations + UX tweaks:
+ * - Eager prefetch (idle + hover/touch)
+ * - Instant nav on pointerdown
+ * - Whole navbar hover area is clickable (block links)
+ * - Cursor pointer over the entire hover region
  */
 
 import React, { useEffect, useRef, useState, useMemo } from "react";
@@ -44,6 +25,64 @@ const HelpPopup = dynamic(() => import("@/components/HelpPopup"), {
 // Utility: remove any HTML tags from strings
 const stripHtml = (s) => String(s || "").replace(/<[^>]+>/g, "").trim();
 
+// schedule on idle with fallback
+const onIdle = (cb, { timeout = 2000 } = {}) => {
+  if (typeof window === "undefined") return () => {};
+  if ("requestIdleCallback" in window) {
+    const id = window.requestIdleCallback(cb, { timeout });
+    return () => window.cancelIdleCallback?.(id);
+  }
+  const id = setTimeout(cb, Math.min(timeout, 1200));
+  return () => clearTimeout(id);
+};
+
+// Link that prefetches on hover/touch and navigates on pointerdown
+const EagerLink = ({
+  href,
+  children,
+  className,
+  prefetch = true,
+  onNavigate,
+  ...rest
+}) => {
+  const router = useRouter();
+  const pushedRef = useRef(false);
+
+  const doPrefetch = () => {
+    try {
+      router.prefetch(href);
+    } catch {}
+  };
+
+  const goNow = (e) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button === 1) return;
+    e.preventDefault?.();
+    if (pushedRef.current) return;
+    pushedRef.current = true;
+    try {
+      onNavigate?.();
+    } catch {}
+    router.push(href);
+  };
+
+  return (
+    <Link
+      href={href}
+      prefetch={prefetch}
+      className={className}
+      onPointerEnter={doPrefetch}
+      onTouchStart={doPrefetch}
+      onPointerDown={goNow}
+      onClick={(e) => {
+        if (!pushedRef.current) goNow(e);
+      }}
+      {...rest}
+    >
+      {children}
+    </Link>
+  );
+};
+
 const HeroSection = () => {
   const { data: session } = useSession();
 
@@ -55,7 +94,6 @@ const HeroSection = () => {
   const [showGradeDropdown, setShowGradeDropdown] = useState(false);
   const [showSubjectDropdown, setShowSubjectDropdown] = useState(false);
 
-  // Controls how long after mouse leaves before menus close
   const LEAVE_CLOSE_MS = 500;
   const gradeCloseRef = useRef(null);
   const subjectCloseRef = useRef(null);
@@ -95,17 +133,17 @@ const HeroSection = () => {
   // ──────────────────────────────────────────────────────────────────────────
   // SEARCH STATE
   // ──────────────────────────────────────────────────────────────────────────
-  const [q, setQ] = useState(""); // 🔤 UI TEXT: search input value
-  const [open, setOpen] = useState(false); // open/close suggestion panel
-  const [items, setItems] = useState([]); // suggestion items
-  const [loading, setLoading] = useState(false); // loader row
-  const [hadFirstType, setHadFirstType] = useState(false); // to show "No matches" state
+  const [q, setQ] = useState("");
+  const [open, setOpen] = useState(false);
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [hadFirstType, setHadFirstType] = useState(false);
 
   const boxRef = useRef(null);
   const router = useRouter();
   const suggestAbortRef = useRef(null);
   const debounceRef = useRef(null);
-  const cacheRef = useRef(new Map()); // local cache for suggestions
+  const cacheRef = useRef(new Map());
   const [lastFetchedQ, setLastFetchedQ] = useState("");
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -131,31 +169,25 @@ const HeroSection = () => {
     "Social Studies",
   ]);
 
-  // Prefetch a few routes in the background for snappier nav
+  // Aggressive route prefetch on idle
   useEffect(() => {
-    const idle = (cb) => {
-      if (typeof window === "undefined") return;
-      if ("requestIdleCallback" in window) return window.requestIdleCallback(cb, { timeout: 2000 });
-      return setTimeout(cb, 1200);
-    };
-    const cancel = idle(() => {
+    const cancel = onIdle(() => {
       try {
         router.prefetch("/see-all-results");
         router.prefetch("/explore-library");
-        router.prefetch("/login");
+        router.prefetch("/get-started");
         router.prefetch("/create-lesson");
         router.prefetch("/presentations/[slug]");
-        router.prefetch("/my-lessons"); // NEW
-      } catch {
-        /* ignore */
-      }
+        router.prefetch("/my-lessons");
+        router.prefetch("/profile");
+        router.prefetch("/library");
+        router.prefetch("/pricing");
+      } catch {}
     });
-    return () => {
-      if (typeof cancel === "number") clearTimeout(cancel);
-    };
+    return cancel;
   }, [router]);
 
-  // Load meta lists (grades/subjects) from API (cached in sessionStorage)
+  // Load meta lists (grades/subjects)
   useEffect(() => {
     (async () => {
       try {
@@ -181,12 +213,9 @@ const HeroSection = () => {
             }
           }
         }
-      } catch {
-        /* ignore */
-      }
+      } catch {}
     })();
 
-    // cleanup timers/aborters on unmount
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
       if (suggestAbortRef.current) suggestAbortRef.current.abort();
@@ -195,9 +224,7 @@ const HeroSection = () => {
     };
   }, []);
 
-  // ──────────────────────────────────────────────────────────────────────────
-  // SEARCH HIGHLIGHT & SCORING (client-side ranking)
-  // ──────────────────────────────────────────────────────────────────────────
+  // SEARCH highlight + scoring
   const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const qTokens = useMemo(
     () => String(q || "").trim().split(/\s+/).filter(Boolean),
@@ -240,7 +267,6 @@ const HeroSection = () => {
     return score;
   };
 
-  // Called on each keystroke; sets loading state & shows cached results if present
   const onType = (val) => {
     setQ(val);
     if (!hadFirstType) setHadFirstType(true);
@@ -310,11 +336,11 @@ const HeroSection = () => {
       } finally {
         setLoading(false);
       }
-    }, 1000);
+    }, 500);
     return () => clearTimeout(debounceRef.current);
   }, [q, lastFetchedQ]);
 
-  // Close suggestions when clicking outside of the search box
+  // Close suggestions when clicking outside
   useEffect(() => {
     function handleClickOutside(e) {
       if (boxRef.current && !boxRef.current.contains(e.target)) {
@@ -325,14 +351,12 @@ const HeroSection = () => {
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
-  // Perform the full results search navigation
   const goSearch = () => {
     const query = q.trim();
     if (!query) return;
     router.push(`/see-all-results?q=${encodeURIComponent(query)}`);
   };
 
-  // Navigate to Explore Library with query params (grade/subject selections)
   const pushWithQuery = (params) => {
     const qs = new URLSearchParams(params).toString();
     router.push(`/explore-library?${qs}`);
@@ -348,7 +372,6 @@ const HeroSection = () => {
     pushWithQuery({ subjects: subjectName });
   };
 
-  // Small loader row used in suggestion panel
   const LoaderRow = () => (
     <div className="px-4 py-3 flex items-center gap-2">
       <svg className="h-4 w-4 animate-spin opacity-90" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -359,7 +382,6 @@ const HeroSection = () => {
     </div>
   );
 
-  // Prefetch presentation page for faster hover → click nav
   const prefetchPresentation = (slug) => {
     if (!slug) return;
     try {
@@ -369,13 +391,11 @@ const HeroSection = () => {
 
   return (
     <>
-      {/* ─────────────────────────────────────────────────────────────────────
-          TOP NAVBAR
-         ──────────────────────────────────────────────────────────────────── */}
+      {/* NAVBAR */}
       <nav className="flex flex-wrap items-center justify-between md:ml-8 md:mr-7 md:mt-2 md:py-4 sm:px-30 md:px-0 lg:px-8 xl:mb-10 text-white">
-        {/* Logo (left) */}
+        {/* Logo */}
         <div className="flex items-center md:pl-2">
-          <Link href="/" prefetch aria-label="Lessn Home">
+          <EagerLink href="/" prefetch aria-label="Lessn Home" className="block cursor-pointer">
             <img
               src="/lessnlogo.svg"
               alt="Lessn logo"
@@ -384,37 +404,51 @@ const HeroSection = () => {
               fetchPriority="high"
               decoding="async"
             />
-          </Link>
+          </EagerLink>
         </div>
 
         {/* Center nav (desktop) */}
         <ul className="font-inter hidden lg:flex flex-grow justify-center md:text-[12px] md:gap-4 text-sm lg:text-[14px] lg:gap-4">
-          <li className="hover:bg-[#9500DE] px-2 py-2">
-            <Link href="/explore-library" prefetch className="transition hover:text-gray-200 cursor-pointer">
+          <li>
+            <EagerLink
+              href="/explore-library"
+              prefetch
+              className="block px-2 py-2 hover:bg-[#9500DE] transition cursor-pointer rounded-sm"
+            >
               Explore Library
-            </Link>
+            </EagerLink>
           </li>
 
-          {/* NEW: My Lessons */}
-          <li className="hover:bg-[#9500DE] px-2 py-2">
-            <Link href="/my-lessons" prefetch className="transition hover:text-gray-200 cursor-pointer">
+          <li>
+            <EagerLink
+              href="/my-lessons"
+              prefetch
+              className="block px-2 py-2 hover:bg-[#9500DE] transition cursor-pointer rounded-sm"
+            >
               My Lessons
-            </Link>
+            </EagerLink>
           </li>
 
-          <li className="hover:bg-[#9500DE] px-2 py-2">
-            <Link href="/create-lesson" prefetch className="transition hover:text-gray-200 cursor-pointer">
+          <li>
+            <EagerLink
+              href="/create-lesson"
+              prefetch
+              className="block px-2 py-2 hover:bg-[#9500DE] transition cursor-pointer rounded-sm"
+            >
               Create a Lesson
-            </Link>
+            </EagerLink>
           </li>
 
-          {/* Grade dropdown */}
+          {/* Grade dropdown (button remains) */}
           <li
-            className="relative hover:bg-[#9500DE] px-2 py-2"
+            className="relative"
             onMouseEnter={openGrade}
             onMouseLeave={leaveGrade}
           >
-            <button type="button" className="flex items-center space-x-1 transition hover:text-gray-200">
+            <button
+              type="button"
+              className="flex items-center space-x-1 transition hover:bg-[#9500DE] px-2 py-2 rounded-sm cursor-pointer"
+            >
               <span>Select Grade</span>
               <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16" className="mt-1 h-3 w-3">
                 <path
@@ -429,7 +463,10 @@ const HeroSection = () => {
                   <li
                     key={idx}
                     className="px-4 py-2 text-white border-b border-gray-700 last:border-none hover:bg-[#9500DE] cursor-pointer"
-                    onClick={() => onClickGrade(grade)}
+                    onPointerDown={(e) => {
+                      e.preventDefault();
+                      onClickGrade(grade);
+                    }}
                   >
                     {grade}
                   </li>
@@ -440,11 +477,14 @@ const HeroSection = () => {
 
           {/* Subject dropdown */}
           <li
-            className="relative hover:bg-[#9500DE] px-2 py-2"
+            className="relative"
             onMouseEnter={openSubject}
             onMouseLeave={leaveSubject}
           >
-            <button type="button" className="flex items-center space-x-1 transition hover:text-gray-200">
+            <button
+              type="button"
+              className="flex items-center space-x-1 transition hover:bg-[#9500DE] px-2 py-2 rounded-sm cursor-pointer"
+            >
               <span>Select Subject</span>
               <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16" className="mt-1 h-3 w-3">
                 <path
@@ -459,7 +499,10 @@ const HeroSection = () => {
                   <li
                     key={idx}
                     className="px-4 py-2 text-white border-b border-gray-700 last:border-none hover:bg-[#9500DE] cursor-pointer"
-                    onClick={() => onClickSubject(subject)}
+                    onPointerDown={(e) => {
+                      e.preventDefault();
+                      onClickSubject(subject);
+                    }}
                   >
                     {subject}
                   </li>
@@ -469,49 +512,41 @@ const HeroSection = () => {
           </li>
         </ul>
 
-        {/* Right side: Login/Profile + Help (desktop) */}
         <div className="font-inter md:text-[12px] hidden lg:flex lg:gap-4 items-center text-sm lg:text-[14px]">
           {!session ? (
-            <Link
-              href="/login"
+            <EagerLink
+              href="/get-started"
               prefetch
-              className="transition flex items-center gap-1 px-4 py-2 border border-white rounded-full text-white hover:bg-[#9500DE]"
+              className="block transition cursor-pointer px-4 py-2 border border-white rounded-full text-white hover:bg-[#9500DE]"
             >
-              <svg width="12" height="10" viewBox="0 0 12 10" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <path
-                  d="M9.75 9.40576H7.78125C7.62656 9.40576 7.5 9.2792 7.5 9.12451V8.18701C7.5 8.03232 7.62656 7.90576 7.78125 7.90576H9.75C10.1648 7.90576 10.5 7.57061 10.5 7.15576V2.65576C10.5 2.24092 10.1648 1.90576 9.75 1.90576H7.78125C7.62656 1.90576 7.5 1.7792 7.5 1.62451V0.687012C7.5 0.532324 7.62656 0.405762 7.78125 0.405762H9.75C10.9922 0.405762 12 1.41357 12 2.65576V7.15576C12 8.39795 10.9922 9.40576 9.75 9.40576ZM8.64844 4.69482L4.71094 0.757324C4.35938 0.405762 3.75 0.651855 3.75 1.15576V3.40576H0.5625C0.250781 3.40576 0 3.65654 0 3.96826V6.21826C0 6.52998 0.250781 6.78076 0.5625 6.78076H3.75V9.03076C3.75 9.53467 4.35938 9.78076 4.71094 9.4292L8.64844 5.4917C8.86641 5.27139 8.86641 4.91514 8.64844 4.69482Z"
-                  fill="white"
-                />
-              </svg>
-              Login
-            </Link>
+              Get Started
+            </EagerLink>
           ) : (
-            // If logged in, show a profile dropdown (component provided elsewhere)
             <ProfileDropdown showLabel align="right" />
           )}
 
-          {/* Help button/icon (opens HelpPopup) */}
+          {/* Help button/icon */}
           <div className="hidden lg:flex items-center justify-center rounded-full px-3 py-1 text-xs font-medium">
             <img
               src="/Help.svg"
               alt="Help icon"
-              className="h-10 w-auto object-contain"
+              className="h-10 w-auto object-contain cursor-pointer"
               onClick={() => setHelpOpen(true)}
             />
           </div>
         </div>
 
-        {/* Right side: Mobile hamburger */}
+        {/* Mobile hamburger */}
         <div className="flex items-center gap-7 lg:hidden">
           <div className="hidden md:flex items-center gap-6">
             {!session ? (
-              <Link href="/login" prefetch className="transition hover:text-gray-200 text-sm md:text-[12px]">
-                Login
-              </Link>
+              <EagerLink href="/get-started" prefetch className="transition hover:text-gray-200 text-sm md:text-[12px] block px-1 py-1 cursor-pointer">
+                Get Started
+              </EagerLink>
             ) : (
-              <Link href="/profile" prefetch className="transition hover:text-gray-200 text-sm md:text-[12px]">
+              <EagerLink href="/profile" prefetch className="transition hover:text-gray-200 text-sm md:text-[12px] block px-1 py-1 cursor-pointer">
                 My Profile
-              </Link>
+              </EagerLink>
             )}
           </div>
           <button
@@ -532,17 +567,14 @@ const HeroSection = () => {
         </div>
       </nav>
 
-      {/* ─────────────────────────────────────────────────────────────────────
-          MOBILE SLIDE-IN MENU
-         ──────────────────────────────────────────────────────────────────── */}
+      {/* MOBILE SLIDE-IN MENU */}
       {openMobile && (
         <div className="fixed inset-y-0 right-0 z-50 w-[80%] sm:w-[70%] md:w-[45%] lg:w-[30%] bg-[#500078] text-white transition-transform duration-300 ease-in-out">
           <div className="flex flex-col h-full p-4">
-            {/* Mobile header (logo + close button) */}
             <div className="flex justify-between items-center mb-4">
-              <Link href="/" prefetch aria-label="Lessn Home">
+              <EagerLink href="/" prefetch aria-label="Lessn Home" className="block cursor-pointer">
                 <img src="/lessnlogo.svg" alt="Lessn logo" className="w-16 h-auto object-contain" />
-              </Link>
+              </EagerLink>
               <button
                 className="text-gray-200"
                 aria-label="Close menu"
@@ -560,45 +592,42 @@ const HeroSection = () => {
               </button>
             </div>
 
-            {/* Mobile links */}
             <div className="flex flex-col space-y-4 text-sm">
-              <Link href="/explore-library" prefetch className="hover:text-gray-200" onClick={() => setOpenMobile(false)}>
+              <EagerLink href="/explore-library" prefetch className="block hover:text-gray-200 px-2 py-2 cursor-pointer" onNavigate={() => setOpenMobile(false)}>
                 Explore Library
-              </Link>
+              </EagerLink>
 
-              {/* NEW: My Lessons (mobile) */}
-              <Link href="/my-lessons" prefetch className="hover:text-gray-200" onClick={() => setOpenMobile(false)}>
+              <EagerLink href="/my-lessons" prefetch className="block hover:text-gray-200 px-2 py-2 cursor-pointer" onNavigate={() => setOpenMobile(false)}>
                 My Lessons
-              </Link>
+              </EagerLink>
 
-              <Link href="/create-lesson" prefetch className="hover:text-gray-200" onClick={() => setOpenMobile(false)}>
+              <EagerLink href="/create-lesson" prefetch className="block hover:text-gray-200 px-2 py-2 cursor-pointer" onNavigate={() => setOpenMobile(false)}>
                 Create a Lesson
-              </Link>
-              <button className="text-left hover:text-gray-200" type="button">Select Grade</button>
-              <button className="text-left hover:text-gray-200" type="button">Select Subject</button>
+              </EagerLink>
 
-              {/* Quick account links (only show when NOT large screens) */}
+              <button className="text-left hover:text-gray-200 px-2 py-2 cursor-pointer" type="button">Select Grade</button>
+              <button className="text-left hover:text-gray-200 px-2 py-2 cursor-pointer" type="button">Select Subject</button>
+
               <div className="flex flex-col space-y-2 pt-2 md:hidden">
                 {!session ? (
-                  <Link href="/login" prefetch className="hover:text-gray-200" onClick={() => setOpenMobile(false)}>
-                    Login
-                  </Link>
+                  <EagerLink href="/get-started" prefetch className="block hover:text-gray-200 px-2 py-2 cursor-pointer" onNavigate={() => setOpenMobile(false)}>
+                    Get Started
+                  </EagerLink>
                 ) : (
                   <>
-                    <Link href="/profile" prefetch className="hover:text-gray-200" onClick={() => setOpenMobile(false)}>
+                    <EagerLink href="/profile" prefetch className="block hover:text-gray-200 px-2 py-2 cursor-pointer" onNavigate={() => setOpenMobile(false)}>
                       My Profile
-                    </Link>
-                    <Link href="/library" prefetch className="hover:text-gray-200" onClick={() => setOpenMobile(false)}>
+                    </EagerLink>
+                    <EagerLink href="/library" prefetch className="block hover:text-gray-200 px-2 py-2 cursor-pointer" onNavigate={() => setOpenMobile(false)}>
                       My Library
-                    </Link>
-                    <Link href="/pricing" prefetch className="hover:text-gray-200" onClick={() => setOpenMobile(false)}>
+                    </EagerLink>
+                    <EagerLink href="/pricing" prefetch className="block hover:text-gray-200 px-2 py-2 cursor-pointer" onNavigate={() => setOpenMobile(false)}>
                       Pricing & Subscription
-                    </Link>
+                    </EagerLink>
                   </>
                 )}
               </div>
 
-              {/* Help CTA */}
               <button
                 className="rounded-full bg-[#24C864] px-3 py-1 text-xs font-medium w-fit"
                 onClick={() => {
@@ -613,9 +642,7 @@ const HeroSection = () => {
         </div>
       )}
 
-      {/* ─────────────────────────────────────────────────────────────────────
-          HERO BODY (your original body below — unchanged)
-         ──────────────────────────────────────────────────────────────────── */}
+      {/* HERO BODY */}
       <div className="relative flex flex-col items-center justify-center px-0 text-center md:flex-row md:text-left min-h-[370px]">
         {/* LEFT DECOR IMAGE */}
         <div className="relative mb-8 mt-8 w-full md:mb-0 md:mt-0 md:w-[450px] lg:w-[500px] xl:w-[600px] md:h-full">
@@ -626,7 +653,6 @@ const HeroSection = () => {
             loading="eager"
             decoding="async"
           />
-          {/* Invisible placeholder preserves layout height */}
           <img
             src="/leftimg.svg"
             alt=""
@@ -676,16 +702,19 @@ const HeroSection = () => {
               aria-controls="hero-suggest"
             />
 
-            {/* Search button */}
+            {/* Search button: pointerdown for instant nav */}
             <button
               type="button"
-              onClick={goSearch}
+              onPointerDown={(e) => {
+                e.preventDefault();
+                goSearch();
+              }}
               className="rounded-full bg-[#f6ebfa] px-4 py-1 text-purple-800 hover:cursor-pointer shadow-md"
             >
               Search
             </button>
 
-            {/* Suggestion dropdown */}
+            {/* Suggestions */}
             {open && (
               <div
                 id="hero-suggest"
@@ -713,13 +742,13 @@ const HeroSection = () => {
                       const href = `/presentations/${item.slug}`;
 
                       return (
-                        <Link
+                        <EagerLink
                           key={item.id || item.slug || topic}
                           href={href}
                           prefetch
-                          className="block px-4 py-3 hover:bg-[#9500DE]"
-                          onClick={() => setOpen(false)}
-                          onMouseEnter={() => prefetchPresentation(item.slug)}
+                          className="block px-4 py-3 hover:bg-[#9500DE] cursor-pointer"
+                          onNavigate={() => setOpen(false)}
+                          onPointerEnter={() => prefetchPresentation(item.slug)}
                           onFocus={() => prefetchPresentation(item.slug)}
                           role="option"
                         >
@@ -735,16 +764,19 @@ const HeroSection = () => {
                               {highlightTopic(snippetShort)}
                             </div>
                           )}
-                        </Link>
+                        </EagerLink>
                       );
                     })}
                   </div>
                 )}
 
-                {/* "See all results" CTA */}
+                {/* See all */}
                 <button
                   className="w-full text-left px-4 py-3 text-sm bg-gray-800 hover:bg-gray-700"
-                  onClick={() => router.push(`/see-all-results?q=${encodeURIComponent(q)}`)}
+                  onPointerDown={(e) => {
+                    e.preventDefault();
+                    router.push(`/see-all-results?q=${encodeURIComponent(q)}`);
+                  }}
                 >
                   See all results
                 </button>
@@ -752,16 +784,16 @@ const HeroSection = () => {
             )}
           </div>
 
-          {/* Generate new lesson CTA */}
+          {/* Generate new lesson */}
           <div className="flex items-center justify-center md:space-x-4">
             <span className="text-gray-200">Or</span>
-            <Link
+            <EagerLink
               href="/create-lesson"
               prefetch
               className="rounded-full bg-[#d08bf2] md:px-4 py-2 text-white cursor-pointer"
             >
               Generate a new lesson
-            </Link>
+            </EagerLink>
           </div>
         </div>
 
@@ -791,7 +823,6 @@ const HeroSection = () => {
 };
 
 export default HeroSection;
-
 
 
 

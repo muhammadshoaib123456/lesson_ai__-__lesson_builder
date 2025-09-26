@@ -111,7 +111,7 @@ export default function SlideComponent({
         />
       </div>
       {/* Bullets */}
-      <div className="space-y-2">
+      <div className="">
         {points.map((item, cIndex) => (
           <LiPoint
             point={item}
@@ -131,7 +131,7 @@ export default function SlideComponent({
       <button
         type="button"
         onClick={() => addSlideBelow(index)}
-        className="mt-4 flex items-center justify-center px-4 py-2 rounded-full bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium transition-colors"
+        className=" flex items-center justify-center px-4 py-2 rounded-full bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium transition-colors"
         // Button to insert a new slide below this one. Modify bg-purple-600 to
         // change the fill colour. px-4/py-2 control the size.
       >

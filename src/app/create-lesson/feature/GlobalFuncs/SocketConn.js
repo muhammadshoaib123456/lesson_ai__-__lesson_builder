@@ -1,12 +1,9 @@
+// app/GlobalFuncs/SocketConn.js
 "use client";
 
-import {
-  setImageData,
-  setReceivedData,
-  setSocketId,
-} from "../Redux/slices/SocketSlice.js";
+import { setImageData, setReceivedData, setSocketId } from "../Redux/slices/SocketSlice.js";
 import { toast } from "react-toastify";
-// IMPORTANT: this should be socket.io-client v2.4.0 (matches your server)
+// IMPORTANT: socket.io-client v2.4.0 to match your server
 import io from "socket.io-client";
 
 let socketInstance = null;
@@ -14,7 +11,6 @@ let listenersAttached = false;
 
 export default function initializeSocketConnection(dispatch) {
   try {
-    // reuse the single instance if already connected or connecting
     if (socketInstance && (socketInstance.connected || socketInstance.connecting)) {
       return socketInstance;
     }
@@ -28,28 +24,27 @@ export default function initializeSocketConnection(dispatch) {
 
     const socket = io(url, {
       transports: ["polling", "websocket"],
-      path: "/socket.io", // change only if your server uses a custom path
+      path: "/socket.io",
       reconnection: true,
       reconnectionAttempts: 10,
       reconnectionDelay: 1000,
       reconnectionDelayMax: 5000,
       timeout: 20000,
-      // do NOT force a new socket on every HMR; keep the singleton
       forceNew: false,
-      // withCredentials: true, // enable only if your server requires cookies
     });
 
-    // attach event listeners once to avoid duplicates after Fast Refresh/HMR
     if (!listenersAttached) {
       socket.on("connect", () => {
         console.log("Socket connected:", socket.id);
         dispatch(setSocketId(socket.id));
+        try { localStorage.setItem("socketID", socket.id); } catch {}
       });
 
       socket.on("connect_error", (err) => {
         console.error("socket connect_error:", err?.message || err);
         toast.dismiss();
         toast.error("Realtime connection issue. Retrying…");
+        try { localStorage.removeItem("socketID"); } catch {}
       });
 
       socket.on("error", (err) => {
@@ -58,8 +53,16 @@ export default function initializeSocketConnection(dispatch) {
 
       socket.on("disconnect", (reason) => {
         console.log("Socket disconnected:", reason);
-        // clear socketId to avoid sending stale IDs to your API routes
         dispatch(setSocketId(""));
+        try { localStorage.removeItem("socketID"); } catch {}
+      });
+
+      // ensure we refresh stored id on reconnect
+      socket.io?.on?.("reconnect", () => {
+        if (socket.id) {
+          dispatch(setSocketId(socket.id));
+          try { localStorage.setItem("socketID", socket.id); } catch {}
+        }
       });
 
       socket.on("max_users", (message) => {
@@ -67,9 +70,10 @@ export default function initializeSocketConnection(dispatch) {
         toast.error("System has reached max users. Please try again later.");
         socket.disconnect();
         dispatch(setSocketId(""));
+        try { localStorage.removeItem("socketID"); } catch {}
       });
 
-      // server-emitted events from your backend
+      // server events
       socket.on("slide_content_created", (data) => {
         dispatch(setReceivedData(data));
       });
@@ -90,21 +94,17 @@ export default function initializeSocketConnection(dispatch) {
   }
 }
 
-/**
- * Manually disconnect the socket.
- * We will only call this when leaving /create-lesson* (see SocketBoundary).
- */
 export function disconnectSocket(dispatch) {
   if (socketInstance) {
     console.log("Disconnecting socket…");
     socketInstance.disconnect();
     dispatch(setSocketId(""));
+    try { localStorage.removeItem("socketID"); } catch {}
     socketInstance = null;
     listenersAttached = false;
   }
 }
 
-// Optional: expose current instance for debugging
 export function getSocket() {
   return socketInstance;
 }

@@ -3,7 +3,12 @@ import { NextResponse } from "next/server";
 /**
  * POST /api/lesson-builder/slides/update?socketID=...
  * Body: { text: "<START>...<END>" }
- * Proxies to: POST https://builder.lessn.ai:8085/update_slides?socketID=...
+ *
+ * This endpoint proxies slide-update requests to the upstream slide builder
+ * service.  It performs basic validation on the incoming request and
+ * propagates any JSON response from the upstream service back to the
+ * caller.  In the event of an upstream error the response code is
+ * converted to a 502 with a JSON body describing the failure.
  */
 export async function POST(request) {
   try {
@@ -13,9 +18,14 @@ export async function POST(request) {
       return NextResponse.json({ error: "socketID is required" }, { status: 400 });
     }
 
-    const body = await request.json();
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      body = null;
+    }
     const text = body?.text;
-    if (typeof text !== "string" || !text.length) {
+    if (typeof text !== "string" || text.length === 0) {
       return NextResponse.json({ error: "text is required" }, { status: 400 });
     }
 
@@ -37,14 +47,16 @@ export async function POST(request) {
       );
     }
 
-    // Pass through upstream JSON (if any)
     const contentType = upstream.headers.get("content-type") || "";
     if (contentType.includes("application/json")) {
       const json = await upstream.json();
       return NextResponse.json(json);
     } else {
       const textResp = await upstream.text();
-      return new Response(textResp, { status: 200, headers: { "Content-Type": "text/plain" } });
+      return new Response(textResp, {
+        status: 200,
+        headers: { "Content-Type": "text/plain" },
+      });
     }
   } catch (err) {
     console.error("slides/update error:", err);

@@ -45,9 +45,19 @@ const SmallTile = forwardRef(({ data, setSelected, selected, image }, ref) => {
         <div className="h-full w-full flex justify-center items-center">
           <div className="lg:w-[80%] lg:h-[80%] sm:w-[50%] sm:h-[50%] w-[50%] h-[50%] grid place-items-center outline overflow-clip">
             {loading ? (
-              <div className="animate-spin border border-l-black w-[20%] h-[20%] rounded-full"></div>
+              /*
+                Use a custom spinner similar to the large slide.  The
+                spinner uses a full black ring with a transparent top so
+                rotation can be seen.  It scales relative to the
+                thumbnail size.
+              */
+              <div className="animate-spin w-8 h-8 border-2 border-black border-t-transparent rounded-full"></div>
             ) : (
-              <img src={imageUrl} alt="image" className="w-full h-full object-contain" />
+              <img
+                src={imageUrl}
+                alt="image"
+                className="w-full h-full object-contain"
+              />
             )}
           </div>
         </div>

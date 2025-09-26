@@ -81,17 +81,17 @@ export default function MainPage({ setLoading, setGenSlides, setFinalModal }) {
   return (
     <div className="min-h-screen w-full overflow-hidden bg-white flex flex-col">
       <Header />
-      <main className="flex-1 flex flex-col items-center justify-start px-6 mt-20 mb-20 overflow-hidden">
+      <main className="flex-1 flex flex-col items-center justify-start px-6 mt-10 mb-10 overflow-hidden">
         {/* Title */}
-        <h1 className="mt-4 text-center text-4xl md:text-5xl font-normal text-black">
+        <h1 className="mt-2 text-center text-4xl md:text-5xl font-normal text-black">
           Create a Lesson
         </h1>
         {/* Tagline */}
-        <p className="mt-2 text-center text-lg text-purple-700">
+        <p className="mt-4 text-center text-lg text-purple-700">
           Create interactive, accurate AI-powered lessons for engaged classrooms
         </p>
         {/* Content */}
-        <div className="mt-6 grid flex-1 items-center gap-8 lg:grid-cols-2 w-full max-w-6xl">
+        <div className="mt-5 grid flex-1 items-center gap-8 lg:grid-cols-2 w-full max-w-6xl">
           {/* Left: Form */}
           <div className="flex flex-col items-start justify-center">
             <div className="w-full max-w-md">

@@ -37,18 +37,24 @@ export default function LargeTile({ data, image }) {
 
       <div className="flex w-full h-[82%] flex-row-reverse items-center">
         {/* image area */}
-        <div className="h-full w-full flex justify-center items-center">
-          <div className="w-[80%] h-[80%] grid place-items-center outline outline-2 overflow-clip">
+        <div className="h-full w-2/5 flex justify-center items-center">
+          {/* Frame fills 90% width of the column and is capped by 90% of column height */}
+          <div className="w-[90%] max-h-[90%] flex items-center justify-center overflow-hidden border border-[#7d00a8] rounded-md p-2">
             {loading ? (
-              <div className="animate-spin border-4 border-l-black w-20 h-20 rounded-full" />
+              <div className="animate-spin w-16 h-16 border-4 border-black border-t-transparent rounded-full" />
             ) : (
-              <img src={imageUrl} alt="image" className="w-full h-full object-contain" />
+              <img
+                src={imageUrl}
+                alt="image"
+                /* Fill width, let height follow aspect; never exceed frame's height */
+                className="w-full h-auto max-h-full object-contain block"
+              />
             )}
           </div>
         </div>
 
         {/* bullets */}
-        <div className="flex justify-start items-start pl-[5%] flex-col w-full h-full">
+        <div className="flex justify-start items-start pl-[5%] flex-col w-3/5 h-full">
           <ul className="pt-2 list-disc">
             {data?.content?.map((i, index) => {
               const text = i?.substring ? i.substring(1) : i;

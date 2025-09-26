@@ -154,6 +154,8 @@ export function FormSelect({
   onChange,
   register,
   error,
+  // ADDED: allow setting menu height (in px). Change this number to control dropdown height.
+  maxMenuHeightPx = 258, // ADDED: default height before it scrolls
   ...props
 }) {
   const [options, setOptions] = useState([]);
@@ -210,6 +212,15 @@ export function FormSelect({
       color: "#9333ea",
       "&:hover": { color: "#6b21a8" },
     }),
+    // ⬇️ Ensure the dropdown floats above everything
+    menuPortal: (base) => ({ ...base, zIndex: 999999 }),
+    menu: (base) => ({ ...base, zIndex: 999999 }),
+    // ADDED: cap the internal list height and enable scrolling
+    menuList: (base) => ({
+      ...base,
+      maxHeight: maxMenuHeightPx, // ADDED: this controls visible menu height
+      overflowY: "auto",          // ADDED: scroll when content exceeds maxHeight
+    }),
   };
 
   return (
@@ -233,6 +244,12 @@ export function FormSelect({
           }
         }}
         styles={customStyles}
+        // ⬇️ Render menu in a portal so z-index wins across stacking contexts
+        menuPortalTarget={
+          typeof window !== "undefined" ? document.body : null
+        }
+        // ADDED: react-select’s built-in cap for dropdown height (in px)
+        maxMenuHeight={maxMenuHeightPx} // ADDED: you can also change this prop directly
         {...props}
       />
       {error && <p className="text-red-500 text-xs mt-1">{error}</p>}

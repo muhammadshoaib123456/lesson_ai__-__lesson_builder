@@ -28,7 +28,14 @@ export default function Bar({ data, loading, setFinalModal }) {
   return (
     <div className="w-full">
       {/* fixed height + internal scroll so the observer gets a non-zero value */}
-      <div className="w-full h-40 overflow-hidden border-2 border-[#7d00a8] rounded-lg bg-[#f5edfa]">
+      {/*
+        The notes area uses a white background with a purple border to
+        replicate the design shown in the reference images.  Only a
+        single scrollbar appears within this container when content
+        overflows.  The outer wrapper hides any overflow to prevent
+        nested scrollbars on the overall page.
+      */}
+      <div className="w-full h-40 overflow-hidden border-2 border-[#7d00a8] rounded-lg bg-white">
         <div className="h-full overflow-y-auto p-3">
           <LargeNotes data={data} />
         </div>

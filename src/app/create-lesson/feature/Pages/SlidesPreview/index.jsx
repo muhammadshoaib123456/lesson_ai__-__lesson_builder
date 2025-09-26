@@ -16,18 +16,11 @@ import Header from "@/components/Header.jsx";
 import Footer from "@/components/Footer.jsx";
 import { setAvailability, setLoading } from "../../Redux/slices/DownloadSlice.js";
 
-/**
- * SlidesPreview
- *
- * Updated only the page shell to mirror Outline page:
- * - Fixed heights for header and footer
- * - Middle section is flex-1 and controls scrolling internally
- * - No global page scroll (overflow-hidden on outer container)
- * - Preserved all existing preview functionality and inner layout
- */
+// OPTIONAL: if you have these actions you can import & dispatch to clear Redux socket/slide data.
+// import { setSocketId, setReceivedData, setImageData } from "../../Redux/slices/SocketSlice.js";
+import { disconnectSocket } from "../../GlobalFuncs/SocketConn.js";
+
 export default function SlidesPreview({ setFinalModal }) {
-  // Retrieve relevant state from Redux. We fall back gracefully if
-  // undefined values are encountered.
   const slidesData = useSelector((state) => state.outline.outline);
   const socketId = useSelector((state) => state.socket.socketId);
   const slidesRes = useSelector((state) => state.socket.receivedData);
@@ -35,7 +28,6 @@ export default function SlidesPreview({ setFinalModal }) {
   const { reqPrompt, grade, slides } = useSelector((state) => state.promptData);
   const { loading } = useSelector((state) => state.download);
 
-  // Local UI state
   const [selected, setSelected] = useState(0);
   const [titles, setTitles] = useState([]);
   const [notes, setNotes] = useState([]);
@@ -43,23 +35,29 @@ export default function SlidesPreview({ setFinalModal }) {
   const tileRefs = useRef([]);
   const sentRef = useRef(false);
   const slideRef = useRef(null);
+
+  // Track in-flight fetches + cancellation state
+  const abortersRef = useRef([]);
+  const canceledRef = useRef(false);
+
+  // Prevent handling browser back more than once
+  const backHandledRef = useRef(false);
+
   const dispatch = useDispatch();
   const router = useRouter();
 
-  // Helpers to extract titles and notes from the server response
   const getTitles = (data) =>
     Array.isArray(data) ? data.map((d) => d?.title ?? "") : [];
   const getNotes = (data) =>
     Array.isArray(data) ? data.map((d) => d?.notes ?? "") : [];
 
-  // Compute total slides: 2 static (title and table) plus dynamic tiles
   const totalSlides = useMemo(() => (slidesRes?.length ?? 0) + 2, [slidesRes]);
 
   const clamp = (n, min, max) => Math.min(Math.max(n, min), max);
   const onSliderChange = (val) =>
     setSelected(clamp(parseInt(val, 10), 0, Math.max(totalSlides - 1, 0)));
 
-  // Guard route if prerequisites are missing
+  // Hard guard: if required inputs missing, bounce to create-lesson
   useEffect(() => {
     if (!reqPrompt || !grade || !slides || !slidesData || slidesData.length === 0) {
       dispatch(setAvailability(false));
@@ -67,17 +65,14 @@ export default function SlidesPreview({ setFinalModal }) {
     } else {
       dispatch(setAvailability(true));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reqPrompt, grade, slides, slidesData]);
+  }, [reqPrompt, grade, slides, slidesData, dispatch, router]);
 
-  // Update titles and notes when slide data arrives
   useEffect(() => {
     setTitles(getTitles(slidesRes || []));
     setNotes(getNotes(slidesRes || []));
     setSelected(0);
   }, [slidesRes]);
 
-  // Scroll thumbnail list to keep the selected item in view
   useEffect(() => {
     if (tileRefs.current[selected]) {
       tileRefs.current[selected].scrollIntoView({
@@ -88,7 +83,6 @@ export default function SlidesPreview({ setFinalModal }) {
     }
   }, [selected]);
 
-  // Wheel & keyboard navigation for slide selection
   useEffect(() => {
     const el = slideRef.current;
     if (!el) return;
@@ -113,7 +107,67 @@ export default function SlidesPreview({ setFinalModal }) {
     };
   }, [totalSlides]);
 
-  // Update and upload slides to the backend when the page loads.
+  // Helper: clear persisted artifacts from previous run
+  function clearPrevRunArtifacts() {
+    try {
+      localStorage.removeItem("url");              // Google Slides link from old run
+      localStorage.removeItem("artifactSocketID"); // pinned id for PPTX downloads
+      localStorage.removeItem("socketID");         // live id snapshot
+    } catch {}
+  }
+
+  // Reset session (cancel in-flight, clear artifacts, disconnect socket) and go to create-lesson
+  function resetSessionAndGoBack() {
+    if (backHandledRef.current) return; // guard against re-entrancy
+    backHandledRef.current = true;
+
+    // 1) mark as canceled so no toasts/UI updates fire when responses arrive
+    canceledRef.current = true;
+
+    // 2) abort any in-flight requests from updateAndUpload()
+    try {
+      abortersRef.current.forEach((c) => c?.abort?.());
+      abortersRef.current = [];
+    } catch {}
+
+    // 3) clear artifacts so Slides button can’t open old deck
+    clearPrevRunArtifacts();
+
+    // 4) disconnect socket so a NEW socket id will be created next time
+    try {
+      disconnectSocket(dispatch);
+    } catch {}
+
+    // OPTIONAL: clear redux slices if you want a fully clean store
+    // dispatch(setSocketId(""));
+    // dispatch(setReceivedData([]));
+    // dispatch(setImageData([]));
+
+    // 5) leave the page — go to create-lesson (fresh flow)
+    router.replace("/create-lesson");
+  }
+
+  // Intercept BROWSER BACK to behave like our Back button
+  useEffect(() => {
+    // Push a guard state so the next "Back" triggers a popstate we control
+    try {
+      window.history.pushState({ guard: "slides-preview" }, "", window.location.href);
+    } catch {}
+
+    const onPopState = () => {
+      // Ensure single handling
+      if (backHandledRef.current) return;
+      resetSessionAndGoBack();
+    };
+
+    window.addEventListener("popstate", onPopState);
+    return () => {
+      window.removeEventListener("popstate", onPopState);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // run once
+
+  // Kick off update+upload once per mount when we have a socketId and slidesData
   useEffect(() => {
     const canRun =
       !!socketId &&
@@ -121,9 +175,18 @@ export default function SlidesPreview({ setFinalModal }) {
       slidesData.length > 0 &&
       !sentRef.current;
     if (!canRun) return;
+
     sentRef.current = true;
+    canceledRef.current = false; // this mount/run is now active
+    clearPrevRunArtifacts();     // make sure old links/ids cannot be used in this new run
+
     dispatch(setLoading(true));
+
     const updateAndUpload = async () => {
+      // each fetch uses its own AbortController; we keep references to cancel on "Back"
+      const updCtrl = new AbortController();
+      abortersRef.current.push(updCtrl);
+
       try {
         const upd = await fetch(
           `/api/lesson-builder/slides/update?socketID=${encodeURIComponent(socketId)}`,
@@ -138,19 +201,35 @@ export default function SlidesPreview({ setFinalModal }) {
             }),
             cache: "no-store",
             redirect: "follow",
+            signal: updCtrl.signal,
           }
         );
+
+        // If user hit Back meanwhile, stop here quietly
+        if (canceledRef.current) return;
+
+        const upCtrl = new AbortController();
+        abortersRef.current.push(upCtrl);
+
         const uploadRes = await fetch(
           `/api/lesson-builder/slides/upload?socketID=${encodeURIComponent(socketId)}`,
-          { method: "POST", cache: "no-store", redirect: "follow" }
+          { method: "POST", cache: "no-store", redirect: "follow", signal: upCtrl.signal }
         );
+
+        if (canceledRef.current) return;
+
         const uploadText = await uploadRes.text().catch(() => "fail");
         if (uploadRes.ok && uploadText && uploadText !== "fail") {
-          localStorage.setItem("url", uploadText);
+          // Store ONLY if this run wasn't canceled
+          try { localStorage.setItem("url", uploadText); } catch {}
         } else {
           console.warn("Upload failed:", uploadRes.status, uploadText);
         }
+
         dispatch(setLoading(false));
+
+        if (canceledRef.current) return;
+
         if (upd.ok) {
           toast.success("Slides Created Successfully");
         } else {
@@ -175,15 +254,31 @@ export default function SlidesPreview({ setFinalModal }) {
           toast.error(`Error updating slides: ${msg}`);
         }
       } catch (error) {
+        if (canceledRef.current) {
+          // aborted by Back — do nothing
+          return;
+        }
         dispatch(setLoading(false));
         console.error("Error updating/uploading slides:", error);
         toast.error(`Error updating slides, ${String(error)}`);
+      } finally {
+        // clean out finished controllers
+        abortersRef.current = abortersRef.current.filter((c) => !c.signal.aborted);
       }
     };
+
     updateAndUpload();
+
+    // On unmount, auto-cancel in-flight work to avoid ghost toasts
+    return () => {
+      canceledRef.current = true;
+      try {
+        abortersRef.current.forEach((c) => c?.abort?.());
+        abortersRef.current = [];
+      } catch {}
+    };
   }, [socketId, slidesData, dispatch, setFinalModal]);
 
-  // Enter fullscreen and lock orientation on mobile devices. Unchanged.
   const enterFullscreenAndLockOrientation = async () => {
     if (
       typeof window !== "undefined" &&
@@ -214,44 +309,41 @@ export default function SlidesPreview({ setFinalModal }) {
 
   return (
     <div className="min-h-screen w-full bg-white flex flex-col overflow-hidden">
-      {/* Fixed-height Header area (matches Outline spacing intent) */}
+      {/* Header */}
       <div className="h-20 w-full flex-shrink-0">
         <Header />
       </div>
 
-      {/* Middle section: flex-1, centered like Outline page, no global scroll */}
+      {/* Middle */}
       <main className="flex-1 flex flex-col items-center px-4 py-6 overflow-hidden">
         <div className="w-full max-w-7xl">
-          {/* Outer preview container (unchanged functionality/content) */}
-          <div className="w-full bg-white rounded-3xl border border-gray-300 relative overflow-hidden flex">
-            {/* Back button – returns the user to the outline page. */}
-            <button
-              onClick={() => router.push("/create-lesson/outline")}
-              className="absolute top-4 left-4 sm:top-6 sm:left-6 flex items-center gap-2 px-4 py-2 rounded-full border-2 border-green-500 bg-white text-green-600 hover:bg-green-50 transition-colors z-30"
-              title="Back to outline"
-            >
-              <span className="flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-green-500 text-white">
-                <svg
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  className="w-3 h-3 sm:w-4 sm:h-4"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M12.707 14.707a1 1 0 01-1.414 0L6.586 10l4.707-4.707a1 1 0 011.414 1.414L9.414 10l3.293 3.293a1 1 0 010 1.414z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </span>
-              <span className="font-semibold text-sm sm:text-base">Back</span>
-            </button>
-
-            {/* Download menu */}
-            <div className="absolute top-4 right-4 sm:top-6 sm:right-6 z-30">
+          <div className="w-full bg-white rounded-xl relative overflow-hidden flex">
+            {/* Button group top-right */}
+            <div className="absolute top-3 right-4 sm:top-4 sm:right-6 flex items-center gap-3 z-30">
+              <button
+                onClick={resetSessionAndGoBack}
+                className="flex items-center gap-2 px-4 py-2 rounded-full border-2 border-green-500 bg-white text-green-600 hover:bg-green-50 transition-colors"
+                title="Back to create lesson page"
+              >
+                <span className="flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-green-500 text-white">
+                  <svg
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    className="w-3 h-3 sm:w-4 sm:h-4"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M12.707 14.707a1 1 0 01-1.414 0L6.586 10l4.707-4.707a1 1 0 011.414 1.414L9.414 10l3.293 3.293a1 1 0 010 1.414z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </span>
+                <span className="font-semibold text-sm sm:text-base">Back</span>
+              </button>
               <DownloadMenu />
             </div>
 
-            {/* Left sidebar with thumbnails (scrolls internally) */}
+            {/* Sidebar */}
             <div className="w-1/4 min-w-[200px] max-w-xs h-[calc(100vh-10rem)] overflow-y-auto p-4 space-y-4 bg-[#f5edfa] border-r-4 border-[#7d00a8] z-10 scrollable">
               <SmallTitle
                 setSelected={() => setSelected(0)}
@@ -276,14 +368,13 @@ export default function SlidesPreview({ setFinalModal }) {
               ))}
             </div>
 
-            {/* Main preview area (content unchanged), internal scrolling only for notes bar if needed */}
+            {/* Preview */}
             <div
               ref={slideRef}
               className="flex-1 flex flex-col justify-center items-center p-4 overflow-hidden relative"
               id="slideRef"
             >
               <div className="w-full flex justify-center items-center">
-                {/* Outer wrapper enforcing the 16/9 aspect ratio and purple border around the slide */}
                 <div className="w-full max-w-3xl flex justify-center items-center">
                   <div className="w-full aspect-[16/9] border-2 border-[#7d00a8] rounded-xl bg-white overflow-hidden">
                     {selected === 0 ? (
@@ -300,7 +391,6 @@ export default function SlidesPreview({ setFinalModal }) {
                 </div>
               </div>
 
-              {/* Notes bar appears only for content slides */}
               {selected > 1 && (
                 <div className="mt-6 w-full max-w-3xl relative z-10">
                   <Bar
@@ -315,7 +405,7 @@ export default function SlidesPreview({ setFinalModal }) {
         </div>
       </main>
 
-      {/* Fixed-height Footer area */}
+      {/* Footer */}
       <div className="h-20 w-full flex-shrink-0">
         <Footer />
       </div>

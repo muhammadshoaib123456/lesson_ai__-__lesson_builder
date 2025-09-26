@@ -1,11 +1,10 @@
-
-
 "use client";
 
 import { useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import FetchOutline from "../../GlobalFuncs/FetchOutline.js";
-import uuid from "react-uuid";
+// 🚫 Removed uuid import because a changing key was remounting slides
+// import uuid from "react-uuid";
 import { useRouter } from "next/navigation";
 import ButtonGroup from "./Components/ButtonGroup.jsx";
 import TopText from "./Components/TopText.jsx";
@@ -142,17 +141,11 @@ export default function OutlinePage({ setLoading, setFinalModal, setQueueStatus 
   return (
     <div className="min-h-screen w-full bg-white flex flex-col overflow-hidden">
       <Header />
-      <main className="flex-1 flex flex-col items-center px-4 py-6 mt-20 mb-20 overflow-hidden">
+      <main className="flex-1 flex flex-col items-center px-4 py-6 mt-3 mb-3 overflow-hidden">
         {/* Main content wrapper */}
-        <div className="w-full max-w-7xl">
-          <h1 className="text-center font-bold text-3xl md:text-4xl text-gray-900">
-            Create a Lessn
-          </h1>
-          <p className="text-center text-gray-500 mt-2 text-sm md:text-base">
-            Create interactive, accurate AI-powered lesson for engaged classrooms.
-          </p>
+        <div className="w-full max-w-6xl">
           {/* Purple gradient container */}
-          <div className="mt-8 w-full rounded-3xl bg-gradient-to-b from-purple-700 to-purple-300 p-6">
+          <div className="mt-0 w-full rounded-3xl bg-gradient-to-b from-purple-700 to-purple-300 p-6">
             {/* Outline header on the gradient background */}
             <div className="text-center text-white">
               <h2 className="font-bold text-xl sm:text-2xl md:text-3xl">
@@ -164,7 +157,7 @@ export default function OutlinePage({ setLoading, setFinalModal, setQueueStatus 
             {/* White card that contains slides and bottom buttons */}
             <div className="mt-6 bg-white rounded-2xl shadow-md overflow-hidden">
               {/* Slides list: scrollable */}
-              <div className="p-4 overflow-y-auto max-h-[50vh] md:max-h-[60vh] space-y-6 scrollbar-thin scrollbar-thumb-purple-400 scrollbar-track-transparent">
+              <div className="p-4 overflow-y-auto max-h-[45vh] md:max-h-[52vh] space-y-6 scrollbar-thin scrollbar-thumb-purple-400 scrollbar-track-transparent">
                 <ul className="space-y-6">
                   {dataJSON.map((item, index) => (
                     <SlideComponent
@@ -173,7 +166,8 @@ export default function OutlinePage({ setLoading, setFinalModal, setQueueStatus 
                       title={item.title}
                       index={index + 1}
                       DeleteSlide={DeleteSlide}
-                      key={uuid()}
+                      // ✅ Use a stable key so typing in bullets doesn't remount the slide
+                      key={item.slide_number}
                       addSlideBelow={AddSlideBelow}
                     />
                   ))}
@@ -191,11 +185,6 @@ export default function OutlinePage({ setLoading, setFinalModal, setQueueStatus 
     </div>
   );
 }
-
-
-
-
-
 
 
 

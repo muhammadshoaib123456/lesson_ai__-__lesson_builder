@@ -64,7 +64,7 @@ export default function LiPoint({
           // the action icons.
         />
         <div
-          className="absolute top-1/2 -translate-y-1/2 right-0 flex items-center space-x-1"
+          className="absolute top-1/2 -translate-y-1/2 right-0 flex items-center space-x-2"
           // This container holds the plus, reorder and delete icons. Adjust right-0
           // to add or remove spacing on the right edge of the card. space-x-1
           // controls the gap between icons.
