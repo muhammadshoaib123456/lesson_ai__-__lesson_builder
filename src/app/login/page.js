@@ -98,15 +98,15 @@ export default function Login() {
               style={{
                 fontFamily: "Mulish, sans-serif",
                 fontWeight: 400,
-                fontSize: 18,
+                fontSize: 15,
                 lineHeight: "23px",
                 color: "rgba(50, 47, 53, 0.7)",
                 textAlign: "center",
               }}
             >
-              Dont Have an Account?{" "}
+              Dont Have An Account?{" "}
               <a href="/register" style={{ color: "#9500DE", marginLeft: 4 }}>
-                Register
+               Register
               </a>
             </p>
           </div>
@@ -118,15 +118,16 @@ export default function Login() {
               <div className="flex flex-col items-center justify-center gap-4 w-full">
                 {/* Email */}
                 <div
-                  className="w-[365px] flex flex-row items-center"
-                  style={{
-                    boxSizing: "border-box",
-                    padding: "16px 12px",
-                    gap: 10,
-                    height: 44,
-                    border: "1px solid rgba(50, 47, 53, 0.5)",
-                    borderRadius: 8,
-                  }}
+                 className="w-[365px] h-[44px] flex flex-row items-center px-3 py-4 gap-[10px] border border-[#322F35]/50 rounded-lg box-border"
+
+                  // style={{
+                  //   boxSizing: "border-box",
+                  //   padding: "16px 12px",
+                  //   gap: 10,
+                  //   height: 44,
+                  //   border: "1px solid rgba(50, 47, 53, 0.5)",
+                  //   borderRadius: 8,
+                  // }}
                 >
                   <input
                     id="email"
@@ -143,15 +144,16 @@ export default function Login() {
 
                 {/* Password */}
                 <div
-                  className="w-[365px] flex flex-row items-center"
-                  style={{
-                    boxSizing: "border-box",
-                    padding: "16px 12px",
-                    gap: 10,
-                    height: 44,
-                    border: "1px solid rgba(50, 47, 53, 0.5)",
-                    borderRadius: 8,
-                  }}
+                  className="w-[365px] h-[44px] flex flex-row items-center px-3 py-4 gap-[10px] border border-[#322F35]/50 rounded-lg box-border"
+
+                  // style={{
+                  //   boxSizing: "border-box",
+                  //   padding: "16px 12px",
+                  //   gap: 10,
+                  //   height: 44,
+                  //   border: "1px solid rgba(50, 47, 53, 0.5)",
+                  //   borderRadius: 8,
+                  // }}
                 >
                   <input
                     id="password"
@@ -187,8 +189,9 @@ export default function Login() {
 
                 {/* Remember + Forgot */}
                 <div className="w-[365px] flex items-center justify-between">
-                  <label className="flex items-center gap-2 text-sm" style={{ color: "#4A4A4A" }}>
-                    <input type="checkbox" className="w-4 h-4" style={{ accentColor: "#9500DE" }} defaultChecked />
+                  <label className="flex items-center gap-2 text-sm" style={{ color: "#322F35" }}>
+                    <input type="checkbox"   className="w-[16px] h-[16px] rounded-[4px] border border-[#9500DE] bg-white accent-[#9500DE]"
+ />
                     Remember me
                   </label>
                   <a
@@ -233,7 +236,7 @@ export default function Login() {
               </button>
 
               {/* Divider */}
-              <div className="my-2 flex items-center w-[365px]" style={{ color: "#9A9A9A" }}>
+              <div className="my-1 flex items-center w-[365px]" style={{ color: "#9A9A9A" }}>
                 <hr className="flex-1 border-[#E2E2E2]" />
                 <span className="px-3 text-sm">or</span>
                 <hr className="flex-1 border-[#E2E2E2]" />

@@ -17,10 +17,10 @@ export default function Home() {
         <div className="relative flex flex-col items-center gap-12 w-full max-w-[720px]">
           {/* Headline + Subhead */}
           <div className="flex flex-col items-center text-center gap-2 w-full">
-            <h1 className="sm:text-xl lg-text-7xl md:text-4xl font-bold leading-tight text-purple-700 whitespace-nowrap">
+            <h1 className="sm:text-xl lg-text-7xl md:text-4xl font-bold leading-tight text-[#9500DE] whitespace-nowrap">
               Your next great Lessn starts here!
             </h1>
-            <p className="text-base md:text-lg text-gray-600">
+            <p className="text-base md:text-lg text-[#9500DE]">
               Build &amp; explore standards-based, AI-driven lessns
             </p>
           </div>
@@ -194,7 +194,7 @@ export default function Home() {
   {/* Login */}
   <Link
     href="/login"
-    className="w-full rounded-full border border-purple-600 text-purple-700 py-3 px-6 font-medium hover:bg-purple-50 transition text-center"
+    className="w-full rounded-full border border-purple-600 text-[#9500DE] py-3 px-6 font-medium hover:bg-purple-50 transition text-center"
   >
     Already have an Account
   </Link>
