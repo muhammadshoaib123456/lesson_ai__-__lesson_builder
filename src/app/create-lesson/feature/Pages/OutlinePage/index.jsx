@@ -3,8 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import FetchOutline from "../../GlobalFuncs/FetchOutline.js";
-// 🚫 Removed uuid import because a changing key was remounting slides
-// import uuid from "react-uuid";
 import { useRouter } from "next/navigation";
 import ButtonGroup from "./Components/ButtonGroup.jsx";
 import TopText from "./Components/TopText.jsx";
@@ -14,16 +12,6 @@ import Header from "@/components/Header.jsx";
 import Footer from "@/components/Footer.jsx";
 import { setDefaultImageData, setDefaultReceivedData } from "../../Redux/slices/SocketSlice.js";
 
-/**
- * OutlinePage
- *
- * Shows the outline preview for the lesson. This version matches the UI in
- * your screenshots: the outline is contained within a purple gradient card with
- * its own header, a white card for the slides, and a bottom bar with action
- * buttons. Only the slides card scrolls—there should be no global page scroll.
- * Top and bottom margins have been added to the main content so that the
- * header and footer are spaced consistently with the other pages.
- */
 export default function OutlinePage({ setLoading, setFinalModal, setQueueStatus }) {
   const [dataJSON, setDataJSON] = useState([]);
   const runningRef = useRef(false);
@@ -32,7 +20,6 @@ export default function OutlinePage({ setLoading, setFinalModal, setQueueStatus 
   const dispatch = useDispatch();
   const router = useRouter();
 
-  // Generate full slides and move to preview page
   function genSlides(e) {
     e.preventDefault();
     dispatch(setOutline(dataJSON));
@@ -56,18 +43,14 @@ export default function OutlinePage({ setLoading, setFinalModal, setQueueStatus 
     router.push("/create-lesson/preview");
   }
 
-  // Delete slide at index
   function DeleteSlide(index) {
     setDataJSON((prev) => {
       const next = prev.map((s) => ({ ...s }));
-      for (let i = index; i < next.length; i++) {
-        next[i].slide_number -= 1;
-      }
+      for (let i = index; i < next.length; i++) next[i].slide_number -= 1;
       return next.slice(0, index - 1).concat(next.slice(index));
     });
   }
 
-  // Add slide below index
   function AddSlideBelow(index) {
     setDataJSON((prev) => {
       const base = prev.map((s) => ({ ...s, content: [...s.content] }));
@@ -79,15 +62,11 @@ export default function OutlinePage({ setLoading, setFinalModal, setQueueStatus 
       return [
         ...base.slice(0, index),
         newSlide,
-        ...base.slice(index).map((s) => ({
-          ...s,
-          slide_number: s.slide_number + 1,
-        })),
+        ...base.slice(index).map((s) => ({ ...s, slide_number: s.slide_number + 1 })),
       ];
     });
   }
 
-  // Fetch outline from the server
   const runFetch = async (quiet) => {
     if (runningRef.current) return;
     runningRef.current = true;
@@ -104,10 +83,6 @@ export default function OutlinePage({ setLoading, setFinalModal, setQueueStatus 
         { quiet }
       );
       if (!result?.ok) {
-        if (result?.error === "MISSING_FIELDS") {
-          router.replace("/create-lesson");
-          return;
-        }
         router.replace("/create-lesson");
         return;
       }
@@ -118,23 +93,37 @@ export default function OutlinePage({ setLoading, setFinalModal, setQueueStatus 
     }
   };
 
-  // Initial and precondition checks
+  // Pre-conditions: explain WHY if we bounce
   useEffect(() => {
-    setFinalModal?.(false);
-  }, [setFinalModal]);
-  useEffect(() => {
-    if (!socketId || !reqPrompt || (!grade && grade !== 0) || !slides || !subject) {
+    const missing = [];
+    if (!socketId) missing.push("socketId");
+    if (!reqPrompt) missing.push("reqPrompt");
+    if (!slides) missing.push("slides");
+    if (!subject) missing.push("subject");
+    if (!grade && grade !== 0) missing.push("grade");
+
+    if (missing.length) {
+      if (process.env.NODE_ENV !== "production") {
+        console.warn("[OUTLINE] missing preconditions:", missing);
+      }
       router.replace("/create-lesson");
+      return;
     }
   }, [socketId, reqPrompt, grade, slides, subject, router]);
+
+  // ✅ Only fetch when socketId is ready (prevents the race)
   useEffect(() => {
+    if (!socketId) return;
+    if (process.env.NODE_ENV !== "production") {
+      console.log("[OUTLINE] ready → FetchOutline with socketId:", socketId);
+    }
     runFetch(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [socketId]);
 
-  // Regenerate outline handler
   const onRegenerate = async (e) => {
     e?.preventDefault?.();
+    if (!socketId) return;
     await runFetch(false);
   };
 
@@ -142,38 +131,28 @@ export default function OutlinePage({ setLoading, setFinalModal, setQueueStatus 
     <div className="min-h-screen w-full bg-white flex flex-col overflow-hidden">
       <Header />
       <main className="flex-1 flex flex-col items-center px-4 py-6 mt-3 mb-3 overflow-hidden">
-        {/* Main content wrapper */}
         <div className="w-full max-w-6xl">
-          {/* Purple gradient container */}
           <div className="mt-0 w-full rounded-3xl bg-gradient-to-b from-purple-700 to-purple-300 p-6">
-            {/* Outline header on the gradient background */}
             <div className="text-center text-white">
-              <h2 className="font-bold text-xl sm:text-2xl md:text-3xl">
-                Outline Preview
-              </h2>
-              {/* Subheading with topic details; uses TopText for reuse */}
+              <h2 className="font-bold text-xl sm:text-2xl md:text-3xl">Outline Preview</h2>
               <TopText />
             </div>
-            {/* White card that contains slides and bottom buttons */}
             <div className="mt-6 bg-white rounded-2xl shadow-md overflow-hidden">
-              {/* Slides list: scrollable */}
               <div className="p-4 overflow-y-auto max-h-[45vh] md:max-h-[52vh] space-y-6 scrollbar-thin scrollbar-thumb-purple-400 scrollbar-track-transparent">
                 <ul className="space-y-6">
-                  {dataJSON.map((item, index) => (
+                  {dataJSON.map((item) => (
                     <SlideComponent
                       setDataJson={setDataJSON}
                       points={item.content}
                       title={item.title}
-                      index={index + 1}
+                      index={item.slide_number}
                       DeleteSlide={DeleteSlide}
-                      // ✅ Use a stable key so typing in bullets doesn't remount the slide
                       key={item.slide_number}
                       addSlideBelow={AddSlideBelow}
                     />
                   ))}
                 </ul>
               </div>
-              {/* Action buttons bar */}
               <div className="border-t border-gray-200 p-4 flex justify-end rounded-b-2xl">
                 <ButtonGroup genSlides={genSlides} onRegenerate={onRegenerate} />
               </div>
@@ -185,6 +164,7 @@ export default function OutlinePage({ setLoading, setFinalModal, setQueueStatus 
     </div>
   );
 }
+
 
 
 

@@ -1,14 +1,10 @@
 import { NextResponse } from "next/server";
 
+export const runtime = "nodejs";
+
 /**
  * POST /api/lesson-builder/slides/update?socketID=...
  * Body: { text: "<START>...<END>" }
- *
- * This endpoint proxies slide-update requests to the upstream slide builder
- * service.  It performs basic validation on the incoming request and
- * propagates any JSON response from the upstream service back to the
- * caller.  In the event of an upstream error the response code is
- * converted to a 502 with a JSON body describing the failure.
  */
 export async function POST(request) {
   try {

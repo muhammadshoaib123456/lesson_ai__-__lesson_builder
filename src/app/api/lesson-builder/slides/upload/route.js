@@ -1,14 +1,10 @@
 import { NextResponse } from "next/server";
 
+export const runtime = "nodejs";
+
 /**
  * POST /api/lesson-builder/slides/upload?socketID=...
- *
- * Proxies slide upload requests to the upstream service.  The upstream
- * service returns a plain‑text response containing either a URL or the
- * literal string "fail".  This implementation preserves the plain
- * text response when the upstream is successful and propagates
- * upstream errors as a 502 with a plain "fail" body.  A missing
- * socketID results in a 400.
+ * Proxies to upstream which returns plain text: Google Slides URL or "fail".
  */
 export async function POST(request) {
   try {
@@ -25,7 +21,6 @@ export async function POST(request) {
     const text = await upstream.text().catch(() => "fail");
 
     if (!upstream.ok) {
-      // On error propagate a generic failure; the client checks for "fail".
       return new Response("fail", { status: 502, headers: { "Content-Type": "text/plain" } });
     }
 

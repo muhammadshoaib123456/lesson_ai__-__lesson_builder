@@ -15,9 +15,6 @@ import { useRouter } from "next/navigation";
 import Header from "@/components/Header.jsx";
 import Footer from "@/components/Footer.jsx";
 import { setAvailability, setLoading } from "../../Redux/slices/DownloadSlice.js";
-
-// OPTIONAL: if you have these actions you can import & dispatch to clear Redux socket/slide data.
-// import { setSocketId, setReceivedData, setImageData } from "../../Redux/slices/SocketSlice.js";
 import { disconnectSocket } from "../../GlobalFuncs/SocketConn.js";
 
 export default function SlidesPreview({ setFinalModal }) {
@@ -36,28 +33,22 @@ export default function SlidesPreview({ setFinalModal }) {
   const sentRef = useRef(false);
   const slideRef = useRef(null);
 
-  // Track in-flight fetches + cancellation state
   const abortersRef = useRef([]);
   const canceledRef = useRef(false);
-
-  // Prevent handling browser back more than once
   const backHandledRef = useRef(false);
 
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const getTitles = (data) =>
-    Array.isArray(data) ? data.map((d) => d?.title ?? "") : [];
-  const getNotes = (data) =>
-    Array.isArray(data) ? data.map((d) => d?.notes ?? "") : [];
+  const getTitles = (data) => (Array.isArray(data) ? data.map((d) => d?.title ?? "") : []);
+  const getNotes = (data) => (Array.isArray(data) ? data.map((d) => d?.notes ?? "") : []);
 
-  const totalSlides = useMemo(() => (slidesRes?.length ?? 0) + 2, [slidesRes]);
+  const safeSlides = Array.isArray(slidesRes) ? slidesRes : [];
+  const totalSlides = useMemo(() => safeSlides.length + 2, [safeSlides]);
 
   const clamp = (n, min, max) => Math.min(Math.max(n, min), max);
-  const onSliderChange = (val) =>
-    setSelected(clamp(parseInt(val, 10), 0, Math.max(totalSlides - 1, 0)));
 
-  // Hard guard: if required inputs missing, bounce to create-lesson
+  // Guard: required inputs
   useEffect(() => {
     if (!reqPrompt || !grade || !slides || !slidesData || slidesData.length === 0) {
       dispatch(setAvailability(false));
@@ -67,12 +58,14 @@ export default function SlidesPreview({ setFinalModal }) {
     }
   }, [reqPrompt, grade, slides, slidesData, dispatch, router]);
 
+  // Keep title/notes in sync with live socket data
   useEffect(() => {
-    setTitles(getTitles(slidesRes || []));
-    setNotes(getNotes(slidesRes || []));
+    setTitles(getTitles(safeSlides));
+    setNotes(getNotes(safeSlides));
     setSelected(0);
-  }, [slidesRes]);
+  }, [safeSlides]);
 
+  // Scroll active small tile into view
   useEffect(() => {
     if (tileRefs.current[selected]) {
       tileRefs.current[selected].scrollIntoView({
@@ -83,107 +76,95 @@ export default function SlidesPreview({ setFinalModal }) {
     }
   }, [selected]);
 
+  // Keyboard & wheel nav
   useEffect(() => {
     const el = slideRef.current;
     if (!el) return;
-    const handleScroll = (event) => {
+    const handle = (event) => {
       if (event.type === "wheel") {
-        if (event.deltaY < 0)
-          setSelected((prev) => clamp(prev - 1, 0, totalSlides - 1));
-        else if (event.deltaY > 0)
-          setSelected((prev) => clamp(prev + 1, 0, totalSlides - 1));
+        setSelected((p) => clamp(p + (event.deltaY > 0 ? 1 : -1), 0, totalSlides - 1));
       } else if (event.type === "keydown") {
-        if (event.key === "ArrowUp")
-          setSelected((prev) => clamp(prev - 1, 0, totalSlides - 1));
-        else if (event.key === "ArrowDown")
-          setSelected((prev) => clamp(prev + 1, 0, totalSlides - 1));
+        if (event.key === "ArrowUp") setSelected((p) => clamp(p - 1, 0, totalSlides - 1));
+        if (event.key === "ArrowDown") setSelected((p) => clamp(p + 1, 0, totalSlides - 1));
       }
     };
-    el.addEventListener("wheel", handleScroll, { passive: true });
-    window.addEventListener("keydown", handleScroll);
+    el.addEventListener("wheel", handle, { passive: true });
+    window.addEventListener("keydown", handle);
     return () => {
-      el.removeEventListener("wheel", handleScroll);
-      window.removeEventListener("keydown", handleScroll);
+      el.removeEventListener("wheel", handle);
+      window.removeEventListener("keydown", handle);
     };
   }, [totalSlides]);
 
-  // Helper: clear persisted artifacts from previous run
+  // Clear artifacts from previous run
   function clearPrevRunArtifacts() {
     try {
-      localStorage.removeItem("url");              // Google Slides link from old run
-      localStorage.removeItem("artifactSocketID"); // pinned id for PPTX downloads
-      localStorage.removeItem("socketID");         // live id snapshot
+      localStorage.removeItem("url");
+      localStorage.removeItem("artifactSocketID");
+      localStorage.removeItem("socketID");
     } catch {}
   }
 
-  // Reset session (cancel in-flight, clear artifacts, disconnect socket) and go to create-lesson
-  function resetSessionAndGoBack() {
-    if (backHandledRef.current) return; // guard against re-entrancy
-    backHandledRef.current = true;
+  // ✅ Mirror Redux socketId -> localStorage ASAP for DownloadMenu
+  useEffect(() => {
+    try {
+      if (socketId) localStorage.setItem("socketID", socketId);
+    } catch {}
+  }, [socketId]);
 
-    // 1) mark as canceled so no toasts/UI updates fire when responses arrive
+  // Back button handler (disconnect, cancel inflight, navigate)
+  function resetSessionAndGoBack() {
+    if (backHandledRef.current) return;
+    backHandledRef.current = true;
     canceledRef.current = true;
 
-    // 2) abort any in-flight requests from updateAndUpload()
     try {
       abortersRef.current.forEach((c) => c?.abort?.());
       abortersRef.current = [];
     } catch {}
 
-    // 3) clear artifacts so Slides button can’t open old deck
     clearPrevRunArtifacts();
 
-    // 4) disconnect socket so a NEW socket id will be created next time
     try {
       disconnectSocket(dispatch);
     } catch {}
 
-    // OPTIONAL: clear redux slices if you want a fully clean store
-    // dispatch(setSocketId(""));
-    // dispatch(setReceivedData([]));
-    // dispatch(setImageData([]));
-
-    // 5) leave the page — go to create-lesson (fresh flow)
     router.replace("/create-lesson");
   }
 
-  // Intercept BROWSER BACK to behave like our Back button
+  // Intercept browser back
   useEffect(() => {
-    // Push a guard state so the next "Back" triggers a popstate we control
     try {
       window.history.pushState({ guard: "slides-preview" }, "", window.location.href);
     } catch {}
-
     const onPopState = () => {
-      // Ensure single handling
       if (backHandledRef.current) return;
       resetSessionAndGoBack();
     };
-
     window.addEventListener("popstate", onPopState);
-    return () => {
-      window.removeEventListener("popstate", onPopState);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // run once
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
 
-  // Kick off update+upload once per mount when we have a socketId and slidesData
+  // ✅ Kick off update+upload AFTER socketId is ready; re-pin socketID after clearing
   useEffect(() => {
     const canRun =
       !!socketId &&
       Array.isArray(slidesData) &&
       slidesData.length > 0 &&
       !sentRef.current;
+
     if (!canRun) return;
 
     sentRef.current = true;
-    canceledRef.current = false; // this mount/run is now active
-    clearPrevRunArtifacts();     // make sure old links/ids cannot be used in this new run
+    canceledRef.current = false;
+    clearPrevRunArtifacts();
+    try {
+      localStorage.setItem("socketID", socketId); // re-pin fresh id immediately
+    } catch {}
 
     dispatch(setLoading(true));
 
     const updateAndUpload = async () => {
-      // each fetch uses its own AbortController; we keep references to cancel on "Back"
       const updCtrl = new AbortController();
       abortersRef.current.push(updCtrl);
 
@@ -205,7 +186,6 @@ export default function SlidesPreview({ setFinalModal }) {
           }
         );
 
-        // If user hit Back meanwhile, stop here quietly
         if (canceledRef.current) return;
 
         const upCtrl = new AbortController();
@@ -220,8 +200,9 @@ export default function SlidesPreview({ setFinalModal }) {
 
         const uploadText = await uploadRes.text().catch(() => "fail");
         if (uploadRes.ok && uploadText && uploadText !== "fail") {
-          // Store ONLY if this run wasn't canceled
-          try { localStorage.setItem("url", uploadText); } catch {}
+          try {
+            localStorage.setItem("url", uploadText);
+          } catch {}
         } else {
           console.warn("Upload failed:", uploadRes.status, uploadText);
         }
@@ -254,22 +235,17 @@ export default function SlidesPreview({ setFinalModal }) {
           toast.error(`Error updating slides: ${msg}`);
         }
       } catch (error) {
-        if (canceledRef.current) {
-          // aborted by Back — do nothing
-          return;
-        }
+        if (canceledRef.current) return;
         dispatch(setLoading(false));
         console.error("Error updating/uploading slides:", error);
         toast.error(`Error updating slides, ${String(error)}`);
       } finally {
-        // clean out finished controllers
         abortersRef.current = abortersRef.current.filter((c) => !c.signal.aborted);
       }
     };
 
     updateAndUpload();
 
-    // On unmount, auto-cancel in-flight work to avoid ghost toasts
     return () => {
       canceledRef.current = true;
       try {
@@ -279,19 +255,14 @@ export default function SlidesPreview({ setFinalModal }) {
     };
   }, [socketId, slidesData, dispatch, setFinalModal]);
 
+  // Mobile fullscreen + landscape lock
   const enterFullscreenAndLockOrientation = async () => {
-    if (
-      typeof window !== "undefined" &&
-      window.matchMedia("(max-width: 639px)").matches
-    ) {
+    if (typeof window !== "undefined" && window.matchMedia("(max-width: 639px)").matches) {
       try {
         const elem = document.documentElement;
         if (elem.requestFullscreen) {
           await elem.requestFullscreen();
-          if (
-            screen.orientation &&
-            typeof screen.orientation.lock === "function"
-          ) {
+          if (screen.orientation && typeof screen.orientation.lock === "function") {
             await screen.orientation.lock("landscape-primary");
           }
         }
@@ -304,21 +275,22 @@ export default function SlidesPreview({ setFinalModal }) {
     enterFullscreenAndLockOrientation();
   }, []);
 
-  const selectedTile = slidesRes?.[selected - 2];
-  const selectedTileImage = slidesResImages?.[selected - 2];
+  const selectedTile = safeSlides?.[selected - 2];
+  const selectedTileImage =
+    Array.isArray(slidesResImages) && slidesResImages?.[selected - 2]
+      ? slidesResImages[selected - 2]
+      : {};
 
   return (
     <div className="min-h-screen w-full bg-white flex flex-col overflow-hidden">
-      {/* Header */}
       <div className="h-20 w-full flex-shrink-0">
         <Header />
       </div>
 
-      {/* Middle */}
       <main className="flex-1 flex flex-col items-center px-4 py-6 overflow-hidden">
         <div className="w-full max-w-7xl">
           <div className="w-full bg-white rounded-xl relative overflow-hidden flex">
-            {/* Button group top-right */}
+            {/* Top-right buttons */}
             <div className="absolute top-3 right-4 sm:top-4 sm:right-6 flex items-center gap-3 z-30">
               <button
                 onClick={resetSessionAndGoBack}
@@ -326,11 +298,7 @@ export default function SlidesPreview({ setFinalModal }) {
                 title="Back to create lesson page"
               >
                 <span className="flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-green-500 text-white">
-                  <svg
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                    className="w-3 h-3 sm:w-4 sm:h-4"
-                  >
+                  <svg viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3 sm:w-4 sm:h-4">
                     <path
                       fillRule="evenodd"
                       d="M12.707 14.707a1 1 0 01-1.414 0L6.586 10l4.707-4.707a1 1 0 011.414 1.414L9.414 10l3.293 3.293a1 1 0 010 1.414z"
@@ -356,10 +324,10 @@ export default function SlidesPreview({ setFinalModal }) {
                 selected={selected === 1}
                 ref={(el) => (tileRefs.current[1] = el)}
               />
-              {slidesRes?.map((tile, index) => (
+              {safeSlides.map((tile, index) => (
                 <SmallTile
                   key={index + 2}
-                  image={slidesResImages?.[index] || {}}
+                  image={(Array.isArray(slidesResImages) && slidesResImages[index]) || {}}
                   data={tile}
                   setSelected={() => setSelected(index + 2)}
                   selected={selected === index + 2}
@@ -393,11 +361,7 @@ export default function SlidesPreview({ setFinalModal }) {
 
               {selected > 1 && (
                 <div className="mt-6 w-full max-w-3xl relative z-10">
-                  <Bar
-                    loading={loading}
-                    setFinalModal={setFinalModal}
-                    data={notes?.[selected - 2]}
-                  />
+                  <Bar loading={loading} setFinalModal={setFinalModal} data={notes?.[selected - 2]} />
                 </div>
               )}
             </div>
@@ -405,13 +369,13 @@ export default function SlidesPreview({ setFinalModal }) {
         </div>
       </main>
 
-      {/* Footer */}
       <div className="h-20 w-full flex-shrink-0">
         <Footer />
       </div>
     </div>
   );
 }
+
 
 
 

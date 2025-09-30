@@ -1,20 +1,18 @@
-// app/components/downloadmenu.jsx
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { useDispatch } from "react-redux";
-// keep import; we don't call disconnect after download so users can download repeatedly
-import { disconnectSocket } from "../../../GlobalFuncs/SocketConn.js";
 
 export default function DownloadMenu() {
   const [open, setOpen] = useState(false);
-  const [href, setHref] = useState("");          // shown in UI; we still refresh it at click-time
-  const [socketID, setSocketID] = useState("");  // live socket id snapshot
+  const [href, setHref] = useState("");          // Slides URL (Google Slides)
+  const [socketID, setSocketID] = useState("");  // component-local snapshot (storage)
   const [downloading, setDownloading] = useState(false);
-  const dispatch = useDispatch();
 
-  // Track last seen values so we can detect changes
+  // ✅ Live Redux fallback for freshest id
+  const reduxSocketId = useSelector((s) => s.socket.socketId);
+
   const lastUrlRef = useRef("");
   const lastSocketRef = useRef("");
 
@@ -29,40 +27,36 @@ export default function DownloadMenu() {
     } catch {}
   }, []);
 
-  // Poll for changes to url/socketID written by other parts of the app in the SAME tab.
-  // (The "storage" event won't fire in the same document.)
+  // Light polling to catch same-tab storage changes
   useEffect(() => {
     const iv = setInterval(() => {
       try {
         const curUrl = localStorage.getItem("url") || "";
         const curSid = localStorage.getItem("socketID") || "";
 
-        // If a new Slides URL appears, clear the pinned artifact id so PPTX uses the new run
         if (curUrl && curUrl !== lastUrlRef.current) {
           lastUrlRef.current = curUrl;
           setHref(curUrl);
           try { localStorage.removeItem("artifactSocketID"); } catch {}
         }
-
         if (curSid !== lastSocketRef.current) {
           lastSocketRef.current = curSid;
           setSocketID(curSid);
         }
       } catch {}
-    }, 800); // light polling; cheap and reliable
-
+    }, 800);
     return () => clearInterval(iv);
   }, []);
 
   async function handleDownloadPPT() {
-    // Prevent re-entry / double-clicks
     if (downloading) return;
 
-    // Prefer a pinned artifact id (the run that produced the PPTX), else the freshest live id
+    // Best available socket id (stable artifact -> Redux -> storage -> local state)
     let sidToUse = "";
     try {
       sidToUse =
         localStorage.getItem("artifactSocketID") ||
+        reduxSocketId ||
         localStorage.getItem("socketID") ||
         socketID ||
         "";
@@ -80,7 +74,6 @@ export default function DownloadMenu() {
       );
 
       if (!res.ok) {
-        // Read whatever the server gave us (often empty on errors)
         let msg = "";
         try { msg = await res.text(); } catch {}
         console.error("Download error:", { status: res.status, msg: msg?.slice?.(0, 500) || "(empty)" });
@@ -88,10 +81,9 @@ export default function DownloadMenu() {
         return;
       }
 
-      // Pin the socket id that worked so repeated downloads keep working
+      // Pin the id that produced this artifact (stable for repeat downloads)
       try { localStorage.setItem("artifactSocketID", sidToUse); } catch {}
 
-      // Try to honor server-provided filename
       let filename = "presentation.pptx";
       const cd = res.headers.get("content-disposition");
       if (cd && /filename\*=UTF-8''([^;]+)/i.test(cd)) {
@@ -102,8 +94,6 @@ export default function DownloadMenu() {
 
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
-
-      // Create the anchor only once; guard against multiple clicks by checking downloading above
       const a = document.createElement("a");
       a.href = url;
       a.download = filename || "presentation.pptx";
@@ -111,9 +101,6 @@ export default function DownloadMenu() {
       a.click();
       a.remove();
       URL.revokeObjectURL(url);
-
-      // DO NOT disconnect; let users download as many times as they want.
-      // SocketBoundary will disconnect when leaving /create-lesson*.
     } catch (err) {
       console.error("download error:", err);
       toast.error("Download failed.");
@@ -124,7 +111,6 @@ export default function DownloadMenu() {
   }
 
   function handleOpenSlides() {
-    // Always read the freshest URL at click-time (avoid opening an old deck)
     let fresh = href;
     try {
       const latest = localStorage.getItem("url");
@@ -167,7 +153,7 @@ export default function DownloadMenu() {
       {open && (
         <div className="absolute right-0 mt-2 w-56 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
           <div className="py-2">
-            {/* PPTX (socket-only) */}
+            {/* PPTX */}
             <div
               onClick={handleDownloadPPT}
               className={`flex items-start px-4 py-2 hover:bg-gray-100 cursor-pointer ${downloading ? "pointer-events-none opacity-60" : ""}`}
@@ -184,7 +170,7 @@ export default function DownloadMenu() {
               </div>
             </div>
 
-            {/* Slides (unchanged) */}
+            {/* Slides (Google Slides link) */}
             <div
               onClick={handleOpenSlides}
               className="flex items-start px-4 py-2 hover:bg-gray-100 cursor-pointer"
@@ -208,6 +194,7 @@ export default function DownloadMenu() {
     </div>
   );
 }
+
 
 
 

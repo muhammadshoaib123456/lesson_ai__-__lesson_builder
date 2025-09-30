@@ -18,9 +18,17 @@ export default function MainPage({ setLoading, setGenSlides, setFinalModal }) {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const dispatch = useDispatch();
   const router = useRouter();
-  const { canCreateSlides, showLimitReached, showLimitWarning } = useUsageLimit();
 
-  // ---- Soft gate (inline) ----
+  // canCreateSlides is a BOOLEAN from the hook
+  const {
+    canCreateSlides,
+    showLimitReached,
+    showLimitWarning,
+    loading: usageLoading,
+    checkUsage,
+  } = useUsageLimit();
+
+  // Soft gate – profile completion
   const [checkingGate, setCheckingGate] = useState(true);
   const [blocked, setBlocked] = useState(false);
 
@@ -40,6 +48,7 @@ export default function MainPage({ setLoading, setGenSlides, setFinalModal }) {
     return () => { mounted = false; };
   }, []);
 
+  // Reset store/UI on mount
   useEffect(() => {
     setLoading(false);
     setGenSlides(false);
@@ -48,19 +57,34 @@ export default function MainPage({ setLoading, setGenSlides, setFinalModal }) {
     dispatch(resetReceivedData());
     dispatch(resetImageData());
     dispatch(resetOutline());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function onSubmit(data) {
-    if (!canCreateSlides()) {
+    if (usageLoading) {
+      await checkUsage();
+    }
+
+    if (!canCreateSlides) {
       showLimitReached();
       return;
     }
+
     const reqPrompt = data.topic;
     const grade = data.grade;
     const slides = 10;
     const subject = data.subject;
 
+    // Quick sanity log
+    if (process.env.NODE_ENV !== "production") {
+      console.log("[MAIN] submit payload", { reqPrompt, grade, slides, subject });
+    }
+
+    // Write to Redux before navigating
     dispatch(setForm({ reqPrompt, grade, slides, subject }));
+
+    // Make sure Redux state is flushed before Outline reads it
+    await Promise.resolve();
 
     if (typeof window !== "undefined") {
       try {
@@ -83,6 +107,7 @@ export default function MainPage({ setLoading, setGenSlides, setFinalModal }) {
         subject,
       });
     }
+
     showLimitWarning();
     setLoading(true);
     router.push("/create-lesson/outline");
@@ -94,7 +119,6 @@ export default function MainPage({ setLoading, setGenSlides, setFinalModal }) {
     <div className="min-h-screen w-full overflow-hidden bg-white flex flex-col">
       <Header />
 
-      {/* Soft gate modal (only when profile incomplete). We still render page underneath. */}
       {!checkingGate && blocked && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
@@ -148,6 +172,7 @@ export default function MainPage({ setLoading, setGenSlides, setFinalModal }) {
     </div>
   );
 }
+
 
 
 

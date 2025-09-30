@@ -1,69 +1,47 @@
-// app/api/lesson-builder/slides/download/route.js
 import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
 
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const socketID = searchParams.get("socketID");
     if (!socketID) {
-      return NextResponse.json({ error: "socketID required" }, { status: 400 });
+      return new NextResponse("socketID is required", {
+        status: 400,
+        headers: { "Content-Type": "text/plain" },
+      });
     }
 
-    const sourceUrl = `https://builder.lessn.ai:8085/download_slide?socketID=${encodeURIComponent(
-      socketID
-    )}`;
-
-    const upstream = await fetch(sourceUrl, {
-      method: "GET",
-      redirect: "follow",
-      cache: "no-store",
-      headers: {
-        Accept:
-          "application/vnd.openxmlformats-officedocument.presentationml.presentation,application/octet-stream",
-      },
-    });
+    const upstream = await fetch(
+      `https://builder.lessn.ai:8085/download_ppt?socketID=${encodeURIComponent(socketID)}`,
+      { method: "GET", cache: "no-store" }
+    );
 
     if (!upstream.ok) {
-      const text = await upstream.text().catch(() => "");
-      return NextResponse.json(
-        { error: `Flask upstream ${upstream.status}`, msg: text },
-        { status: 502 }
-      );
-    }
-
-    const ct =
-      upstream.headers.get("content-type") ||
-      "application/vnd.openxmlformats-officedocument.presentationml.presentation";
-    if (/json|html|text/i.test(ct)) {
-      const text = await upstream.text().catch(() => "");
-      return NextResponse.json(
-        { error: "Unexpected upstream response", msg: text.slice(0, 1000) },
-        { status: 502 }
-      );
-    }
-
-    // filename (fallback)
-    let filename = "presentation.pptx";
-    const cd = upstream.headers.get("content-disposition");
-    if (cd && /filename\*=UTF-8''([^;]+)/i.test(cd)) {
-      filename = decodeURIComponent(cd.match(/filename\*=UTF-8''([^;]+)/i)[1]);
-    } else if (cd && /filename="?([^";]+)"?/i.test(cd)) {
-      filename = cd.match(/filename="?([^";]+)"?/i)[1];
+      const msg = await upstream.text().catch(() => "");
+      console.error("Upstream PPTX error:", upstream.status, msg?.slice?.(0, 500));
+      return new NextResponse("fail", {
+        status: 502,
+        headers: { "Content-Type": "text/plain" },
+      });
     }
 
     const headers = new Headers();
+    const cd = upstream.headers.get("content-disposition");
+    const ct =
+      upstream.headers.get("content-type") ||
+      "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+    if (cd) headers.set("content-disposition", cd);
     headers.set("content-type", ct);
-    const cl = upstream.headers.get("content-length");
-    if (cl) headers.set("content-length", cl);
-    headers.set("content-disposition", `attachment; filename="${filename}"`);
-    headers.set("cache-control", "no-store");
 
-    return new Response(upstream.body, { status: 200, headers });
+    const body = await upstream.arrayBuffer();
+    return new NextResponse(body, { status: 200, headers });
   } catch (err) {
     console.error("slides/download error:", err);
-    return NextResponse.json({ error: "Download failed" }, { status: 500 });
+    return new NextResponse("fail", {
+      status: 500,
+      headers: { "Content-Type": "text/plain" },
+    });
   }
 }

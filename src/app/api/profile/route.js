@@ -6,6 +6,7 @@ import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 
 async function requireSession() {
+  // App Router style
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
     return { session: null, res: NextResponse.json({ error: "Unauthorized" }, { status: 401 }) };
@@ -50,5 +51,8 @@ export async function PUT(req) {
   if ("onboardingStep" in body) data.onboardingStep = Number(body.onboardingStep) || 1;
 
   const updated = await prisma.user.update({ where: { id: session.user.id }, data });
-  return NextResponse.json({ ok: true, profileComplete: updated.profileComplete }, { status: 200 });
+  return NextResponse.json(
+    { ok: true, profileComplete: updated.profileComplete },
+    { status: 200 }
+  );
 }

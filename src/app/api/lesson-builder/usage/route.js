@@ -1,10 +1,12 @@
-// src/app/api/lesson-builder/usage/route.js
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";      // ✅ import from lib, not the API route
-import { prisma } from "@/lib/prisma";
+import { authOptions } from "@/lib/auth";
+import prisma from "@/lib/prisma";
 
-export const runtime = "nodejs";               // ✅ ensure Node runtime
+export const runtime = "nodejs";
+
+// 🔧 Single source of truth for free tier
+const FREE_LIMIT = 500; // change to 550 if that's your intended limit, but keep it consistent.
 
 export async function GET() {
   try {
@@ -32,16 +34,15 @@ export async function GET() {
       user.subscriptionActive && (!user.subscriptionEnds || new Date() < user.subscriptionEnds);
 
     const slidesUsed = user.slidesCreated || 0;
-    const maxFreeSlides = 250;
-    const canCreateSlides = hasActiveSubscription || slidesUsed < maxFreeSlides;
+    const canCreateSlides = hasActiveSubscription || slidesUsed < FREE_LIMIT;
 
     return NextResponse.json({
       slidesUsed,
-      maxFreeSlides,
+      maxFreeSlides: FREE_LIMIT,
       canCreateSlides,
       hasSubscription: hasActiveSubscription,
       subscriptionType: user.subscriptionType || "free",
-      remainingSlides: hasActiveSubscription ? "unlimited" : Math.max(0, maxFreeSlides - slidesUsed),
+      remainingSlides: hasActiveSubscription ? "unlimited" : Math.max(0, FREE_LIMIT - slidesUsed),
       lastSlideCreated: user.lastSlideCreated,
     });
   } catch (error) {
@@ -69,7 +70,7 @@ export async function POST() {
     const hasActiveSubscription =
       user?.subscriptionActive && (!user.subscriptionEnds || new Date() < user.subscriptionEnds);
 
-    if (!hasActiveSubscription && (user?.slidesCreated ?? 0) >= 5) {
+    if (!hasActiveSubscription && (user?.slidesCreated ?? 0) >= FREE_LIMIT) {
       return NextResponse.json(
         { error: "Free limit exceeded. Please upgrade to continue." },
         { status: 403 }
