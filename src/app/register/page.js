@@ -86,7 +86,7 @@ function StudentSVG() {
 <g filter="url(#filter0_d_322_13793)">
 <rect x="17.5" y="18" width="178" height="174" rx="16" fill="#FCF6FF"/>
 <rect x="17.5" y="18" width="178" height="174" rx="16" stroke="#9500DE" strokeWidth="0.5"/>
-<g clip-path="url(#clip0_322_13793)">
+<g clipPath="url(#clip0_322_13793)">
 <path d="M142.28 71.1787H132.463V75.3283H142.28V71.1787Z" fill="#EBEBEB"/>
 <path d="M136.801 76.4111H126.984V80.5608H136.801V76.4111Z" fill="#EBEBEB"/>
 <path d="M131.347 71.1785H121.53V75.3281H131.347V71.1785Z" fill="#EBEBEB"/>
