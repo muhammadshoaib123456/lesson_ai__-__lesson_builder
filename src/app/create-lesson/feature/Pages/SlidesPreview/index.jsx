@@ -33,10 +33,6 @@ export default function SlidesPreview({ setFinalModal }) {
   const sentRef = useRef(false);
   const slideRef = useRef(null);
 
-  const abortersRef = useRef([]);
-  const canceledRef = useRef(false);
-  const backHandledRef = useRef(false);
-
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -58,14 +54,14 @@ export default function SlidesPreview({ setFinalModal }) {
     }
   }, [reqPrompt, grade, slides, slidesData, dispatch, router]);
 
-  // Keep title/notes in sync with live socket data
+  // Sync titles/notes
   useEffect(() => {
     setTitles(getTitles(safeSlides));
     setNotes(getNotes(safeSlides));
     setSelected(0);
   }, [safeSlides]);
 
-  // Scroll active small tile into view
+  // Scroll active small tile
   useEffect(() => {
     if (tileRefs.current[selected]) {
       tileRefs.current[selected].scrollIntoView({
@@ -96,56 +92,7 @@ export default function SlidesPreview({ setFinalModal }) {
     };
   }, [totalSlides]);
 
-  // Clear artifacts from previous run
-  function clearPrevRunArtifacts() {
-    try {
-      localStorage.removeItem("url");
-      localStorage.removeItem("artifactSocketID");
-      localStorage.removeItem("socketID");
-    } catch {}
-  }
-
-  // ✅ Mirror Redux socketId -> localStorage ASAP for DownloadMenu
-  useEffect(() => {
-    try {
-      if (socketId) localStorage.setItem("socketID", socketId);
-    } catch {}
-  }, [socketId]);
-
-  // Back button handler (disconnect, cancel inflight, navigate)
-  function resetSessionAndGoBack() {
-    if (backHandledRef.current) return;
-    backHandledRef.current = true;
-    canceledRef.current = true;
-
-    try {
-      abortersRef.current.forEach((c) => c?.abort?.());
-      abortersRef.current = [];
-    } catch {}
-
-    clearPrevRunArtifacts();
-
-    try {
-      disconnectSocket(dispatch);
-    } catch {}
-
-    router.replace("/create-lesson");
-  }
-
-  // Intercept browser back
-  useEffect(() => {
-    try {
-      window.history.pushState({ guard: "slides-preview" }, "", window.location.href);
-    } catch {}
-    const onPopState = () => {
-      if (backHandledRef.current) return;
-      resetSessionAndGoBack();
-    };
-    window.addEventListener("popstate", onPopState);
-    return () => window.removeEventListener("popstate", onPopState);
-  }, []);
-
-  // ✅ Kick off update+upload AFTER socketId is ready; re-pin socketID after clearing
+  // Update + upload slides
   useEffect(() => {
     const canRun =
       !!socketId &&
@@ -156,63 +103,39 @@ export default function SlidesPreview({ setFinalModal }) {
     if (!canRun) return;
 
     sentRef.current = true;
-    canceledRef.current = false;
-    clearPrevRunArtifacts();
-    try {
-      localStorage.setItem("socketID", socketId); // re-pin fresh id immediately
-    } catch {}
-
     dispatch(setLoading(true));
 
     const updateAndUpload = async () => {
-      const updCtrl = new AbortController();
-      abortersRef.current.push(updCtrl);
-
       try {
         const upd = await fetch(
           `/api/lesson-builder/slides/update?socketID=${encodeURIComponent(socketId)}`,
           {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
+            headers: { "Content-Type": "application/json", Accept: "application/json" },
             body: JSON.stringify({
               text: `<START>${JSON.stringify(slidesData)}<END>`,
             }),
             cache: "no-store",
             redirect: "follow",
-            signal: updCtrl.signal,
           }
         );
 
-        if (canceledRef.current) return;
-
-        const upCtrl = new AbortController();
-        abortersRef.current.push(upCtrl);
-
         const uploadRes = await fetch(
           `/api/lesson-builder/slides/upload?socketID=${encodeURIComponent(socketId)}`,
-          { method: "POST", cache: "no-store", redirect: "follow", signal: upCtrl.signal }
+          { method: "POST", cache: "no-store", redirect: "follow" }
         );
-
-        if (canceledRef.current) return;
-
         const uploadText = await uploadRes.text().catch(() => "fail");
         if (uploadRes.ok && uploadText && uploadText !== "fail") {
-          try {
-            localStorage.setItem("url", uploadText);
-          } catch {}
+          localStorage.setItem("url", uploadText);
         } else {
           console.warn("Upload failed:", uploadRes.status, uploadText);
         }
 
         dispatch(setLoading(false));
 
-        if (canceledRef.current) return;
-
         if (upd.ok) {
           toast.success("Slides Created Successfully");
+          if (typeof setFinalModal === "function") setFinalModal(true);
         } else {
           const msg = await (async () => {
             const ct = upd.headers.get("content-type") || "";
@@ -235,43 +158,49 @@ export default function SlidesPreview({ setFinalModal }) {
           toast.error(`Error updating slides: ${msg}`);
         }
       } catch (error) {
-        if (canceledRef.current) return;
         dispatch(setLoading(false));
         console.error("Error updating/uploading slides:", error);
         toast.error(`Error updating slides, ${String(error)}`);
-      } finally {
-        abortersRef.current = abortersRef.current.filter((c) => !c.signal.aborted);
       }
     };
 
     updateAndUpload();
-
-    return () => {
-      canceledRef.current = true;
-      try {
-        abortersRef.current.forEach((c) => c?.abort?.());
-        abortersRef.current = [];
-      } catch {}
-    };
   }, [socketId, slidesData, dispatch, setFinalModal]);
 
-  // Mobile fullscreen + landscape lock
-  const enterFullscreenAndLockOrientation = async () => {
-    if (typeof window !== "undefined" && window.matchMedia("(max-width: 639px)").matches) {
-      try {
-        const elem = document.documentElement;
-        if (elem.requestFullscreen) {
-          await elem.requestFullscreen();
-          if (screen.orientation && typeof screen.orientation.lock === "function") {
-            await screen.orientation.lock("landscape-primary");
-          }
-        }
-      } catch (error) {
-        console.error("Failed to enter fullscreen or lock orientation:", error);
-      }
-    }
-  };
+  // ✅ Intercept Chrome back button and force redirect
   useEffect(() => {
+    // Push dummy state so first back press doesn’t go to outline
+    window.history.pushState({ page: "slides-preview" }, "", window.location.href);
+
+    const handleBack = (event) => {
+      event.preventDefault();
+      disconnectSocket(dispatch);
+      router.replace("/create-lesson");
+    };
+
+    window.addEventListener("popstate", handleBack);
+    return () => {
+      window.removeEventListener("popstate", handleBack);
+    };
+  }, [dispatch, router]);
+
+  // Mobile fullscreen
+  useEffect(() => {
+    const enterFullscreenAndLockOrientation = async () => {
+      if (typeof window !== "undefined" && window.matchMedia("(max-width: 639px)").matches) {
+        try {
+          const elem = document.documentElement;
+          if (elem.requestFullscreen) {
+            await elem.requestFullscreen();
+            if (screen.orientation && typeof screen.orientation.lock === "function") {
+              await screen.orientation.lock("landscape-primary");
+            }
+          }
+        } catch (error) {
+          console.error("Failed to enter fullscreen or lock orientation:", error);
+        }
+      }
+    };
     enterFullscreenAndLockOrientation();
   }, []);
 
@@ -280,6 +209,11 @@ export default function SlidesPreview({ setFinalModal }) {
     Array.isArray(slidesResImages) && slidesResImages?.[selected - 2]
       ? slidesResImages[selected - 2]
       : {};
+
+  const handleBack = () => {
+    disconnectSocket(dispatch);
+    router.push("/create-lesson");
+  };
 
   return (
     <div className="min-h-screen w-full bg-white flex flex-col overflow-hidden">
@@ -293,7 +227,7 @@ export default function SlidesPreview({ setFinalModal }) {
             {/* Top-right buttons */}
             <div className="absolute top-3 right-4 sm:top-4 sm:right-6 flex items-center gap-3 z-30">
               <button
-                onClick={resetSessionAndGoBack}
+                onClick={handleBack}
                 className="flex items-center gap-2 px-4 py-2 rounded-full border-2 border-green-500 bg-white text-green-600 hover:bg-green-50 transition-colors"
                 title="Back to create lesson page"
               >
@@ -314,6 +248,7 @@ export default function SlidesPreview({ setFinalModal }) {
             {/* Sidebar */}
             <div className="w-1/4 min-w-[200px] max-w-xs h-[calc(100vh-10rem)] overflow-y-auto p-4 space-y-4 bg-[#f5edfa] border-r-4 border-[#7d00a8] z-10 scrollable">
               <SmallTitle
+                data={titles}
                 setSelected={() => setSelected(0)}
                 selected={selected === 0}
                 ref={(el) => (tileRefs.current[0] = el)}
@@ -375,6 +310,7 @@ export default function SlidesPreview({ setFinalModal }) {
     </div>
   );
 }
+
 
 
 

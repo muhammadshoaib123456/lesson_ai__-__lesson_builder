@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -27,26 +27,6 @@ export default function MainPage({ setLoading, setGenSlides, setFinalModal }) {
     loading: usageLoading,
     checkUsage,
   } = useUsageLimit();
-
-  // Soft gate – profile completion
-  const [checkingGate, setCheckingGate] = useState(true);
-  const [blocked, setBlocked] = useState(false);
-
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      try {
-        const res = await fetch("/api/profile", { cache: "no-store" });
-        const p = res.ok ? await res.json() : null;
-        if (mounted) setBlocked(!p?.profileComplete);
-      } catch {
-        if (mounted) setBlocked(false);
-      } finally {
-        if (mounted) setCheckingGate(false);
-      }
-    })();
-    return () => { mounted = false; };
-  }, []);
 
   // Reset store/UI on mount
   useEffect(() => {
@@ -113,37 +93,9 @@ export default function MainPage({ setLoading, setGenSlides, setFinalModal }) {
     router.push("/create-lesson/outline");
   }
 
-  const next = "/create-lesson";
-
   return (
     <div className="min-h-screen w-full overflow-hidden bg-white flex flex-col">
       <Header />
-
-      {!checkingGate && blocked && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-          <div className="relative z-[101] bg-white text-black w-[92%] max-w-md rounded-2xl shadow-xl border p-6">
-            <h3 className="text-xl font-semibold mb-2">Complete your profile</h3>
-            <p className="text-gray-700 mb-4">
-              Please complete your profile first to access <span className="font-medium">Create a Lesson</span>.
-            </p>
-            <div className="flex gap-3 justify-end">
-              <button
-                onClick={() => router.back()}
-                className="px-4 py-2 rounded-full border border-gray-300 text-gray-700"
-              >
-                Go back
-              </button>
-              <button
-                onClick={() => router.push(`/register?next=${encodeURIComponent(next)}`)}
-                className="px-5 py-2 rounded-full bg-purple-600 text-white hover:bg-purple-700"
-              >
-                Continue onboarding
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       <main className="flex-1 flex flex-col items-center justify-start px-6 mt-10 mb-10 overflow-hidden">
         <h1 className="mt-2 text-center text-4xl md:text-5xl font-normal text-black">
@@ -153,7 +105,7 @@ export default function MainPage({ setLoading, setGenSlides, setFinalModal }) {
           Create interactive, accurate AI-powered lessons for engaged classrooms
         </p>
 
-        <div className={`mt-5 grid flex-1 items-center gap-8 lg:grid-cols-2 w-full max-w-6xl ${blocked ? "pointer-events-none select-none opacity-60" : ""}`}>
+        <div className="mt-5 grid flex-1 items-center gap-8 lg:grid-cols-2 w-full max-w-6xl">
           <div className="flex flex-col items-start justify-center">
             <div className="w-full max-w-md">
               <Form
@@ -172,6 +124,9 @@ export default function MainPage({ setLoading, setGenSlides, setFinalModal }) {
     </div>
   );
 }
+
+
+
 
 
 

@@ -23,8 +23,7 @@ function safeToastError(msg) {
 
 function normalizeUrl(raw) {
   if (!raw) return "";
-  // remove trailing slash(s)
-  return raw.replace(/\/+$/, "");
+  return raw.replace(/\/+$/, ""); // remove trailing slashes
 }
 
 /**
@@ -38,7 +37,7 @@ export default function initializeSocketConnection(dispatch) {
       return socketInstance;
     }
 
-    const rawUrl = process.env.NEXT_PUBLIC_SERVER_URL; // e.g. https://builder.lessn.ai:8085
+    const rawUrl = process.env.NEXT_PUBLIC_SERVER_URL;
     const baseUrl = normalizeUrl(rawUrl);
     if (!baseUrl) {
       console.error("[SOCKET] NEXT_PUBLIC_SERVER_URL is not set");
@@ -46,37 +45,36 @@ export default function initializeSocketConnection(dispatch) {
       return null;
     }
 
-    // Create (or reuse) the connection promise; useful if a caller needs to await readiness
     if (!connectPromise) {
       connectPromise = new Promise((resolve) => {
         const socket = io(baseUrl, {
-          // Prefer websocket for speed/reliability; fallback to polling
           transports: ["websocket", "polling"],
-          path: "/socket.io", // keep in sync with server
+          path: "/socket.io",
           reconnection: true,
           reconnectionAttempts: 10,
           reconnectionDelay: 800,
           reconnectionDelayMax: 6000,
           timeout: 20000,
           forceNew: false,
-          // If your server requires cookies or auth headers, set withCredentials here
-          // withCredentials: true,
         });
 
-        // Attach listeners once per process lifetime
         if (!listenersAttached) {
           socket.on("connect", () => {
             const id = socket.id;
             console.log("[SOCKET] connected →", id);
             dispatch(setSocketId(id));
-            try { localStorage.setItem("socketID", id); } catch {}
+            try {
+              localStorage.setItem("socketID", id);
+            } catch {}
             resolve(socket);
           });
 
           socket.on("connect_error", (err) => {
             console.error("[SOCKET] connect_error:", err?.message || err);
             safeToastError("Realtime connection issue. Retrying…");
-            try { localStorage.removeItem("socketID"); } catch {}
+            try {
+              localStorage.removeItem("socketID");
+            } catch {}
           });
 
           socket.on("error", (err) => {
@@ -86,38 +84,39 @@ export default function initializeSocketConnection(dispatch) {
           socket.on("disconnect", (reason) => {
             console.log("[SOCKET] disconnected:", reason);
             dispatch(setSocketId(""));
-            try { localStorage.removeItem("socketID"); } catch {}
+            try {
+              localStorage.removeItem("socketID");
+            } catch {}
           });
 
-          // v2 client fires "reconnect" on successful reconnection
           socket.io?.on?.("reconnect", () => {
             if (socket.id) {
               console.log("[SOCKET] reconnected →", socket.id);
               dispatch(setSocketId(socket.id));
-              try { localStorage.setItem("socketID", socket.id); } catch {}
+              try {
+                localStorage.setItem("socketID", socket.id);
+              } catch {}
             }
           });
 
-          // Optional server capacity guard
           socket.on("max_users", (message) => {
             console.warn("[SOCKET] max_users:", message);
             safeToastError("System has reached max users. Please try again later.");
             socket.disconnect();
             dispatch(setSocketId(""));
-            try { localStorage.removeItem("socketID"); } catch {}
+            try {
+              localStorage.removeItem("socketID");
+            } catch {}
           });
 
-          // ---- Slide events from server ----
+          // ---- Slide events ----
           socket.on("slide_content_created", (data) => {
-            // Defensive: server may send a full array or an incremental update
             if (!data) return;
-            // Expect array of { title, content, notes, slide? } OR your known shape
             dispatch(setReceivedData(data));
           });
 
           socket.on("slide_image_created", (data) => {
             if (!data) return;
-            // Expect array or one payload; your reducer should handle merge/replace as designed
             dispatch(setImageData(data));
           });
 
@@ -137,26 +136,33 @@ export default function initializeSocketConnection(dispatch) {
 }
 
 /**
- * Gracefully disconnect. Call on route exit if you want a fresh socket next time.
+ * Gracefully disconnect. Safe with or without dispatch.
  */
 export function disconnectSocket(dispatch) {
   if (socketInstance) {
-    console.log("[SOCKET] disconnecting…");
     try {
+      console.log("[SOCKET] disconnecting…");
       socketInstance.disconnect();
     } catch (e) {
       console.warn("[SOCKET] disconnect error:", e);
     }
   }
-  dispatch?.(setSocketId(""));
-  try { localStorage.removeItem("socketID"); } catch {}
+
+  if (typeof dispatch === "function") {
+    dispatch(setSocketId(""));
+  }
+
+  try {
+    localStorage.removeItem("socketID");
+  } catch {}
+
   socketInstance = null;
   listenersAttached = false;
   connectPromise = null;
 }
 
 /**
- * Return current socket instance (may be null if not initialized).
+ * Return current socket instance (may be null).
  */
 export function getSocket() {
   return socketInstance;
@@ -164,12 +170,9 @@ export function getSocket() {
 
 /**
  * Await until socket is connected (optional helper).
- * Usage:
- *   const sock = await waitForSocketConnected(dispatch);
  */
 export async function waitForSocketConnected(dispatch) {
   const sock = initializeSocketConnection(dispatch);
-  // If we already have a connected instance, return it
   if (sock?.connected) return sock;
   try {
     const s = await (connectPromise || Promise.resolve(sock));

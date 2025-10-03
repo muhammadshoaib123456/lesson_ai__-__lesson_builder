@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { FormInput, FormSelect } from "./FormComponents.jsx";
 import { useSelector } from "react-redux";
 
@@ -64,9 +64,6 @@ export default function Form({ handleSubmit, register }) {
   const [selectedSubject, setSelectedSubject] = useState("");
   const [selectedTopic, setSelectedTopic] = useState("");
 
-  // NEW: profile defaults
-  const [profile, setProfile] = useState(null);
-
   const gradeOrder = useMemo(
     () => [
       "Pre-K","Kindergarten","First Grade","Second Grade","Third Grade",
@@ -76,18 +73,6 @@ export default function Form({ handleSubmit, register }) {
   );
 
   const BACKEND = process.env.NEXT_PUBLIC_SERVER_URL;
-
-  // Prefill from profile
-  useEffect(() => {
-    (async () => {
-      try {
-        const p = await fetch("/api/profile", { cache: "no-store" }).then(r => r.ok ? r.json() : null);
-        setProfile(p);
-        if (p?.defaultGrade) setSelectedGrade(p.defaultGrade);
-        if (p?.defaultSubject) setSelectedSubject(p.defaultSubject);
-      } catch {}
-    })();
-  }, []);
 
   const handleGradeChange = (value) => {
     setSelectedGrade(value?.value ?? "");
@@ -167,19 +152,6 @@ export default function Form({ handleSubmit, register }) {
     }
   };
 
-  // Helpers to use/save defaults
-  async function saveAsDefault() {
-    await fetch("/api/profile", {
-      method: "PUT",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        defaultGrade: selectedGrade || null,
-        defaultSubject: selectedSubject || null,
-      }),
-    });
-    setProfile(p => ({ ...(p||{}), defaultGrade: selectedGrade, defaultSubject: selectedSubject }));
-  }
-
   return (
     <div className="object-contain flex-shrink max-h-full flex-2 flex flex-col sm:justify-center">
       <form onSubmit={handleSubmit} className="h-full">
@@ -217,29 +189,6 @@ export default function Form({ handleSubmit, register }) {
             required
             className="rounded-3xl border-purple-600 focus:border-purple-700 focus:ring-2 focus:ring-purple-700 hover:border-purple-600"
           />
-        )}
-
-        {/* Defaults helpers */}
-        {profile && (
-          <div className="flex items-center gap-4 mt-2">
-            <button
-              type="button"
-              className="text-sm underline text-purple-700"
-              onClick={() => {
-                setSelectedGrade(profile.defaultGrade || "");
-                setSelectedSubject(profile.defaultSubject || "");
-              }}
-            >
-              Use my defaults
-            </button>
-            <button
-              type="button"
-              className="text-sm underline text-gray-700"
-              onClick={saveAsDefault}
-            >
-              Save as my default
-            </button>
-          </div>
         )}
 
         <button

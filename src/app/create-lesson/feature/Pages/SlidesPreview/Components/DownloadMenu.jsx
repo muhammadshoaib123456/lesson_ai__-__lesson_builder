@@ -70,7 +70,7 @@ export default function DownloadMenu() {
     setDownloading(true);
     try {
       const res = await fetch(
-        `/api/lesson-builder/slides/download?socketID=${encodeURIComponent(sidToUse)}`
+        `/api/lesson-builder/download-slides?socketID=${encodeURIComponent(sidToUse)}`
       );
 
       if (!res.ok) {
