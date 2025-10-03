@@ -1,10 +1,14 @@
+
+
+
 "use client";
 
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore } from "@reduxjs/toolkit";
 import PromptReducer from "../slices/PromptSlice.js";
 import SocketReducer from "../slices/SocketSlice.js";
 import OutlineReducer from "../slices/OutlineSlice.js";
-import DownloadSlice from '../slices/DownloadSlice.js';
+import DownloadSlice from "../slices/DownloadSlice.js";
+import StandardReducer from "../slices/StandardSlice.js"; // 👈 import your slice
 
 export const store = configureStore({
   reducer: {
@@ -12,5 +16,6 @@ export const store = configureStore({
     socket: SocketReducer,
     outline: OutlineReducer,
     download: DownloadSlice,
+    standard: StandardReducer, // 👈 add it here
   },
 });

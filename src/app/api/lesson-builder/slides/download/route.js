@@ -14,7 +14,7 @@ export async function GET(request) {
     }
 
     const upstream = await fetch(
-      `https://builder.lessn.ai:8085/download_ppt?socketID=${encodeURIComponent(socketID)}`,
+      `https://builder.lessn.ai:8031/download_ppt?socketID=${encodeURIComponent(socketID)}`,
       { method: "GET", cache: "no-store" }
     );
 

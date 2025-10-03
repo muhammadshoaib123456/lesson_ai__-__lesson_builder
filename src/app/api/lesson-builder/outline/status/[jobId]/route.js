@@ -13,7 +13,7 @@ export async function GET(_request, context) {
     }
 
     const upstream = await fetch(
-      `https://builder.lessn.ai:8085/status/${encodeURIComponent(jobId)}`,
+      `https://builder.lessn.ai:8031/status/${encodeURIComponent(jobId)}`,
       {
         method: "GET",
         cache: "no-store",

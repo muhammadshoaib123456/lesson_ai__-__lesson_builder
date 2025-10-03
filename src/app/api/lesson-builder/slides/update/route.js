@@ -26,7 +26,7 @@ export async function POST(request) {
     }
 
     const upstream = await fetch(
-      `https://builder.lessn.ai:8085/update_slides?socketID=${encodeURIComponent(socketID)}`,
+      `https://builder.lessn.ai:8031/update_slides?socketID=${encodeURIComponent(socketID)}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },

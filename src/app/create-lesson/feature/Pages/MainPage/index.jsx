@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -13,13 +13,23 @@ import { pushToDataLayer } from "../../utils/ganalytics.js";
 import { useUsageLimit } from "../../hooks/useUsageLimit.js";
 import Header from "@/components/Header.jsx";
 import Footer from "@/components/Footer.jsx";
+import { useSelector, useDispatch as useReduxDispatch } from "react-redux";
+import { flip } from "../../Redux/slices/StandardSlice.js"; // toggle action
 
 export default function MainPage({ setLoading, setGenSlides, setFinalModal }) {
-  const { register, handleSubmit, formState: { errors } } = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+  } = useForm();
+
   const dispatch = useDispatch();
   const router = useRouter();
 
-  // canCreateSlides is a BOOLEAN from the hook
+  const standard = useSelector((state) => state.standard.standard);
+
+  // usage hook
   const {
     canCreateSlides,
     showLimitReached,
@@ -28,7 +38,7 @@ export default function MainPage({ setLoading, setGenSlides, setFinalModal }) {
     checkUsage,
   } = useUsageLimit();
 
-  // Reset store/UI on mount
+  // reset redux/UI on mount
   useEffect(() => {
     setLoading(false);
     setGenSlides(false);
@@ -55,15 +65,11 @@ export default function MainPage({ setLoading, setGenSlides, setFinalModal }) {
     const slides = 10;
     const subject = data.subject;
 
-    // Quick sanity log
     if (process.env.NODE_ENV !== "production") {
       console.log("[MAIN] submit payload", { reqPrompt, grade, slides, subject });
     }
 
-    // Write to Redux before navigating
     dispatch(setForm({ reqPrompt, grade, slides, subject }));
-
-    // Make sure Redux state is flushed before Outline reads it
     await Promise.resolve();
 
     if (typeof window !== "undefined") {
@@ -105,6 +111,24 @@ export default function MainPage({ setLoading, setGenSlides, setFinalModal }) {
           Create interactive, accurate AI-powered lessons for engaged classrooms
         </p>
 
+        {/* 🔥 Toggle Switch */}
+        <div className="mt-6 flex items-center gap-4">
+          <span className="text-sm font-medium text-gray-700">Original</span>
+          <button
+            onClick={() => dispatch(flip())}
+            className={`relative inline-flex h-6 w-12 items-center rounded-full transition ${
+              standard ? "bg-purple-600" : "bg-gray-300"
+            }`}
+          >
+            <span
+              className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
+                standard ? "translate-x-7" : "translate-x-1"
+              }`}
+            />
+          </button>
+          <span className="text-sm font-medium text-gray-700">Standards</span>
+        </div>
+
         <div className="mt-5 grid flex-1 items-center gap-8 lg:grid-cols-2 w-full max-w-6xl">
           <div className="flex flex-col items-start justify-center">
             <div className="w-full max-w-md">
@@ -112,6 +136,7 @@ export default function MainPage({ setLoading, setGenSlides, setFinalModal }) {
                 handleSubmit={handleSubmit(onSubmit)}
                 register={register}
                 errors={errors}
+                setValue={setValue}
               />
             </div>
           </div>
@@ -120,13 +145,11 @@ export default function MainPage({ setLoading, setGenSlides, setFinalModal }) {
           </div>
         </div>
       </main>
+
       <Footer />
     </div>
   );
 }
-
-
-
 
 
 

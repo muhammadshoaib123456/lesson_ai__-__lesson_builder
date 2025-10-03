@@ -13,7 +13,7 @@ export async function GET(request) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10_000);
 
-    const upstreamUrl = `https://builder.lessn.ai:8085/get_subject?grade=${encodeURIComponent(
+    const upstreamUrl = `https://builder.lessn.ai:8031/get_subject?grade=${encodeURIComponent(
       grade
     )}`;
 

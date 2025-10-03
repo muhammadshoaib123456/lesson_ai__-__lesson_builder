@@ -11,7 +11,7 @@ export async function GET(request) {
 
     // Call your Flask API for download
     const response = await fetch(
-      `https://builder.lessn.ai:8085/download_slide?socketID=${socketID}`,
+      `https://builder.lessn.ai:8031/download_slide?socketID=${socketID}`,
       {
         method: "GET",
         redirect: "follow",

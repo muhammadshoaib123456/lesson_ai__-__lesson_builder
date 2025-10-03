@@ -13,7 +13,7 @@ export async function POST(request) {
     }
 
     const url =
-      `https://builder.lessn.ai:8085/main` +
+      `https://builder.lessn.ai:8031/main` +
       `?socketID=${encodeURIComponent(socketId)}` +
       `&userText=${encodeURIComponent(reqPrompt)}` +
       `&grade=${encodeURIComponent(grade)}` +

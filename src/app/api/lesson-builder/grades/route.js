@@ -5,7 +5,7 @@ export async function GET() {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10_000);
 
-    const response = await fetch("https://builder.lessn.ai:8085/get_grades", {
+    const response = await fetch("https://builder.lessn.ai:8031/get_grades", {
       signal: controller.signal,
       cache: "no-store",
       headers: { Accept: "application/json, text/plain, */*" },

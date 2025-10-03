@@ -14,7 +14,7 @@ export async function POST(request) {
       return NextResponse.json({ error: "socketID is required" }, { status: 400 });
     }
     const upstream = await fetch(
-      `https://builder.lessn.ai:8085/upload_slide?socketID=${encodeURIComponent(socketID)}`,
+      `https://builder.lessn.ai:8031/upload_slide?socketID=${encodeURIComponent(socketID)}`,
       { method: "POST", cache: "no-store" }
     );
 
