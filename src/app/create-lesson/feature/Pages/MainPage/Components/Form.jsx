@@ -1,17 +1,29 @@
 "use client";
 
+/*
+ * Form.jsx
+ *
+ * The top‑level form component responsible for rendering either the
+ * original (non‑standards) form or the standards‑mode form.  It pulls
+ * context from Redux to determine which mode is active and manages
+ * local state for the original form fields.  When the form is
+ * submitted, react‑hook‑form collects the values into a `data` object
+ * which is then forwarded up to MainPage via handleSubmit.
+ */
+
 import { useEffect, useState, useMemo } from "react";
 import { useSelector } from "react-redux";
-import { useFormContext } from "./standard/FormContext";
+import { useFormContext as useStdFormContext } from "./standard/FormContext";
 import StandardForm from "./standard/StandardForm";
-import { FormInput, FormSelect } from "./FormComponents";  // assuming FormInput & FormSelect are exported from here
-// (Note: Adjust the import paths according to your project structure)
+import { FormInput, FormSelect } from "./FormComponents";
 
 export default function Form({ handleSubmit, register, errors, setValue }) {
   const { socketId } = useSelector((state) => state.socket);
-  const standardModeEnabled = useSelector((state) => state.standard.standard);  // boolean toggle for standard vs original form
+  const standardModeEnabled = useSelector((state) => state.standard.standard);
 
-  // Context values for standard form
+  // Context values for the standards form.  We import everything here so
+  // that we can reset it when toggling between modes.  These setters
+  // come from the custom FormContext defined in `standard/FormContext.jsx`.
   const {
     selectedStandard,
     selectedSubject,
@@ -29,14 +41,15 @@ export default function Form({ handleSubmit, register, errors, setValue }) {
     setCurriculumData,
     setTopicInput,
     setComments,
-  } = useFormContext();
+  } = useStdFormContext();
 
-  // Local state for the original (non-standard) form fields
+  // Local state for the original form (used when standards mode is off).
   const [localGrade, setLocalGrade] = useState("");
   const [localSubject, setLocalSubject] = useState("");
   const [localTopic, setLocalTopic] = useState("");
 
-  // Predefined options for original form dropdowns
+  // Predefined options for the original form dropdowns.  We memoise
+  // these arrays because they never change during the component lifetime.
   const gradeOptions = useMemo(
     () =>
       Array.from({ length: 13 }, (_, i) =>
@@ -55,40 +68,63 @@ export default function Form({ handleSubmit, register, errors, setValue }) {
     []
   );
 
-  // Determine if the form (either mode) is incomplete
+  /**
+   * Determine whether the form is incomplete.  For the original form we
+   * require all three inputs (grade, subject and topic).  For the
+   * standards form we require all selections plus at least one
+   * curriculum point.
+   */
   const isFormIncomplete = () => {
     if (!standardModeEnabled) {
-      // Original form requires all three fields
       return !localGrade || !localSubject || !localTopic;
     } else {
-      // Standard form requires all selections plus a curriculum point choice
+      // Standards mode: ensure all selections are made and at least one
+      // curriculum point has been chosen.  selectedCurriculumPoint may
+      // be an array; treat an empty array as incomplete.
+      // Determine if no curriculum point has been selected.  In the
+      // standards form we store a single point object (or null).  We
+      // also support arrays for backwards compatibility.  Treat an
+      // empty object or empty array as no selection.
+      const noCurriculum =
+        !selectedCurriculumPoint ||
+        (Array.isArray(selectedCurriculumPoint) &&
+          selectedCurriculumPoint.length === 0) ||
+        (typeof selectedCurriculumPoint === "object" &&
+          !Array.isArray(selectedCurriculumPoint) &&
+          Object.keys(selectedCurriculumPoint).length === 0);
       return (
         !selectedStandard ||
         !selectedSubject ||
         !selectedGrade ||
         !selectedTopic ||
-        !selectedCurriculumPoint
+        noCurriculum
       );
     }
   };
 
-  // Reset context state when toggling between standard and original modes
+  /**
+   * When toggling between standard and original modes, reset the
+   * appropriate state.  This effect mirrors the logic from the React
+   * implementation.  Switching to the original form clears the
+   * standards context, and switching to the standards form clears the
+   * local inputs.
+   */
   useEffect(() => {
     if (!standardModeEnabled) {
-      // If switching to original form, clear standard form context data
+      // If switching to original form, clear the standards context
       setSelectedStandard(null);
       setSelectedSubject(null);
       setSelectedGrade(null);
       setSelectedTopic("");
       setSelectedCurriculumPoint(null);
-      setStandardOptions([]);  // clear options as well
+      setStandardOptions([]);
       setSubjectOptions([]);
       setGradeOptions([]);
       setCurriculumData([]);
       setTopicInput("");
       setComments("");
     } else {
-      // If switching to standard form, clear original form local fields
+      // If switching to standards form, clear local inputs
       setLocalGrade("");
       setLocalSubject("");
       setLocalTopic("");
@@ -108,16 +144,34 @@ export default function Form({ handleSubmit, register, errors, setValue }) {
     setComments,
   ]);
 
+  /*
+   * Register hidden label fields.  react‑hook‑form only tracks fields
+   * that have been registered.  Even though we set the values via
+   * StandardForm effects, we register them here so that when the
+   * standards form is submitted the `gradeLabel` and `subjectLabel`
+   * properties are included in the `data` object.
+   */
+  useEffect(() => {
+    register("gradeLabel");
+    register("subjectLabel");
+    // Register additional hidden fields so that they are included in the
+    // submitted data even if StandardForm hasn't been mounted yet.  These
+    // registrations are idempotent; if the fields already exist they
+    // will not overwrite their values.
+    register("standardLabel");
+    register("curriculumPoint");
+  }, [register]);
+
   return (
     <div className="lg:overflow-y-auto flex-3 flex-grow max-h-full flex flex-col sm:justify-center">
       <form onSubmit={handleSubmit} className="h-full">
         {standardModeEnabled ? (
-          // Standard-based Form (with standards, subjects, grades, etc.)
+          // Standards form (with cascading selects and curriculum selection)
           <StandardForm register={register} setValue={setValue} />
         ) : (
-          // Original Form (simple form with manual grade/subject inputs)
+          // Original form (simple grade/subject/topic inputs)
           <>
-            {/* Original Form - Grade Selector */}
+            {/* Original Form – Grade Selector */}
             <FormSelect
               label="Select Grade"
               name="grade"
@@ -129,7 +183,7 @@ export default function Form({ handleSubmit, register, errors, setValue }) {
               required
             />
 
-            {/* Original Form - Subject Selector */}
+            {/* Original Form – Subject Selector */}
             {localGrade && (
               <FormSelect
                 label="Select Subject"
@@ -143,7 +197,7 @@ export default function Form({ handleSubmit, register, errors, setValue }) {
               />
             )}
 
-            {/* Original Form - Topic Input */}
+            {/* Original Form – Topic Input */}
             {localSubject && (
               <FormInput
                 label="Enter Topic"
@@ -161,9 +215,7 @@ export default function Form({ handleSubmit, register, errors, setValue }) {
         {/* Submit Button */}
         <button
           type="submit"
-          className="mt-4 rounded-3xl px-6 py-2 font-medium shadow 
-                     bg-purple-600 hover:bg-purple-700 text-white disabled:bg-gray-300 
-                     disabled:text-gray-500 disabled:cursor-not-allowed transition"
+          className="mt-4 rounded-3xl px-6 py-2 font-medium shadow bg-purple-600 hover:bg-purple-700 text-white disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed transition"
           disabled={!socketId || isFormIncomplete()}
         >
           Generate Outline
@@ -172,11 +224,6 @@ export default function Form({ handleSubmit, register, errors, setValue }) {
     </div>
   );
 }
-
-
-
-
-
 
 
 

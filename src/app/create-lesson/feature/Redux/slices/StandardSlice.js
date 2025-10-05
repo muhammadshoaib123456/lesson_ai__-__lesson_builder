@@ -1,9 +1,17 @@
 "use client";
 
+/*
+ * StandardSlice.js
+ *
+ * Redux slice controlling whether the standards form is active.  A simple
+ * boolean flag toggled via the `flip` reducer.  This slice is
+ * intentionally trivial but kept separate for clarity.
+ */
+
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  standard: false, // default value
+  standard: false,
 };
 
 const standardSlice = createSlice({

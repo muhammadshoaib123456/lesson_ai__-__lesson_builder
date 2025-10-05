@@ -1,5 +1,15 @@
 "use client";
 
+/*
+ * outlinepage/index.jsx
+ *
+ * Renders the outline preview.  Upon mounting it triggers the outline
+ * generation via FetchOutline and displays each slide's points.  Users
+ * can regenerate the outline or proceed to slide creation.  This
+ * component closely mirrors the working React version, adapted for
+ * Next.js.
+ */
+
 import { useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import FetchOutline from "../../GlobalFuncs/FetchOutline.js";
@@ -10,16 +20,28 @@ import SlideComponent from "./Components/SlideComponent.jsx";
 import { setOutline } from "../../Redux/slices/OutlineSlice.js";
 import Header from "@/components/Header.jsx";
 import Footer from "@/components/Footer.jsx";
-import { setDefaultImageData, setDefaultReceivedData } from "../../Redux/slices/SocketSlice.js";
+import {
+  setDefaultImageData,
+  setDefaultReceivedData,
+} from "../../Redux/slices/SocketSlice.js";
 
 export default function OutlinePage({ setLoading, setFinalModal, setQueueStatus }) {
   const [dataJSON, setDataJSON] = useState([]);
   const runningRef = useRef(false);
   const { socketId } = useSelector((state) => state.socket);
-  const { reqPrompt, grade, slides, subject } = useSelector((state) => state.promptData);
+  const {
+    reqPrompt,
+    grade,
+    slides,
+    subject,
+    chosenStandard,
+    comments,
+    curriculumPoint,
+  } = useSelector((state) => state.promptData);
   const dispatch = useDispatch();
   const router = useRouter();
 
+  // Navigate to the slide creation page when the user clicks Generate Slides.
   function genSlides(e) {
     e.preventDefault();
     dispatch(setOutline(dataJSON));
@@ -43,6 +65,7 @@ export default function OutlinePage({ setLoading, setFinalModal, setQueueStatus 
     router.push("/create-lesson/preview");
   }
 
+  // Remove a slide from the preview
   function DeleteSlide(index) {
     setDataJSON((prev) => {
       const next = prev.map((s) => ({ ...s }));
@@ -51,9 +74,13 @@ export default function OutlinePage({ setLoading, setFinalModal, setQueueStatus 
     });
   }
 
+  // Add an empty slide below the current one
   function AddSlideBelow(index) {
     setDataJSON((prev) => {
-      const base = prev.map((s) => ({ ...s, content: [...s.content] }));
+      const base = prev.map((s) => ({
+        ...s,
+        content: [...s.content],
+      }));
       const newSlide = {
         title: "",
         content: [""],
@@ -62,11 +89,15 @@ export default function OutlinePage({ setLoading, setFinalModal, setQueueStatus 
       return [
         ...base.slice(0, index),
         newSlide,
-        ...base.slice(index).map((s) => ({ ...s, slide_number: s.slide_number + 1 })),
+        ...base.slice(index).map((s) => ({
+          ...s,
+          slide_number: s.slide_number + 1,
+        })),
       ];
     });
   }
 
+  // Kick off the outline generation once the socket ID is ready
   const runFetch = async (quiet) => {
     if (runningRef.current) return;
     runningRef.current = true;
@@ -80,6 +111,9 @@ export default function OutlinePage({ setLoading, setFinalModal, setQueueStatus 
         setQueueStatus,
         dispatch,
         subject,
+        chosenStandard,
+        comments,
+        curriculumPoint,
         { quiet }
       );
       if (!result?.ok) {
@@ -93,7 +127,7 @@ export default function OutlinePage({ setLoading, setFinalModal, setQueueStatus 
     }
   };
 
-  // Pre-conditions: explain WHY if we bounce
+  // Precondition check: redirect if mandatory fields are missing
   useEffect(() => {
     const missing = [];
     if (!socketId) missing.push("socketId");
@@ -101,17 +135,16 @@ export default function OutlinePage({ setLoading, setFinalModal, setQueueStatus 
     if (!slides) missing.push("slides");
     if (!subject) missing.push("subject");
     if (!grade && grade !== 0) missing.push("grade");
-
     if (missing.length) {
       if (process.env.NODE_ENV !== "production") {
         console.warn("[OUTLINE] missing preconditions:", missing);
       }
       router.replace("/create-lesson");
-      return;
     }
-  }, [socketId, reqPrompt, grade, slides, subject, router]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [socketId, reqPrompt, grade, slides, subject, chosenStandard, curriculumPoint]);
 
-  // ✅ Only fetch when socketId is ready (prevents the race)
+  // Fetch when socketId is ready
   useEffect(() => {
     if (!socketId) return;
     if (process.env.NODE_ENV !== "production") {
@@ -164,13 +197,6 @@ export default function OutlinePage({ setLoading, setFinalModal, setQueueStatus 
     </div>
   );
 }
-
-
-
-
-
-
-
 
 
 

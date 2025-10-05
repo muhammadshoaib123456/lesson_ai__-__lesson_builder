@@ -1,20 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { setForm } from "../../Redux/slices/PromptSlice.js";
-import { resetImageData, resetReceivedData } from "../../Redux/slices/SocketSlice.js";
+import {
+  resetImageData,
+  resetReceivedData,
+} from "../../Redux/slices/SocketSlice.js";
 import { resetOutline } from "../../Redux/slices/OutlineSlice.js";
 import Form from "./Components/Form.jsx";
 import Image from "./Components/Image.jsx";
-import { pushToDataLayer } from "../../utils/ganalytics.js";
-import { useUsageLimit } from "../../hooks/useUsageLimit.js";
 import Header from "@/components/Header.jsx";
 import Footer from "@/components/Footer.jsx";
-import { useSelector, useDispatch as useReduxDispatch } from "react-redux";
-import { flip } from "../../Redux/slices/StandardSlice.js"; // toggle action
+import { pushToDataLayer } from "../../utils/ganalytics.js";
+import { useUsageLimit } from "../../hooks/useUsageLimit.js";
+import { flip } from "../../Redux/slices/StandardSlice.js";
 
 export default function MainPage({ setLoading, setGenSlides, setFinalModal }) {
   const {
@@ -26,10 +28,8 @@ export default function MainPage({ setLoading, setGenSlides, setFinalModal }) {
 
   const dispatch = useDispatch();
   const router = useRouter();
-
   const standard = useSelector((state) => state.standard.standard);
 
-  // usage hook
   const {
     canCreateSlides,
     showLimitReached,
@@ -38,47 +38,102 @@ export default function MainPage({ setLoading, setGenSlides, setFinalModal }) {
     checkUsage,
   } = useUsageLimit();
 
-  // reset redux/UI on mount
   useEffect(() => {
     setLoading(false);
     setGenSlides(false);
     setFinalModal(false);
-    dispatch(setForm({ reqPrompt: "", grade: "", slides: "" }));
+    dispatch(
+      setForm({
+        reqPrompt: "",
+        grade: "",
+        slides: "",
+        subject: "",
+        chosenStandard: "",
+        comments: "",
+        curriculumPoint: "",
+        gradeLabel: "",
+        subjectLabel: "",
+      })
+    );
     dispatch(resetReceivedData());
     dispatch(resetImageData());
     dispatch(resetOutline());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [dispatch, setLoading, setGenSlides, setFinalModal]);
 
   async function onSubmit(data) {
-    if (usageLoading) {
-      await checkUsage();
-    }
-
+    if (usageLoading) await checkUsage();
     if (!canCreateSlides) {
       showLimitReached();
       return;
     }
 
-    const reqPrompt = data.topic;
+    // Original values
+    let reqPrompt = data.topic;
     const grade = data.grade;
     const slides = 10;
     const subject = data.subject;
 
-    if (process.env.NODE_ENV !== "production") {
-      console.log("[MAIN] submit payload", { reqPrompt, grade, slides, subject });
+    let chosenStandard = "";
+    let comments = "";
+    let curriculumPoint = "";
+    let gradeLabel = "";
+    let subjectLabel = "";
+    let standardLabel = "";
+
+    // ✅ Handle Standards Mode
+    if (standard) {
+      chosenStandard = data.standard || "";
+      comments = data.comments || "";
+
+      const selectedPoint = data.curriculumPointData || null;
+      curriculumPoint = selectedPoint?.point_id || "";
+
+      // ✅ Override reqPrompt with curriculum description or code
+      reqPrompt = selectedPoint
+        ? `${selectedPoint.code || ""}: ${selectedPoint.description || ""}`
+        : data.topic;
+
+      gradeLabel = data.gradeLabel || "";
+      subjectLabel = data.subjectLabel || "";
+      standardLabel = data.standardLabel || "";
     }
 
-    dispatch(setForm({ reqPrompt, grade, slides, subject }));
+    // Log final payload for verification
+    console.log("Submitting form data:", {
+      reqPrompt,
+      grade,
+      subject,
+      chosenStandard,
+      curriculumPoint,
+      comments,
+    });
+
+    // Dispatch form to Redux
+    dispatch(
+      setForm({
+        reqPrompt,
+        grade,
+        slides,
+        subject,
+        chosenStandard,
+        comments,
+        curriculumPoint,
+        gradeLabel,
+        subjectLabel,
+        standardLabel,
+      })
+    );
+
     await Promise.resolve();
 
+    // Analytics
     if (typeof window !== "undefined") {
       try {
         const ReactGA = (await import("react-ga4")).default;
         ReactGA.event({
           category: "Form",
           action: "Submit",
-          label: `Topic: ${reqPrompt}, Grade: ${grade}, Subject: ${subject}`,
+          label: `Topic: ${reqPrompt}, Grade: ${gradeLabel || grade}, Subject: ${subjectLabel || subject}`,
           value: slides,
         });
       } catch (e) {
@@ -88,9 +143,9 @@ export default function MainPage({ setLoading, setGenSlides, setFinalModal }) {
         event: "formSubmission",
         formType: "mainPage",
         topic: reqPrompt,
-        grade,
+        grade: gradeLabel || grade,
         slides,
-        subject,
+        subject: subjectLabel || subject,
       });
     }
 
@@ -102,7 +157,6 @@ export default function MainPage({ setLoading, setGenSlides, setFinalModal }) {
   return (
     <div className="min-h-screen w-full overflow-hidden bg-white flex flex-col">
       <Header />
-
       <main className="flex-1 flex flex-col items-center justify-start px-6 mt-10 mb-10 overflow-hidden">
         <h1 className="mt-2 text-center text-4xl md:text-5xl font-normal text-black">
           Create a Lesson
@@ -110,8 +164,7 @@ export default function MainPage({ setLoading, setGenSlides, setFinalModal }) {
         <p className="mt-4 text-center text-lg text-purple-700">
           Create interactive, accurate AI-powered lessons for engaged classrooms
         </p>
-
-        {/* 🔥 Toggle Switch */}
+        {/* Toggle */}
         <div className="mt-6 flex items-center gap-4">
           <span className="text-sm font-medium text-gray-700">Original</span>
           <button
@@ -145,17 +198,10 @@ export default function MainPage({ setLoading, setGenSlides, setFinalModal }) {
           </div>
         </div>
       </main>
-
       <Footer />
     </div>
   );
 }
-
-
-
-
-
-
 
 
 

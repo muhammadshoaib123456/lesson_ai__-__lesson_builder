@@ -1,11 +1,28 @@
 "use client";
 
+/*
+ * FormContext.jsx
+ *
+ * This context manages all of the shared state for the Standards‑mode form.
+ * It closely mirrors the behaviour found in the working React application.
+ *
+ * Responsibilities:
+ *   • Keep track of which standard, subject and grade the user has selected.
+ *   • Store the topic query and any curriculum data returned from the backend.
+ *   • Manage dropdown options and loading flags while data is being fetched.
+ *   • Expose setter functions so child components can update the state.
+ */
+
 import { createContext, useContext, useState } from "react";
 
+// Create a context instance.  We export useFormContext below as a convenience
+// hook so consuming components don't need to import useContext repeatedly.
 const FormContext = createContext();
 
 export function FormProvider({ children }) {
-  // Selected values (for Standard mode form)
+  // Selected values (for Standards mode form).  We store the entire option
+  // objects (with both label and value) so we can easily display labels and
+  // retrieve the underlying IDs when fetching data.
   const [selectedStandard, setSelectedStandard] = useState(null);
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [selectedGrade, setSelectedGrade] = useState(null);
@@ -25,13 +42,21 @@ export function FormProvider({ children }) {
   const [loadingSubjects, setLoadingSubjects] = useState(false);
   const [loadingGrades, setLoadingGrades] = useState(false);
 
-  // Topic input text (controlled input for topic search)
+  // Topic input text (controlled input for topic search).  We separate
+  // `topicInput` from `selectedTopic` so users can type freely without
+  // triggering a search until they click the search button.
   const [topicInput, setTopicInput] = useState("");
 
-  // Optional comments or additional input (not used in standard mode in this context)
+  // Optional comments or additional input (not used in standards mode in this context)
   const [comments, setComments] = useState("");
 
-  // Handler: Standard selection changed
+  /*
+   * Handler: Standard selection changed
+   * When the selected standard changes, we clear all dependent selections
+   * (subject, grade, topic, curriculum point) and clear previously
+   * fetched data.  We also reset the dropdown options so new subjects and
+   * grades can be fetched for the newly selected standard.
+   */
   const handleStandardChange = (option) => {
     setSelectedStandard(option);
     // Reset dependent fields when standard changes
@@ -40,31 +65,38 @@ export function FormProvider({ children }) {
     setSelectedTopic("");
     setTopicInput("");
     setSelectedCurriculumPoint(null);
-    setCurriculumData([]);  // clear any previous curriculum results
+    setCurriculumData([]);
     setComments("");
     // Clear dependent dropdown options
     setSubjectOptions([]);
     setGradeOptions([]);
   };
 
-  // Handler: Subject selection changed
+  /*
+   * Handler: Subject selection changed
+   * When the subject changes, clear deeper dependent fields (grade, topic,
+   * curriculum point, comments) and clear grade options so they can be
+   * reloaded for the new subject.
+   */
   const handleSubjectChange = (option) => {
     setSelectedSubject(option);
-    // Reset deeper dependent fields when subject changes
     setSelectedGrade(null);
     setSelectedTopic("");
     setTopicInput("");
     setSelectedCurriculumPoint(null);
     setCurriculumData([]);
     setComments("");
-    // Clear grade options for new subject
     setGradeOptions([]);
   };
 
-  // Handler: Grade selection changed
+  /*
+   * Handler: Grade selection changed
+   * When the grade changes, clear the topic, curriculum data and any
+   * previously selected curriculum points.  Topic input is also reset
+   * because a new grade might warrant a different search query.
+   */
   const handleGradeChange = (option) => {
     setSelectedGrade(option);
-    // Reset topic and curriculum data when grade changes
     setSelectedTopic("");
     setTopicInput("");
     setSelectedCurriculumPoint(null);
@@ -72,10 +104,15 @@ export function FormProvider({ children }) {
     setComments("");
   };
 
-  // Handler: Topic search triggered (user entered a topic and clicked search)
+  /*
+   * Handler: Topic search triggered
+   * When the user enters a topic and clicks search, update
+   * `selectedTopic` (which triggers a curriculum fetch) and clear
+   * previously selected curriculum points and data.  We do not clear
+   * `topicInput` here so the input box retains its value.
+   */
   const handleTopicChange = (topic) => {
     setSelectedTopic(topic);
-    // Clear any previously selected curriculum point and data when searching a new topic
     setSelectedCurriculumPoint(null);
     setCurriculumData([]);
   };
@@ -128,4 +165,5 @@ export function FormProvider({ children }) {
   );
 }
 
+// Convenience hook for consuming the context
 export const useFormContext = () => useContext(FormContext);

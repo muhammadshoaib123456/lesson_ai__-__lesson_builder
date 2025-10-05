@@ -1,8 +1,16 @@
 "use client";
 
+/*
+ * StandardForm.jsx
+ *
+ * Standards-mode multi-step form.  Lets the user pick a standard,
+ * subject, grade, topic, and specific curriculum point.
+ * Integrated with react-hook-form and shared FormContext.
+ */
+
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { useFormContext } from "./FormContext";
+import { useFormContext as useStdFormContext } from "./FormContext";
 import { getData } from "./getFormData";
 import { FormInput } from "./standard-components/FormInput";
 import { FormSelect } from "./standard-components/FormSelect";
@@ -10,16 +18,14 @@ import { FormCurriculumPointSelectionModal } from "./standard-components/FormCur
 import { FormDiv } from "./standard-components/FormDiv";
 
 const StandardForm = ({ register, setValue }) => {
-  const standardModeEnabled = useSelector((state) => state.standard.standard);  // boolean flag if "Standard" mode is active
+  const standardModeEnabled = useSelector((state) => state.standard.standard);
 
   const {
-    // selected values from context
     selectedStandard,
     selectedSubject,
     selectedGrade,
     selectedTopic,
     selectedCurriculumPoint,
-    // option lists and loading states from context
     standardOptions,
     subjectOptions,
     gradeOptions,
@@ -27,123 +33,120 @@ const StandardForm = ({ register, setValue }) => {
     loadingStandards,
     loadingSubjects,
     loadingGrades,
-    // handlers from context
+    topicInput,
+    setTopicInput,
+    setCurriculumData,
+    setStandardOptions,
+    setSubjectOptions,
+    setGradeOptions,
+    setLoadingStandards,
+    setLoadingSubjects,
+    setLoadingGrades,
     handleStandardChange,
     handleSubjectChange,
     handleGradeChange,
     handleTopicChange,
-    // topic input text and setter
-    topicInput,
-    setTopicInput,
-    // to update options lists
-    setStandardOptions,
-    setSubjectOptions,
-    setGradeOptions,
-    setCurriculumData,
-    setLoadingStandards,
-    setLoadingSubjects,
-    setLoadingGrades,
-  } = useFormContext();
+    setSelectedCurriculumPoint,
+  } = useStdFormContext();
 
-  // State to control the curriculum selection modal visibility
   const [enlargeCurriculumModal, setEnlargeCurriculumModal] = useState(false);
 
-  /** Fetch the list of standards on initial load (when standard mode is enabled) */
+  // Fetch standards
   useEffect(() => {
-    if (standardModeEnabled) {
-      const fetchStandardOptions = async () => {
-        setLoadingStandards(true);
-        try {
-          const options = await getData("standards");
-          setStandardOptions(options);  // use fetched {value, label} list directly
-        } catch (error) {
-          console.error("Error fetching standard options:", error);
-          setStandardOptions([]);
-        } finally {
-          setLoadingStandards(false);
-        }
-      };
-      fetchStandardOptions();
-    }
-  }, [standardModeEnabled, setStandardOptions, setLoadingStandards]);
+    if (!standardModeEnabled) return;
+    const fetchStandardOptions = async () => {
+      setLoadingStandards(true);
+      try {
+        const options = await getData("standards");
+        setStandardOptions(options || []);
+      } catch (error) {
+        console.error("Error fetching standard options:", error);
+        setStandardOptions([]);
+      } finally {
+        setLoadingStandards(false);
+      }
+    };
+    fetchStandardOptions();
+  }, [standardModeEnabled, setLoadingStandards, setStandardOptions]);
 
-  /** Fetch subjects whenever a standard is selected */
+  // Fetch subjects
   useEffect(() => {
-    if (standardModeEnabled && selectedStandard) {
-      const fetchSubjectOptions = async () => {
-        setLoadingSubjects(true);
-        try {
-          const options = await getData(
-            "standards/subjects",
-            null,
-            selectedStandard.value  // pass selected standard ID
-          );
-          setSubjectOptions(options);
-        } catch (error) {
-          console.error("Error fetching subject options:", error);
-          setSubjectOptions([]);
-        } finally {
-          setLoadingSubjects(false);
-        }
-      };
-      fetchSubjectOptions();
-    }
-  }, [standardModeEnabled, selectedStandard, setSubjectOptions, setLoadingSubjects]);
+    if (!standardModeEnabled || !selectedStandard) return;
+    const fetchSubjectOptions = async () => {
+      setLoadingSubjects(true);
+      try {
+        const options = await getData(
+          "standards/subjects",
+          null,
+          selectedStandard.value
+        );
+        setSubjectOptions(options || []);
+      } catch (error) {
+        console.error("Error fetching subject options:", error);
+        setSubjectOptions([]);
+      } finally {
+        setLoadingSubjects(false);
+      }
+    };
+    fetchSubjectOptions();
+  }, [standardModeEnabled, selectedStandard, setLoadingSubjects, setSubjectOptions]);
 
-  /** Fetch grades whenever a subject is selected (and a standard is already selected) */
+  // Fetch grades
   useEffect(() => {
-    if (standardModeEnabled && selectedStandard && selectedSubject) {
-      const fetchGradeOptions = async () => {
-        setLoadingGrades(true);
-        try {
-          const options = await getData(
-            "standards/grades",
-            null,
-            selectedStandard.value,
-            selectedSubject.value
-          );
-          setGradeOptions(options);
-        } catch (error) {
-          console.error("Error fetching grade options:", error);
-          setGradeOptions([]);
-        } finally {
-          setLoadingGrades(false);
-        }
-      };
-      fetchGradeOptions();
-    }
-  }, [standardModeEnabled, selectedStandard, selectedSubject, setGradeOptions, setLoadingGrades]);
+    if (!standardModeEnabled || !selectedStandard || !selectedSubject) return;
+    const fetchGradeOptions = async () => {
+      setLoadingGrades(true);
+      try {
+        const options = await getData(
+          "standards/grades",
+          null,
+          selectedStandard.value,
+          selectedSubject.value
+        );
+        setGradeOptions(options || []);
+      } catch (error) {
+        console.error("Error fetching grade options:", error);
+        setGradeOptions([]);
+      } finally {
+        setLoadingGrades(false);
+      }
+    };
+    fetchGradeOptions();
+  }, [
+    standardModeEnabled,
+    selectedStandard,
+    selectedSubject,
+    setLoadingGrades,
+    setGradeOptions,
+  ]);
 
-  /** Fetch relevant curriculum points whenever a topic search is triggered */
+  // Fetch curriculum data when topic changes
   useEffect(() => {
     if (
-      standardModeEnabled &&
-      selectedStandard &&
-      selectedSubject &&
-      selectedGrade &&
-      selectedTopic
-    ) {
-      const fetchCurriculumData = async () => {
-        try {
-          const data = await getData(
-            "standards/curriculum",
-            selectedGrade.value,       // grade ID
-            selectedStandard.value,    // standard ID
-            selectedSubject.value,     // subject ID
-            selectedTopic              // topic query
-          );
-          setCurriculumData(data || []);
-          if (data) {
-            // Open the modal to select a specific curriculum point after fetching results
-            setEnlargeCurriculumModal(true);
-          }
-        } catch (error) {
-          console.error("Error fetching curriculum data:", error);
-          setCurriculumData([]);
-        }
-      };
-      fetchCurriculumData();
-    }
+      !standardModeEnabled ||
+      !selectedStandard ||
+      !selectedSubject ||
+      !selectedGrade ||
+      !selectedTopic
+    )
+      return;
+    const fetchCurriculumData = async () => {
+      try {
+        const data = await getData(
+          "standards/curriculum",
+          selectedGrade.value,
+          selectedStandard.value,
+          selectedSubject.value,
+          selectedTopic
+        );
+        setCurriculumData(data || []);
+        if (data) setEnlargeCurriculumModal(true);
+      } catch (error) {
+        console.error("Error fetching curriculum data:", error);
+        setCurriculumData([]);
+      }
+    };
+    fetchCurriculumData();
   }, [
     standardModeEnabled,
     selectedStandard,
@@ -153,17 +156,34 @@ const StandardForm = ({ register, setValue }) => {
     setCurriculumData,
   ]);
 
+  // Sync hidden label fields
+  useEffect(() => {
+    setValue("gradeLabel", selectedGrade?.label || "");
+  }, [selectedGrade, setValue]);
+  useEffect(() => {
+    setValue("subjectLabel", selectedSubject?.label || "");
+  }, [selectedSubject, setValue]);
+  useEffect(() => {
+    setValue("standardLabel", selectedStandard?.label || "");
+  }, [selectedStandard, setValue]);
+
+  // ✅ Sync full curriculum point object (for backend use)
+  useEffect(() => {
+    if (selectedCurriculumPoint) {
+      setValue("curriculumPointData", selectedCurriculumPoint);
+    } else {
+      setValue("curriculumPointData", null);
+    }
+  }, [selectedCurriculumPoint, setValue]);
+
   return (
     <div>
-      {/* Standard Selector */}
+      {/* Standard selector */}
       <FormSelect
         label="Select Standard"
         name="standard"
         options={standardOptions}
-        value={
-          // Find the option object that matches the selected standard (by value)
-          standardOptions.find((opt) => opt.value === selectedStandard?.value) || null
-        }
+        value={selectedStandard || null}
         onChange={handleStandardChange}
         register={register}
         loading={loadingStandards}
@@ -171,15 +191,13 @@ const StandardForm = ({ register, setValue }) => {
         required
       />
 
-      {/* Subject Selector (shown after a standard is chosen) */}
+      {/* Subject selector */}
       {selectedStandard && (
         <FormSelect
           label="Select Subject"
           name="subject"
           options={subjectOptions}
-          value={
-            subjectOptions.find((opt) => opt.value === selectedSubject?.value) || null
-          }
+          value={selectedSubject || null}
           onChange={handleSubjectChange}
           register={register}
           loading={loadingSubjects}
@@ -188,15 +206,13 @@ const StandardForm = ({ register, setValue }) => {
         />
       )}
 
-      {/* Grade Selector (shown after a subject is chosen) */}
+      {/* Grade selector */}
       {selectedStandard && selectedSubject && (
         <FormSelect
           label="Select Grade"
           name="grade"
           options={gradeOptions}
-          value={
-            gradeOptions.find((opt) => opt.value === selectedGrade?.value) || null
-          }
+          value={selectedGrade || null}
           onChange={handleGradeChange}
           register={register}
           loading={loadingGrades}
@@ -205,14 +221,14 @@ const StandardForm = ({ register, setValue }) => {
         />
       )}
 
-      {/* Topic Input & Search Button (shown after a grade is chosen) */}
+      {/* Topic input */}
       {selectedStandard && selectedSubject && selectedGrade && (
         <div className="flex flex-col sm:flex-row gap-2 items-center">
           <FormInput
             label="Enter Topic"
             name="topic"
             placeholder="e.g. Big Bang Theory"
-            value={selectedTopic}
+            value={topicInput}
             onChange={(e) => setTopicInput(e.target.value)}
             register={register}
             required
@@ -227,17 +243,21 @@ const StandardForm = ({ register, setValue }) => {
         </div>
       )}
 
-      {/* Curriculum Data Preview (shown after a topic is searched) */}
-      {selectedStandard && selectedSubject && selectedGrade && selectedTopic && curriculumData.length > 0 && (
-        <FormDiv
-          label="Curriculum Data"
-          selectedPoints={selectedCurriculumPoint}
-          fetchedContent={curriculumData}
-          setEnlarge={setEnlargeCurriculumModal}
-        />
-      )}
+      {/* Curriculum preview */}
+      {selectedStandard &&
+        selectedSubject &&
+        selectedGrade &&
+        selectedTopic &&
+        curriculumData && (
+          <FormDiv
+            label="Curriculum Data"
+            selectedPoints={selectedCurriculumPoint}
+            fetchedContent={curriculumData}
+            setEnlarge={setEnlargeCurriculumModal}
+          />
+        )}
 
-      {/* Modal for selecting a specific curriculum point from the list */}
+      {/* Curriculum selection modal */}
       {enlargeCurriculumModal && (
         <FormCurriculumPointSelectionModal
           enlarge={enlargeCurriculumModal}
@@ -249,6 +269,15 @@ const StandardForm = ({ register, setValue }) => {
           setValue={setValue}
         />
       )}
+
+      {/* Hidden fields */}
+      <input type="hidden" {...register("gradeLabel")} />
+      <input type="hidden" {...register("subjectLabel")} />
+      <input type="hidden" {...register("curriculumPoint")} />
+      <input type="hidden" {...register("standardLabel")} />
+
+      {/* ✅ Hidden field for full curriculum object */}
+      <input type="hidden" {...register("curriculumPointData")} />
     </div>
   );
 };

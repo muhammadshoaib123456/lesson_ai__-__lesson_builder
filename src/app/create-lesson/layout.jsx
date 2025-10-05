@@ -14,7 +14,6 @@ import { LoadingScreen, FinalModal, GenSlidesModal } from "./feature/Loaders/ind
 import "../globals.css";
 
 export default function CreateLessonLayout({ children }) {
-  // Local UI states that App.jsx previously handled
   const [loading, setLoading] = useState(false);
   const [finalModal, setFinalModal] = useState(false);
   const [genSlides, setGenSlides] = useState(false);
@@ -23,23 +22,19 @@ export default function CreateLessonLayout({ children }) {
   return (
     <Provider store={store}>
       <SocketBoundary />
-
-      {/* Share loading & modal state across children */}
       <FinalModalContext.Provider value={{ setFinalModal }}>
         <GoogleAnalytics />
         <PopupProvider>
+          {/* ✅ One global FormProvider for the whole flow */}
           <FormProvider>
-            {/* Render children (pages) inside providers */}
             {children}
           </FormProvider>
         </PopupProvider>
       </FinalModalContext.Provider>
 
-      {/* Global overlays */}
       {loading && <LoadingScreen status={queueStatus} />}
       {genSlides && <GenSlidesModal />}
       {finalModal && <FinalModal setFinalModal={setFinalModal} />}
-
       <ToastContainer />
     </Provider>
   );
