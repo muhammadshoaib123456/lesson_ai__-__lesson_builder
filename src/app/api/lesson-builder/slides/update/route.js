@@ -4,7 +4,11 @@ export const runtime = "nodejs";
 
 /**
  * POST /api/lesson-builder/slides/update?socketID=...
- * Body: { text: "<START>...<END>" }
+ *
+ * Proxies a slide update request to the upstream Flask API.  The
+ * `socketID` query parameter is required.  The request body must
+ * include a `text` field containing the updated outline text (wrapped
+ * in <START>...<END>).  Responds with the upstream JSON or text.
  */
 export async function POST(request) {
   try {

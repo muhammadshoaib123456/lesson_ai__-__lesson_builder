@@ -1,20 +1,27 @@
 import { NextResponse } from 'next/server';
 
+/**
+ * GET /api/lesson-builder/download-slides?socketID=...
+ *
+ * Proxies a download request to the upstream Flask API.  The query
+ * parameter `socketID` is required.  On success returns the PPTX as
+ * a Blob with appropriate headers set for download.  On error returns
+ * a JSON response describing the failure.
+ */
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const socketID = searchParams.get('socketID');
-    
+
     if (!socketID) {
       return NextResponse.json({ error: 'Socket ID required' }, { status: 400 });
     }
 
-    // Call your Flask API for download
     const response = await fetch(
-      `https://builder.lessn.ai:8031/download_slide?socketID=${socketID}`,
+      `https://builder.lessn.ai:8031/download_slide?socketID=${encodeURIComponent(socketID)}`,
       {
-        method: "GET",
-        redirect: "follow",
+        method: 'GET',
+        redirect: 'follow',
       }
     );
 
@@ -23,7 +30,7 @@ export async function GET(request) {
     }
 
     const blob = await response.blob();
-    
+
     return new NextResponse(blob, {
       headers: {
         'Content-Type': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',

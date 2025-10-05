@@ -29,17 +29,32 @@ export default function OutlinePage({ setLoading, setFinalModal, setQueueStatus 
   const [dataJSON, setDataJSON] = useState([]);
   const runningRef = useRef(false);
   const { socketId } = useSelector((state) => state.socket);
+  // Pull prompt values from our unified slice.  Depending on your store
+  // configuration the slice may be stored under `state.prompt` or
+  // `state.promptData`.  Destructure the topic instead of reqPrompt and
+  // remove unused label fields.
   const {
-    reqPrompt,
+    topic,
     grade,
     slides,
     subject,
     chosenStandard,
     comments,
     curriculumPoint,
-  } = useSelector((state) => state.promptData);
+  } = useSelector((state) => state.prompt || state.promptData);
   const dispatch = useDispatch();
   const router = useRouter();
+
+  // Clear any final modal state when entering the outline page.  This mirrors
+  // the behaviour of the React implementation, ensuring the final
+  // slide-preview modal is not shown prematurely.
+  useEffect(() => {
+    if (typeof setFinalModal === "function") {
+      setFinalModal(false);
+    }
+    // Only run once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Navigate to the slide creation page when the user clicks Generate Slides.
   function genSlides(e) {
@@ -97,14 +112,14 @@ export default function OutlinePage({ setLoading, setFinalModal, setQueueStatus 
     });
   }
 
-  // Kick off the outline generation once the socket ID is ready
+  // Kick off the outline generation once the socket ID is ready.
   const runFetch = async (quiet) => {
     if (runningRef.current) return;
     runningRef.current = true;
     try {
       const result = await FetchOutline(
         socketId,
-        reqPrompt,
+        topic,
         grade,
         slides,
         setLoading,
@@ -131,7 +146,7 @@ export default function OutlinePage({ setLoading, setFinalModal, setQueueStatus 
   useEffect(() => {
     const missing = [];
     if (!socketId) missing.push("socketId");
-    if (!reqPrompt) missing.push("reqPrompt");
+    if (!topic) missing.push("topic");
     if (!slides) missing.push("slides");
     if (!subject) missing.push("subject");
     if (!grade && grade !== 0) missing.push("grade");
@@ -142,7 +157,7 @@ export default function OutlinePage({ setLoading, setFinalModal, setQueueStatus 
       router.replace("/create-lesson");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [socketId, reqPrompt, grade, slides, subject, chosenStandard, curriculumPoint]);
+  }, [socketId, topic, grade, slides, subject, chosenStandard, curriculumPoint]);
 
   // Fetch when socketId is ready
   useEffect(() => {

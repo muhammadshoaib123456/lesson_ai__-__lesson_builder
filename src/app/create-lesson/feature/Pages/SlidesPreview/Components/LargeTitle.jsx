@@ -3,8 +3,10 @@
 import { useSelector } from "react-redux";
 
 export default function LargeTitle() {
-  const { reqPrompt } = useSelector((state) => state.promptData);
-  const formattedPrompt = (reqPrompt || "")
+  // Use `topic` as the lesson prompt instead of `reqPrompt`.  The prompt slice
+  // has been updated to store the user's request under this key.
+  const { topic } = useSelector((state) => state.promptData);
+  const formattedPrompt = (topic || "")
     .split(" ")
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
     .join(" ");

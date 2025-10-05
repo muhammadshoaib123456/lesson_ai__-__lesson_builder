@@ -22,7 +22,11 @@ export default function SlidesPreview({ setFinalModal }) {
   const socketId = useSelector((state) => state.socket.socketId);
   const slidesRes = useSelector((state) => state.socket.receivedData);
   const slidesResImages = useSelector((state) => state.socket.imageData);
-  const { reqPrompt, grade, slides } = useSelector((state) => state.promptData);
+  // Destructure the lesson parameters from the prompt slice.  The React version
+  // uses `topic` instead of `reqPrompt`, so mirror that here.  This allows the
+  // slides preview to reference the same field names as the rest of the
+  // application.  Grade and slides are still pulled unchanged.
+  const { topic, grade, slides } = useSelector((state) => state.promptData);
   const { loading } = useSelector((state) => state.download);
 
   const [selected, setSelected] = useState(0);
@@ -46,13 +50,16 @@ export default function SlidesPreview({ setFinalModal }) {
 
   // Guard: required inputs
   useEffect(() => {
-    if (!reqPrompt || !grade || !slides || !slidesData || slidesData.length === 0) {
+    // If any required fields are missing, redirect back to the lesson creation page.
+    // topic replaces reqPrompt as the key for the lesson prompt.  We also guard
+    // against empty slide data.
+    if (!topic || !grade || !slides || !slidesData || slidesData.length === 0) {
       dispatch(setAvailability(false));
       router.replace("/create-lesson");
     } else {
       dispatch(setAvailability(true));
     }
-  }, [reqPrompt, grade, slides, slidesData, dispatch, router]);
+  }, [topic, grade, slides, slidesData, dispatch, router]);
 
   // Sync titles/notes
   useEffect(() => {

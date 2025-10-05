@@ -4,24 +4,28 @@
  * PromptSlice.js
  *
  * Redux slice for storing the form data used when generating lesson
- * outlines.  It persists both the raw values (grade, subject, etc.) and
- * the human‑readable labels selected in standards mode.  Absent values
- * are normalised to empty strings to simplify conditional rendering.
+ * outlines and slides.  This implementation mirrors the working React
+ * version: it stores the user's lesson request under the `topic` key
+ * (rather than `reqPrompt`) and omits the label fields (`gradeLabel`,
+ * `subjectLabel`, `standardLabel`) that were previously used purely for
+ * display purposes.  The `curriculumPoint` field is an array to
+ * accommodate multiple selected curriculum points.
  */
 
 import { createSlice } from "@reduxjs/toolkit";
 
+// Define the shape of the prompt state.  All values default to empty
+// strings or an empty array for curriculumPoint.  This avoids
+// undefined checks downstream and keeps conditional logic simple.
 const initialState = {
-  reqPrompt: "",
+  topic: "",
   grade: "",
   slides: "",
   subject: "",
   chosenStandard: "",
   comments: "",
-  curriculumPoint: "",
-  gradeLabel: "",
-  subjectLabel: "",
-  standardLabel: "",
+  // curriculumPoint holds an array of selected curriculum point objects.
+  curriculumPoint: [],
 };
 
 const PromptSlice = createSlice({
@@ -30,29 +34,28 @@ const PromptSlice = createSlice({
   reducers: {
     setForm: (state, action) => {
       const {
-        reqPrompt,
+        topic,
         grade,
         slides,
         subject,
         chosenStandard,
         comments,
         curriculumPoint,
-        gradeLabel,
-        subjectLabel,
-        standardLabel,
-      } = action.payload;
+      } = action.payload || {};
+
+      // Return a new state with provided values, falling back to
+      // defaults where undefined.  The spread ensures that any
+      // additional properties on the state (should they be added in the
+      // future) are preserved.
       return {
         ...state,
-        reqPrompt,
-        grade,
-        slides,
-        subject,
+        topic: topic ?? "",
+        grade: grade ?? "",
+        slides: slides ?? "",
+        subject: subject ?? "",
         chosenStandard: chosenStandard ?? "",
         comments: comments ?? "",
-        curriculumPoint: curriculumPoint ?? "",
-        gradeLabel: gradeLabel ?? state.gradeLabel,
-        subjectLabel: subjectLabel ?? state.subjectLabel,
-        standardLabel: standardLabel ?? state.standardLabel,
+        curriculumPoint: curriculumPoint ?? [],
       };
     },
   },

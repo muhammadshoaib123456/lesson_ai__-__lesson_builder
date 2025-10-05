@@ -44,15 +44,14 @@ export default function MainPage({ setLoading, setGenSlides, setFinalModal }) {
     setFinalModal(false);
     dispatch(
       setForm({
-        reqPrompt: "",
+        topic: "",
         grade: "",
         slides: "",
         subject: "",
         chosenStandard: "",
         comments: "",
-        curriculumPoint: "",
-        gradeLabel: "",
-        subjectLabel: "",
+        // Initialise curriculumPoint as an empty array to align with the slice
+        curriculumPoint: [],
       })
     );
     dispatch(resetReceivedData());
@@ -68,39 +67,29 @@ export default function MainPage({ setLoading, setGenSlides, setFinalModal }) {
     }
 
     // Original values
-    let reqPrompt = data.topic;
+    const topic = data.topic;
     const grade = data.grade;
     const slides = 10;
     const subject = data.subject;
 
     let chosenStandard = "";
     let comments = "";
-    let curriculumPoint = "";
-    let gradeLabel = "";
-    let subjectLabel = "";
-    let standardLabel = "";
+    // Curriculum point may be an array, so initialise to empty array
+    let curriculumPoint = [];
 
-    // ✅ Handle Standards Mode
+    // Handle Standards Mode: copy values directly from the form.  We
+    // capture the selected standard (label), any comments, and the
+    // curriculum points array.  We do not override the topic with
+    // curriculum descriptions.
     if (standard) {
       chosenStandard = data.standard || "";
       comments = data.comments || "";
-
-      const selectedPoint = data.curriculumPointData || null;
-      curriculumPoint = selectedPoint?.point_id || "";
-
-      // ✅ Override reqPrompt with curriculum description or code
-      reqPrompt = selectedPoint
-        ? `${selectedPoint.code || ""}: ${selectedPoint.description || ""}`
-        : data.topic;
-
-      gradeLabel = data.gradeLabel || "";
-      subjectLabel = data.subjectLabel || "";
-      standardLabel = data.standardLabel || "";
+      curriculumPoint = data.curriculumPoint || [];
     }
 
     // Log final payload for verification
     console.log("Submitting form data:", {
-      reqPrompt,
+      topic,
       grade,
       subject,
       chosenStandard,
@@ -111,16 +100,13 @@ export default function MainPage({ setLoading, setGenSlides, setFinalModal }) {
     // Dispatch form to Redux
     dispatch(
       setForm({
-        reqPrompt,
+        topic,
         grade,
         slides,
         subject,
         chosenStandard,
         comments,
         curriculumPoint,
-        gradeLabel,
-        subjectLabel,
-        standardLabel,
       })
     );
 
@@ -133,7 +119,7 @@ export default function MainPage({ setLoading, setGenSlides, setFinalModal }) {
         ReactGA.event({
           category: "Form",
           action: "Submit",
-          label: `Topic: ${reqPrompt}, Grade: ${gradeLabel || grade}, Subject: ${subjectLabel || subject}`,
+          label: `Topic: ${topic}, Grade: ${grade}, Subject: ${subject}`,
           value: slides,
         });
       } catch (e) {
@@ -142,10 +128,10 @@ export default function MainPage({ setLoading, setGenSlides, setFinalModal }) {
       pushToDataLayer({
         event: "formSubmission",
         formType: "mainPage",
-        topic: reqPrompt,
-        grade: gradeLabel || grade,
+        topic,
+        grade,
         slides,
-        subject: subjectLabel || subject,
+        subject,
       });
     }
 

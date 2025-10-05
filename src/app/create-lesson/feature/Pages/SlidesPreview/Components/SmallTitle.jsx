@@ -14,8 +14,9 @@ import { useSelector } from "react-redux";
  * for scroll management from the parent component.
  */
 const SmallTitle = forwardRef(({ setSelected, selected }, ref) => {
-  const { reqPrompt } = useSelector((state) => state.promptData);
-  const formattedPrompt = (reqPrompt || "")
+  // Use `topic` as the lesson prompt.  See PromptSlice for context.
+  const { topic } = useSelector((state) => state.promptData);
+  const formattedPrompt = (topic || "")
     .split(" ")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");

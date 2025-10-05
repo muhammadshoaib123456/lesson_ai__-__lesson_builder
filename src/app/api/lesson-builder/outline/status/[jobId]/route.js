@@ -1,13 +1,21 @@
-// src/app/api/lesson-builder/outline/status/[jobId]/route.js
 import { NextResponse } from "next/server";
 
-// Optional (helps ensure no route-level caching):
+// Optional flags to disable caching.  Uncomment if your environment
+// supports them and you want to ensure fresh data every request.
 // export const revalidate = 0;
 // export const dynamic = "force-dynamic";
 
+/**
+ * GET /api/lesson-builder/outline/status/[jobId]
+ *
+ * Polls the upstream Flask API for the status of an outline job.  The
+ * `jobId` is extracted from the route parameters.  Returns the upstream
+ * JSON response directly on success.  If the upstream returns a non-OK
+ * status, the response text (if any) is included in the error details.
+ */
 export async function GET(_request, context) {
   try {
-    const { jobId } = await context.params; // ✅ await the async params
+    const { jobId } = await context.params;
     if (!jobId) {
       return NextResponse.json({ error: "Job ID is required" }, { status: 400 });
     }
@@ -22,15 +30,12 @@ export async function GET(_request, context) {
     );
 
     if (!upstream.ok) {
-      // grab any upstream body for better debugging (non-fatal if it fails)
       let extra = "";
       try {
         extra = await upstream.text();
       } catch {}
       throw new Error(
-        `Flask API responded with status: ${upstream.status}${
-          extra ? ` — ${extra}` : ""
-        }`
+        `Flask API responded with status: ${upstream.status}${extra ? ` — ${extra}` : ""}`
       );
     }
 
@@ -41,8 +46,7 @@ export async function GET(_request, context) {
     return NextResponse.json(
       {
         error: "Failed to fetch job status",
-        details:
-          error instanceof Error ? error.message : "Unknown error occurred",
+        details: error instanceof Error ? error.message : "Unknown error occurred",
       },
       { status: 500 }
     );

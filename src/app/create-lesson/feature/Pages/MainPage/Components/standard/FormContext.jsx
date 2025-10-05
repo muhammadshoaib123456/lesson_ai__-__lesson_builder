@@ -27,7 +27,11 @@ export function FormProvider({ children }) {
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [selectedGrade, setSelectedGrade] = useState(null);
   const [selectedTopic, setSelectedTopic] = useState("");
-  const [selectedCurriculumPoint, setSelectedCurriculumPoint] = useState(null);
+  // Store selected curriculum points as an array.  The original
+  // implementation kept a single object; however, the React version
+  // allows selecting multiple curriculum points.  Initialise to an
+  // empty array for consistency.
+  const [selectedCurriculumPoint, setSelectedCurriculumPoint] = useState([]);
 
   // Dropdown options for each selector
   const [standardOptions, setStandardOptions] = useState([]);
@@ -64,7 +68,7 @@ export function FormProvider({ children }) {
     setSelectedGrade(null);
     setSelectedTopic("");
     setTopicInput("");
-    setSelectedCurriculumPoint(null);
+    setSelectedCurriculumPoint([]);
     setCurriculumData([]);
     setComments("");
     // Clear dependent dropdown options
@@ -83,7 +87,7 @@ export function FormProvider({ children }) {
     setSelectedGrade(null);
     setSelectedTopic("");
     setTopicInput("");
-    setSelectedCurriculumPoint(null);
+    setSelectedCurriculumPoint([]);
     setCurriculumData([]);
     setComments("");
     setGradeOptions([]);
@@ -99,7 +103,7 @@ export function FormProvider({ children }) {
     setSelectedGrade(option);
     setSelectedTopic("");
     setTopicInput("");
-    setSelectedCurriculumPoint(null);
+    setSelectedCurriculumPoint([]);
     setCurriculumData([]);
     setComments("");
   };
@@ -113,7 +117,7 @@ export function FormProvider({ children }) {
    */
   const handleTopicChange = (topic) => {
     setSelectedTopic(topic);
-    setSelectedCurriculumPoint(null);
+    setSelectedCurriculumPoint([]);
     setCurriculumData([]);
   };
 

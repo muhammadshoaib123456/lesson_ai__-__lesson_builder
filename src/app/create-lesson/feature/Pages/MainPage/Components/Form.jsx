@@ -50,13 +50,25 @@ export default function Form({ handleSubmit, register, errors, setValue }) {
 
   // Predefined options for the original form dropdowns.  We memoise
   // these arrays because they never change during the component lifetime.
+  // Original form grade options mirror the working React implementation.
+  // Provide Pre-K, K (Kindergarten), and grades 1 through 12.
   const gradeOptions = useMemo(
-    () =>
-      Array.from({ length: 13 }, (_, i) =>
-        i === 0
-          ? { value: "Grade Pre-K", label: "Grade Pre-K" }
-          : { value: `Grade ${i}`, label: `Grade ${i}` }
-      ),
+    () => [
+      { value: "Grade Pre-K", label: "Grade Pre-K" },
+      { value: "Grade K", label: "Grade K" },
+      { value: "Grade 1", label: "Grade 1" },
+      { value: "Grade 2", label: "Grade 2" },
+      { value: "Grade 3", label: "Grade 3" },
+      { value: "Grade 4", label: "Grade 4" },
+      { value: "Grade 5", label: "Grade 5" },
+      { value: "Grade 6", label: "Grade 6" },
+      { value: "Grade 7", label: "Grade 7" },
+      { value: "Grade 8", label: "Grade 8" },
+      { value: "Grade 9", label: "Grade 9" },
+      { value: "Grade 10", label: "Grade 10" },
+      { value: "Grade 11", label: "Grade 11" },
+      { value: "Grade 12", label: "Grade 12" },
+    ],
     []
   );
   const subjectOptions = useMemo(
@@ -152,13 +164,9 @@ export default function Form({ handleSubmit, register, errors, setValue }) {
    * properties are included in the `data` object.
    */
   useEffect(() => {
-    register("gradeLabel");
-    register("subjectLabel");
-    // Register additional hidden fields so that they are included in the
-    // submitted data even if StandardForm hasn't been mounted yet.  These
-    // registrations are idempotent; if the fields already exist they
-    // will not overwrite their values.
-    register("standardLabel");
+    // Register the curriculumPoint field so that selected curriculum
+    // points are included in the submitted data.  Other label fields
+    // (gradeLabel, subjectLabel, standardLabel) are no longer used.
     register("curriculumPoint");
   }, [register]);
 

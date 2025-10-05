@@ -11,6 +11,7 @@ export function FormSelect({
   register,
   loading = false,
   error,
+  useLabelAsValue = false,
   ...props
 }) {
   // Tailwind-inspired custom styles for react-select
@@ -61,6 +62,14 @@ export function FormSelect({
     }),
   };
 
+  // Determine the currently selected option.  Allow the caller to pass
+  // either the full option object or just a string/ID.  When a string
+  // is provided, attempt to match on the option value or label.
+  const selectedOption =
+    value && typeof value === "object"
+      ? value
+      : options?.find((opt) => opt.value === value || opt.label === value) || null;
+
   return (
     <div className="mb-2 w-4/5">
       {/* Label */}
@@ -74,21 +83,27 @@ export function FormSelect({
       <Select
         id={name}
         options={options || []}
-        value={value || null}  
-        onChange={(selectedOption) => {
-          if (onChange) onChange(selectedOption);
-          // Optional: integrate with react-hook-form by manually triggering register onChange
+        value={selectedOption}
+        onChange={(selected) => {
+          // Invoke the external onChange handler with the full selected option
+          if (onChange) onChange(selected);
+          // Integrate with react-hook-form by manually triggering register onChange
           if (register && typeof register === "function") {
             const field = register(name);
             if (field?.onChange) {
               field.onChange({
-                target: { name, value: selectedOption?.value ?? "" },
+                target: {
+                  name,
+                  value: useLabelAsValue
+                    ? selected?.label ?? ""
+                    : selected?.value ?? "",
+                },
               });
             }
           }
         }}
         styles={customStyles}
-        placeholder={props.placeholder}  
+        placeholder={props.placeholder}
         isLoading={loading}
         noOptionsMessage={() => (loading ? "Loading..." : "No options found")}
         {...props}

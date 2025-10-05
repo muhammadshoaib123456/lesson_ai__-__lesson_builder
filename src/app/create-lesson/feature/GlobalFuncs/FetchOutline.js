@@ -12,7 +12,7 @@ import { toast } from "react-toastify";
 
 export default async function FetchOutline(
   socketId,
-  reqPrompt,
+  topic,
   grade,
   slides,
   setLoading,
@@ -30,7 +30,7 @@ export default async function FetchOutline(
   // Pre‑flight check for missing fields
   const missing = [];
   if (!socketId) missing.push("socketId");
-  if (!reqPrompt) missing.push("reqPrompt");
+  if (!topic) missing.push("topic");
   if (!grade && grade !== 0) missing.push("grade");
   if (!subject) missing.push("subject");
   if (missing.length) {
@@ -47,7 +47,7 @@ export default async function FetchOutline(
       cache: "no-store",
       body: JSON.stringify({
         socketId,
-        reqPrompt,
+        topic,
         grade,
         subject,
         slides: slides ?? 10,

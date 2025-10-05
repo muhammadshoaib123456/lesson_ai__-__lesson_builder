@@ -4,7 +4,10 @@ export const runtime = "nodejs";
 
 /**
  * POST /api/lesson-builder/slides/upload?socketID=...
- * Proxies to upstream which returns plain text: Google Slides URL or "fail".
+ *
+ * Proxies a slide upload request to the upstream Flask API.  The
+ * upstream returns either a URL (as plain text) or the string "fail".
+ * A non-200 response from the upstream is treated as an error.
  */
 export async function POST(request) {
   try {

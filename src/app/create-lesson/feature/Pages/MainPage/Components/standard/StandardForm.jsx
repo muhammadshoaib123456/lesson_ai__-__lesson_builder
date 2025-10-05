@@ -12,6 +12,9 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useFormContext as useStdFormContext } from "./FormContext";
 import { getData } from "./getFormData";
+// Import input and select components from the main components folder.  The
+// standard‑components directory has been removed in favour of using
+// shared components with behaviour flags.
 import { FormInput } from "./standard-components/FormInput";
 import { FormSelect } from "./standard-components/FormSelect";
 import { FormCurriculumPointSelectionModal } from "./standard-components/FormCurriculumPointSelectionModal";
@@ -156,25 +159,10 @@ const StandardForm = ({ register, setValue }) => {
     setCurriculumData,
   ]);
 
-  // Sync hidden label fields
-  useEffect(() => {
-    setValue("gradeLabel", selectedGrade?.label || "");
-  }, [selectedGrade, setValue]);
-  useEffect(() => {
-    setValue("subjectLabel", selectedSubject?.label || "");
-  }, [selectedSubject, setValue]);
-  useEffect(() => {
-    setValue("standardLabel", selectedStandard?.label || "");
-  }, [selectedStandard, setValue]);
-
-  // ✅ Sync full curriculum point object (for backend use)
-  useEffect(() => {
-    if (selectedCurriculumPoint) {
-      setValue("curriculumPointData", selectedCurriculumPoint);
-    } else {
-      setValue("curriculumPointData", null);
-    }
-  }, [selectedCurriculumPoint, setValue]);
+  // No need to synchronise label fields or full curriculum point data in
+  // this implementation.  The selected values are directly registered
+  // via react-hook-form and the curriculum point array is written
+  // through the modal's confirm handler.
 
   return (
     <div>
@@ -189,6 +177,7 @@ const StandardForm = ({ register, setValue }) => {
         loading={loadingStandards}
         placeholder="Select a standard..."
         required
+        useLabelAsValue={true}
       />
 
       {/* Subject selector */}
@@ -203,6 +192,7 @@ const StandardForm = ({ register, setValue }) => {
           loading={loadingSubjects}
           placeholder="Select a subject..."
           required
+          useLabelAsValue={true}
         />
       )}
 
@@ -218,6 +208,7 @@ const StandardForm = ({ register, setValue }) => {
           loading={loadingGrades}
           placeholder="Select a grade..."
           required
+          useLabelAsValue={true}
         />
       )}
 
@@ -270,14 +261,9 @@ const StandardForm = ({ register, setValue }) => {
         />
       )}
 
-      {/* Hidden fields */}
-      <input type="hidden" {...register("gradeLabel")} />
-      <input type="hidden" {...register("subjectLabel")} />
+      {/* Hidden field for curriculum points.  This ensures the array of
+          selected curriculum points is included in the form data. */}
       <input type="hidden" {...register("curriculumPoint")} />
-      <input type="hidden" {...register("standardLabel")} />
-
-      {/* ✅ Hidden field for full curriculum object */}
-      <input type="hidden" {...register("curriculumPointData")} />
     </div>
   );
 };

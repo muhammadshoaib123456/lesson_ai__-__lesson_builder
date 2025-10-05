@@ -1,10 +1,23 @@
 import { NextResponse } from "next/server";
 
+/**
+ * POST /api/lesson-builder/outline
+ *
+ * Starts an outline generation job by proxying a request to the upstream
+ * Flask API.  The request body may include either `topic` (preferred) or
+ * `reqPrompt` for backwards compatibility; whichever is provided will be
+ * used as the user text.  Required fields are socketId, prompt,
+ * grade and subject.  Optional fields are slides (defaults to 10),
+ * chosenStandard, comments and curriculumPoint.
+ */
 export async function POST(request) {
   try {
-    // Destructure required and optional fields from the incoming request body.
+    // Destructure fields from the incoming JSON payload.  Support both
+    // `topic` and `reqPrompt` as the prompt field to allow a smooth
+    // migration from the old API.  Unknown fields are ignored.
     const {
       socketId,
+      topic,
       reqPrompt,
       grade,
       subject,
@@ -13,32 +26,44 @@ export async function POST(request) {
       comments,
       curriculumPoint,
     } = await request.json();
-    // Validate core fields; the standard fields are optional.
-    if (!socketId || !reqPrompt || !grade || !subject) {
+
+    // Determine the actual prompt value.  `topic` takes precedence, but
+    // fall back to `reqPrompt` for older clients.
+    const prompt = topic || reqPrompt;
+
+    // Validate required fields.  Empty strings and undefined values are
+    // considered missing.
+    if (!socketId || !prompt || !grade || !subject) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
       );
     }
-    // Build the query string.  Append the standard ID only if present.
+
+    // Build the upstream URL.  Only append the standard query parameter
+    // if provided.  Encode all values to ensure safe transmission.
     const url =
       `https://builder.lessn.ai:8031/main` +
       `?socketID=${encodeURIComponent(socketId)}` +
-      `&userText=${encodeURIComponent(reqPrompt)}` +
+      `&userText=${encodeURIComponent(prompt)}` +
       `&grade=${encodeURIComponent(grade)}` +
       `&subject=${encodeURIComponent(subject)}` +
       `&slides=${encodeURIComponent(slides)}` +
       (chosenStandard ? `&standard=${encodeURIComponent(chosenStandard)}` : "");
-    // Build the optional JSON body for comments and curriculumPoint.
+
+    // Prepare an optional body containing comments and curriculumPoint.  Do
+    // not include the body if both are falsy.  curriculumPoint may be
+    // either a string or an array; include it as-is to let the upstream
+    // handle parsing.
     const extraBody = {};
     if (comments) {
       extraBody.comments = comments;
     }
-    if (curriculumPoint) {
+    if (curriculumPoint && (Array.isArray(curriculumPoint) ? curriculumPoint.length > 0 : true)) {
       extraBody.curriculumPoint = curriculumPoint;
     }
-    const body =
-      Object.keys(extraBody).length > 0 ? JSON.stringify(extraBody) : undefined;
+    const body = Object.keys(extraBody).length > 0 ? JSON.stringify(extraBody) : undefined;
+
     const response = await fetch(url, {
       method: "POST",
       cache: "no-store",
@@ -46,9 +71,9 @@ export async function POST(request) {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      // Only include the body if comments or curriculumPoint were provided
       body,
     });
+
     if (!response.ok) {
       throw new Error(`Flask API responded with status: ${response.status}`);
     }

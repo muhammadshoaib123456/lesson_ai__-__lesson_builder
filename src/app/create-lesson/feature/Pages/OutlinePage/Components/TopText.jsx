@@ -14,18 +14,20 @@ import { useSelector } from "react-redux";
 export default function TopText() {
   // Determine if standards mode is on
   const standardModeEnabled = useSelector((state) => state.standard.standard);
-  // Access the prompt data from Redux.  gradeLabel and subjectLabel may be
-  // empty strings when the original form is used.
-  const Prompt = useSelector((state) => state.promptData);
-  // Use the human‑readable labels when provided, otherwise fall back
-  // to the raw values for grade and subject.
-  const gradeDisplay = Prompt.gradeLabel || Prompt.grade;
-  const subjectDisplay = Prompt.subjectLabel || Prompt.subject;
-  // Determine the display name for the selected standard.  When
-  // standards mode is enabled we store both the raw ID
-  // (Prompt.chosenStandard) and the human‑readable title
-  // (Prompt.standardLabel).  Use the title when available.
-  const standardDisplay = Prompt.standardLabel || Prompt.chosenStandard;
+  // Access the prompt data from Redux.  Our revised slice stores the
+  // human‑readable grade and subject directly and uses `topic` instead of
+  // `reqPrompt`.  If your store combines the slice under a different key
+  // (e.g. promptData vs prompt) adjust the selector accordingly.
+  const prompt = useSelector((state) => state.prompt || state.promptData);
+  // Derive display values directly from the prompt state.  The
+  // `chosenStandard` holds the readable standard title when standards
+  // mode is enabled.  Grade and subject fields already contain the
+  // readable labels from the form.
+  const gradeDisplay = prompt?.grade || "";
+  const subjectDisplay = prompt?.subject || "";
+  const standardDisplay = prompt?.chosenStandard || "";
+  const slidesDisplay = prompt?.slides || "";
+  const topic = prompt?.topic || "";
   return (
     <>
       <p className="text-center text-white/90 my-2 text-xs sm:text-sm md:text-base leading-relaxed">
@@ -37,11 +39,11 @@ export default function TopText() {
             <span>. </span>
           </>
         )}
-        Topic <span className="font-bold text-white">"{Prompt.reqPrompt}"</span> for&nbsp;
+        Topic <span className="font-bold text-white">"{topic}"</span> for&nbsp;
         <span className="font-bold text-white">{gradeDisplay}</span>, subject&nbsp;
         <span className="font-bold text-white">{subjectDisplay}</span>&nbsp;
         and&nbsp;
-        <span className="font-bold text-white">{Prompt.slides}</span> Slides.
+        <span className="font-bold text-white">{slidesDisplay}</span> Slides.
       </p>
     </>
   );

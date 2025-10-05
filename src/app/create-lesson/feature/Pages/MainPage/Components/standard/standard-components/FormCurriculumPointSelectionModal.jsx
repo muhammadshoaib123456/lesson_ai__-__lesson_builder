@@ -153,17 +153,16 @@ export function FormCurriculumPointSelectionModal({
   setValue,
 }) {
   const modalRef = useRef(null);
-  // Maintain an array of the currently selected point(s) for display.  We
-  // restrict selection to a single curriculum point, mirroring the
-  // behaviour of the working React implementation.  The form stores
-  // only the first selected point ID.
+  // Maintain an array of the currently selected curriculum points.  The
+  // React implementation allows selecting multiple points (up to
+  // maxSelections).  Initialise with an empty array.
   const [selectedPoints, setSelectedPoints] = useState([]);
   const [expandedNodes, setExpandedNodes] = useState(new Set());
   const [currentView, setCurrentView] = useState("suggested"); // "suggested" or "all"
-  // Limit the user to a single curriculum point.  Setting this to 1
-  // prevents multiple points being selected and simplifies the API
-  // payload.  The backend accepts only one curriculum point ID.
-  const maxSelections = 1;
+  // Allow the user to select multiple curriculum points, with a
+  // maximum matching the React implementation.  If more selections
+  // are attempted beyond this limit they will be ignored.
+  const maxSelections = 3;
   const curriculumPoints = useMemo(() => {
     return fetchedContent?.points ? Object.values(fetchedContent.points) || [] : [];
   }, [fetchedContent?.points]);
@@ -174,19 +173,18 @@ export function FormCurriculumPointSelectionModal({
     if (suggestedPoints.length > 0) setCurrentView("suggested");
     else setCurrentView("all");
   }, [suggestedPoints]);
-  // When the parent context supplies a previously selected curriculum
-  // point, ensure it appears preselected in the modal.  The
-  // standards‑mode form stores a single point object rather than an
-  // array, so we wrap it in an array for the internal state.
+  // When the parent context supplies previously selected curriculum points,
+  // ensure they appear preselected in the modal.  We support both
+  // arrays (preferred) and a single object for backwards compatibility.
   useEffect(() => {
-    if (selectedCurriculumPoint) {
-      // If the value is an array, use it directly; otherwise wrap
-      // the single object in an array.
-      if (Array.isArray(selectedCurriculumPoint)) {
-        setSelectedPoints(selectedCurriculumPoint);
-      } else if (Object.keys(selectedCurriculumPoint).length > 0) {
-        setSelectedPoints([selectedCurriculumPoint]);
-      }
+    if (selectedCurriculumPoint && Array.isArray(selectedCurriculumPoint)) {
+      setSelectedPoints(selectedCurriculumPoint);
+    } else if (
+      selectedCurriculumPoint &&
+      typeof selectedCurriculumPoint === "object" &&
+      Object.keys(selectedCurriculumPoint).length > 0
+    ) {
+      setSelectedPoints([selectedCurriculumPoint]);
     }
   }, [selectedCurriculumPoint]);
   const toggleNode = (nodeId) => {
@@ -197,31 +195,33 @@ export function FormCurriculumPointSelectionModal({
       return newSet;
     });
   };
-  // Toggle the selection of a curriculum point.  Because only one
-  // selection is permitted, toggling an unselected point replaces the
-  // existing selection; toggling a selected point removes it.
+  // Toggle the selection of a curriculum point.  If the point is already
+  // selected it will be removed.  Otherwise, add it if under the
+  // selection limit.  Mirrors the behaviour of the React implementation.
   const handlePointToggle = (point) => {
     setSelectedPoints((prev) => {
       const isAlreadySelected = prev.some((p) => p.point_id === point.point_id);
       if (isAlreadySelected) {
-        // Deselect if it was already selected
-        return [];
+        // Remove the existing selection
+        return prev.filter((p) => p.point_id !== point.point_id);
       }
-      // Replace any existing selection with the new point
-      return [point];
+      // Add the new point if we haven't reached the limit
+      if (prev.length < maxSelections) {
+        return [...prev, point];
+      }
+      // Otherwise, ignore the click
+      return prev;
     });
   };
   const handleConfirm = () => {
-    // Persist only the first selected point.  The form stores the ID
-    // directly (via setValue) and the context stores the full object.
-    const firstPoint = selectedPoints[0];
-    if (firstPoint) {
-      setSelectedCurriculumPoint(firstPoint);
-      // Write the point_id into the hidden form field
-      setValue(name, firstPoint.point_id);
+    // Persist the full array of selected points.  Write the array into
+    // the hidden form field so it is submitted with the form data.
+    if (selectedPoints && selectedPoints.length > 0) {
+      setSelectedCurriculumPoint(selectedPoints);
+      setValue(name, selectedPoints);
     } else {
-      setSelectedCurriculumPoint(null);
-      setValue(name, "");
+      setSelectedCurriculumPoint([]);
+      setValue(name, []);
     }
     setEnlarge(false);
   };
