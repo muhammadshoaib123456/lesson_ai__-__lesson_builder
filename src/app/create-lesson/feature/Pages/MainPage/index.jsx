@@ -1,6 +1,9 @@
 "use client";
 
 import { useEffect } from "react";
+// Pull the standards form context to reset its state on page load. Without this,
+// the standard form retains previous selections when navigating back from other pages.
+import { useFormContext as useStdFormContext } from "./Components/standard/FormContext";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -30,6 +33,23 @@ export default function MainPage({ setLoading, setGenSlides, setFinalModal }) {
   const router = useRouter();
   const standard = useSelector((state) => state.standard.standard);
 
+  // Extract setters from the form context. These setters will be invoked
+  // within useEffect below to clear the standards form state when the main
+  // page mounts. We destructure them here to avoid re-render triggers.
+  const {
+    setSelectedStandard,
+    setSelectedSubject,
+    setSelectedGrade,
+    setSelectedTopic,
+    setSelectedCurriculumPoint,
+    setStandardOptions,
+    setSubjectOptions,
+    setGradeOptions,
+    setCurriculumData,
+    setTopicInput,
+    setComments,
+  } = useStdFormContext();
+
   const {
     canCreateSlides,
     showLimitReached,
@@ -57,7 +77,37 @@ export default function MainPage({ setLoading, setGenSlides, setFinalModal }) {
     dispatch(resetReceivedData());
     dispatch(resetImageData());
     dispatch(resetOutline());
-  }, [dispatch, setLoading, setGenSlides, setFinalModal]);
+    // Reset all Standards Form state on mount. Clearing these ensures that when
+    // the user navigates back from the outline or preview pages, the form
+    // appears empty and no curriculum selection modal is displayed.
+    setSelectedStandard(null);
+    setSelectedSubject(null);
+    setSelectedGrade(null);
+    setSelectedTopic("");
+    setSelectedCurriculumPoint([]);
+    setStandardOptions([]);
+    setSubjectOptions([]);
+    setGradeOptions([]);
+    setCurriculumData([]);
+    setTopicInput("");
+    setComments("");
+  }, [
+    dispatch,
+    setLoading,
+    setGenSlides,
+    setFinalModal,
+    setSelectedStandard,
+    setSelectedSubject,
+    setSelectedGrade,
+    setSelectedTopic,
+    setSelectedCurriculumPoint,
+    setStandardOptions,
+    setSubjectOptions,
+    setGradeOptions,
+    setCurriculumData,
+    setTopicInput,
+    setComments,
+  ]);
 
   async function onSubmit(data) {
     if (usageLoading) await checkUsage();

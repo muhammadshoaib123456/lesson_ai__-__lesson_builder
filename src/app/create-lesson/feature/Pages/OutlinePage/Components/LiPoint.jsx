@@ -49,7 +49,10 @@ export default function LiPoint({
       <div className="w-full relative">
         <textarea
           onInput={autoExpand}
-          defaultValue={point}
+          // Use a controlled value instead of defaultValue so new bullets
+          // appear empty and existing text updates correctly when state
+          // changes.
+          value={point}
           onChange={(e) => {
             const val = e.target.value;
             setDataJson((prev) => {
@@ -57,6 +60,18 @@ export default function LiPoint({
               next[pIndex - 1].content[index] = val;
               return next;
             });
+          }}
+          onKeyDown={(e) => {
+            // Pressing Enter ends editing of this bullet instead of inserting a newline.
+            if (e.key === "Enter") {
+              e.preventDefault();
+              e.currentTarget.blur();
+            }
+            // Pressing ArrowDown inserts a new bullet below the current one.
+            if (e.key === "ArrowDown") {
+              e.preventDefault();
+              addPointBelow(index);
+            }
           }}
           className="flex-1 w-full resize-none overflow-hidden bg-transparent text-sm sm:text-base text-gray-800 placeholder-gray-500 rounded-md border-0 focus:outline-none focus:border-black focus:bg-white focus:text-black py-1 px-2 pr-24"
           // The textarea inherits the card background. Remove bg-transparent if you

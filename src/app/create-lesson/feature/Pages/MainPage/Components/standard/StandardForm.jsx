@@ -159,6 +159,28 @@ const StandardForm = ({ register, setValue }) => {
     setCurriculumData,
   ]);
 
+  // Close the curriculum modal whenever any of the dependent selections
+  // (standard, subject, grade, or topic) become empty.  Without this
+  // effect, navigating back to the main page or clearing a field would
+  // leave the modal open, resulting in a poor user experience.
+  useEffect(() => {
+    if (
+      !standardModeEnabled ||
+      !selectedStandard ||
+      !selectedSubject ||
+      !selectedGrade ||
+      !selectedTopic
+    ) {
+      setEnlargeCurriculumModal(false);
+    }
+  }, [
+    standardModeEnabled,
+    selectedStandard,
+    selectedSubject,
+    selectedGrade,
+    selectedTopic,
+  ]);
+
   // No need to synchronise label fields or full curriculum point data in
   // this implementation.  The selected values are directly registered
   // via react-hook-form and the curriculum point array is written

@@ -230,7 +230,12 @@ export function FormCurriculumPointSelectionModal({
   };
   if (!enlarge) return null;
   return (
-    <div className="fixed inset-0 w-full h-full md:bg-opacity-30 md:bg-gray-800 flex overflow-y-auto justify-center items-center z-50">
+    // Apply a translucent dark backdrop with a blur effect across all screen sizes.
+    // The backdrop-blur-sm class uses Tailwind's backdrop filter to soften the
+    // background rather than overlaying a solid colour.  We remove the
+    // breakpoint‑restricted background classes so the blur applies on small
+    // screens as well.
+    <div className="fixed inset-0 w-full h-full bg-black/30 backdrop-blur-sm flex overflow-y-auto justify-center items-center z-50">
       <div
         ref={modalRef}
         className="md:m-8 h-full w-full lg:w-[60vw] lg:h-[80vh] md:min-w-[700px] md:max-w-[900px] md:w-[75vw] md:h-[75vh] md:max-h-[600px] md:min-h-[400px] bg-white rounded-xl flex flex-col relative"
