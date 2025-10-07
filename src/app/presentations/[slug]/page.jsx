@@ -15,7 +15,7 @@ async function getData(slug) {
 
 // ---------- metadata ----------
 export async function generateMetadata({ params }) {
-  const { slug } = await params;
+  const { slug } = params;
   const p = await getData(slug);
   if (!p) return {};
   return {
@@ -74,17 +74,16 @@ const SLIDER_SELECT = {
 };
 
 export default async function PresentationPage({ params }) {
-  const { slug } = await params;
+  const { slug } = params;
 
-  // Parallelized SSR work (no massive "getAllPresentations" scan anymore)
   const [p, session] = await Promise.all([
     getData(slug),
     getServerSession(authOptions),
   ]);
 
-  if (!p) return <div className="max-w-[960px] mx-auto p-6">Not found</div>;
+  if (!p) return <div className="max-w-[960px] p-6">Not found</div>;
 
-  // ---- Build Google Slides embed URL (keep controls/slider) ----
+  // ---- Build Google Slides embed URL ----
   let embedUrl = "";
   if (p.presentation_view_link) {
     const m = String(p.presentation_view_link).match(/src="([^"]+)"/i);
@@ -99,7 +98,7 @@ export default async function PresentationPage({ params }) {
       start: "false",
       loop: "false",
       delayms: "3000",
-      rm: "minimal", // cleaner embed
+      rm: "minimal",
     });
   }
 
@@ -109,7 +108,6 @@ export default async function PresentationPage({ params }) {
     p.download_pdf_url || p.download_ppt_url || p.slides_export_link_url
   );
 
-  // ---- Slider: same behavior as your TeacherSection.jsx (server-seeded + API-backed) ----
   const pageSize = 24;
   const total = await prisma.presentation.count();
 
@@ -148,11 +146,13 @@ export default async function PresentationPage({ params }) {
     <>
       <Header />
 
-      <div className="max-w-[1100px] mx-auto px-4 py-8">
-        <h1 className="text-3xl md:text-4xl font-bold leading-snug mb-4">{p.name}</h1>
+      {/* LEFT-ANCHORED TEXT BLOCKS */}
+      <div className="max-w-[1100px] px-6 py-8 text-left">
+        <h1 className="text-3xl md:text-4xl font-bold leading-snug mb-4">
+          {p.name}
+        </h1>
 
-        {/* Meta row */}
-        <div className="text-base md:text-lg text-gray-700 mb-4">
+        <div className="text-base md:text-lg text-gray-700 mb-6">
           <span className="font-bold text-black">Subject:</span>{" "}
           <span className="font-medium">{p.subject || "-"}</span>
           <span className="mx-3" />
@@ -163,51 +163,42 @@ export default async function PresentationPage({ params }) {
           <span className="font-medium">{p.topic || "-"}</span>
         </div>
 
-        {/* Bullet-style Summary label + content */}
-        {summaryHtml ? (
-          <ul className="list-disc pl-6 mb-6">
-            <li className="text-sm md:text-base">
-              <span className="font-semibold">Summary:</span>
-              <div
-                className="prose max-w-none text-gray-800 mt-2"
-                dangerouslySetInnerHTML={{ __html: summaryHtml }}
-              />
-            </li>
-          </ul>
-        ) : null}
-
-        {/* Preview — slim border; cropped sides; slider visible */}
-        <div className="mx-auto max-w-[1100px] w-full">
-          <div className="relative w-full rounded-lg overflow-hidden border border-gray-300 bg-white shadow-sm">
-            {/* Slightly taller than 16:9 so the bottom controls are not cut */}
-            <div className="pt-[58.5%]" />
-
-            {embedUrl ? (
-              <iframe
-                src={embedUrl}
-                title={p.name}
-                className="absolute inset-0 w-full h-full block origin-center"
-                style={{
-                  transform: "scaleX(1.12)", // crop side gutters only
-                  border: 0,
-                  background: "transparent",
-                }}
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            ) : (
-              <p className="p-4 text-center text-gray-500">
-                Presentation preview is not available.
-              </p>
-            )}
+        {summaryHtml && (
+          <div className="pl-2 mb-8">
+            <p className="font-semibold text-base mb-2">Summary:</p>
+            <div
+              className="prose max-w-none text-gray-800"
+              dangerouslySetInnerHTML={{ __html: summaryHtml }}
+            />
           </div>
-        </div>
+        )}
+      </div>
 
-        {/* Gated CTA */}
-        <div className="mx-auto max-w-[800px] w-full mt-6">
+      {/* CENTERED IFRAME + BUTTONS */}
+      <div className="mx-auto max-w-[1100px] w-full text-center my-8 px-6">
+        {p.presentation_view_link ? (
+          <div
+            className="inline-block"
+            dangerouslySetInnerHTML={{ __html: decodeEntities(p.presentation_view_link) }}
+          />
+        ) : embedUrl ? (
+          <iframe
+            src={embedUrl}
+            title={p.name}
+            style={{ width: "100%", height: "600px", border: 0 }}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        ) : (
+          <p className="p-4 text-center text-gray-500">
+            Presentation preview is not available.
+          </p>
+        )}
+
+        {/* Centered Buttons */}
+        <div className="mt-6 flex justify-center items-center gap-4 flex-wrap">
           {!session ? (
-            <p className="text-center text-[#1e3a8a] font-semibold">
+            <p className="text-[#1e3a8a] font-semibold">
               Please{" "}
               <a href={`/login?next=/presentations/${p.slug}`} className="underline">
                 LOG IN
@@ -216,7 +207,7 @@ export default async function PresentationPage({ params }) {
             </p>
           ) : (
             hasAnyButtons && (
-              <div className="flex items-center justify-center gap-4 mt-4 flex-wrap">
+              <>
                 {p.download_pdf_url && (
                   <a
                     href={`/api/presentations/${p.slug}/download?type=pdf`}
@@ -243,13 +234,15 @@ export default async function PresentationPage({ params }) {
                     Download PPT
                   </a>
                 )}
-              </div>
+              </>
             )
           )}
         </div>
+
+     
       </div>
 
-      {/* Server-seeded, API-backed slider — identical behavior to your TeacherSection.jsx */}
+      {/* TEACHER SECTION (title left) */}
       <section className="w-full px-4 sm:px-6 lg:px-12 py-10 bg-white">
         <TeacherSectionClient
           initial={normalizedInitial}
@@ -259,10 +252,12 @@ export default async function PresentationPage({ params }) {
           apiHref="/api/presentations/slider"
           title="View More Content"
           showCTA={false}
+          titleAlign="left"
         />
       </section>
 
-      <div className="max-w-[1100px] mx-auto px-4 pb-10">
+      {/* LEFT-ANCHORED DETAILS */}
+      <div className="max-w-[1100px] px-6 pb-10 text-left">
         <details className="bg-gray-50 rounded-lg p-5">
           <summary className="cursor-pointer font-semibold text-lg">Show Details</summary>
           {contentHtml && (

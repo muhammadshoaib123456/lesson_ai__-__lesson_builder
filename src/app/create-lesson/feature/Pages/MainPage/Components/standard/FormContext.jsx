@@ -62,7 +62,11 @@ export function FormProvider({ children }) {
    * grades can be fetched for the newly selected standard.
    */
   const handleStandardChange = (option) => {
-    setSelectedStandard(option);
+    // Always set a new object so that React recognises a state change even when
+    // the user reselects the same option.  Without this, reselecting the
+    // existing option would not trigger downstream effects and the subject
+    // dropdown would remain empty.
+    setSelectedStandard(option ? { ...option } : null);
     // Reset dependent fields when standard changes
     setSelectedSubject(null);
     setSelectedGrade(null);
@@ -83,7 +87,10 @@ export function FormProvider({ children }) {
    * reloaded for the new subject.
    */
   const handleSubjectChange = (option) => {
-    setSelectedSubject(option);
+    // Use a cloned object to ensure state changes propagate even when
+    // reselecting the same subject.  This triggers downstream effects
+    // correctly.
+    setSelectedSubject(option ? { ...option } : null);
     setSelectedGrade(null);
     setSelectedTopic("");
     setTopicInput("");
@@ -100,7 +107,9 @@ export function FormProvider({ children }) {
    * because a new grade might warrant a different search query.
    */
   const handleGradeChange = (option) => {
-    setSelectedGrade(option);
+    // Clone the grade option to force a state update.  This ensures that
+    // dependent values reset properly when the same grade is selected.
+    setSelectedGrade(option ? { ...option } : null);
     setSelectedTopic("");
     setTopicInput("");
     setSelectedCurriculumPoint([]);

@@ -143,7 +143,9 @@ const StandardForm = ({ register, setValue }) => {
           selectedTopic
         );
         setCurriculumData(data || []);
-        if (data) setEnlargeCurriculumModal(true);
+        // Do not automatically show the curriculum modal here.  The modal
+        // will be triggered explicitly when the user clicks the search
+        // button or the edit selection button.
       } catch (error) {
         console.error("Error fetching curriculum data:", error);
         setCurriculumData([]);
@@ -248,7 +250,13 @@ const StandardForm = ({ register, setValue }) => {
           />
           <button
             type="button"
-            onClick={() => handleTopicChange(topicInput)}
+            // When searching for relevant standards, trigger the topic change
+            // handler and explicitly open the curriculum modal.  This ensures
+            // the modal appears only in response to a deliberate user action.
+            onClick={() => {
+              handleTopicChange(topicInput);
+              setEnlargeCurriculumModal(true);
+            }}
             className="px-4 py-2 rounded-3xl bg-purple-600 hover:bg-purple-700 text-white font-semibold text-xs shadow transition"
           >
             Search Relevant Standards

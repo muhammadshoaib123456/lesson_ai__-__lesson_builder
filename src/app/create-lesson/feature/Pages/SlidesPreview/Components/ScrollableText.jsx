@@ -20,7 +20,6 @@ export default function ScrollableText({ children, maxHeight = 70 }) {
     const el = containerRef.current;
     if (!el) return;
 
-    // Recalculate when the container size or content changes
     const ro = new ResizeObserver(checkOverflow);
     ro.observe(el);
     return () => ro.disconnect();
@@ -29,12 +28,14 @@ export default function ScrollableText({ children, maxHeight = 70 }) {
   return (
     <div
       ref={containerRef}
-      className={`scrollable-text ${isOverflowing ? "overflowing" : ""}`}
-      style={{ width: "100%", maxHeight: `${maxHeight}px`, overflowY: "auto" }}
-      onScroll={checkOverflow}
+      className="scrollable-text"
+      style={{
+        width: "100%",
+        maxHeight: `${maxHeight}px`,
+        overflow: "hidden", // removed scroll
+      }}
     >
       {children}
-      {isOverflowing && <div className="scrollbar" />}
     </div>
   );
 }

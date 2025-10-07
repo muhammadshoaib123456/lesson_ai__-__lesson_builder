@@ -90,8 +90,13 @@ export default function MyLessonsPage() {
         p.title,
         p.name,
         p.subject,
-        Array.isArray(p.tags) ? p.tags.join(" ") : p.tags,
+        p.topic,
+        p.subtopic,                         // string variant
+        p.sub_topic,                        // ✅ matches your API/DB field
+        Array.isArray(p.subtopics) ? p.subtopics.join(" ") : "", // array variant
+        p.grade,
         Array.isArray(p.grades) ? p.grades.join(" ") : p.grade,
+        Array.isArray(p.tags) ? p.tags.join(" ") : p.tags,
         p.description,
       ]
         .map(norm)

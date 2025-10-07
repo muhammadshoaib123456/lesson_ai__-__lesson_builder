@@ -250,13 +250,14 @@ export function FormCurriculumPointSelectionModal({
               {selectedPoints.length}/{maxSelections} selected
             </span>
           </div>
-          <button onClick={handleCancel}>
+          <button type="button" onClick={handleCancel}>
             <X className="h-[18px] w-[18px] text-white cursor-pointer hover:text-gray-200" />
           </button>
         </div>
         {/* Tabs */}
         <div className="px-6 py-3 bg-gray-50 border-b flex gap-2">
           <button
+            type="button"
             onClick={() => setCurrentView("suggested")}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-colors ${
               currentView === "suggested"
@@ -268,6 +269,7 @@ export function FormCurriculumPointSelectionModal({
             Suggested Points ({suggestedPoints.length})
           </button>
           <button
+            type="button"
             onClick={() => setCurrentView("all")}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-colors ${
               currentView === "all"
@@ -321,19 +323,20 @@ export function FormCurriculumPointSelectionModal({
                   <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
                     <Star className="w-8 h-8 text-gray-400" />
                   </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    No suggestions for entered topic
-                  </h3>
-                  <p className="text-gray-500 mb-6 max-w-md mx-auto">
-                    We couldn’t find curriculum points that closely match your topic. You can manually choose from all available points or try changing your topic.
-                  </p>
-                  <button
-                    onClick={() => setCurrentView("all")}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-medium"
-                  >
-                    <List className="w-4 h-4" />
-                    Browse All Points
-                  </button>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                      No suggestions for entered topic
+                    </h3>
+                    <p className="text-gray-500 mb-6 max-w-md mx-auto">
+                      We couldn’t find curriculum points that closely match your topic. You can manually choose from all available points or try changing your topic.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setCurrentView("all")}
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-medium"
+                    >
+                      <List className="w-4 h-4" />
+                      Browse All Points
+                    </button>
                 </div>
               )}
             </div>
@@ -365,12 +368,14 @@ export function FormCurriculumPointSelectionModal({
         {/* Footer */}
         <div className="p-4 bg-white border-t border-gray-200 flex justify-end space-x-4 rounded-b-xl">
           <button
+            type="button"
             onClick={handleCancel}
             className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 font-semibold"
           >
             Cancel
           </button>
           <button
+            type="button"
             onClick={handleConfirm}
             disabled={selectedPoints.length === 0}
             className={`px-4 py-2 rounded-md font-semibold ${

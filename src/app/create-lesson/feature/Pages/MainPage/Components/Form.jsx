@@ -75,7 +75,15 @@ export default function Form({ handleSubmit, register, errors, setValue }) {
     () => [
       { value: "Math", label: "Math" },
       { value: "Science", label: "Science" },
-      { value: "English Language Arts", label: "English Language Arts" },
+      { value: "Language Arts", label: "Language Arts" },
+      { value: "Arts And Humanities", label: "Arts And Humanities" },
+      { value: "Life Skills", label: "Life Skills" },
+      { value: "Economics", label: "Economics" },
+      { value: "Social Studies", label: "Social Studies" },
+
+
+
+
     ],
     []
   );

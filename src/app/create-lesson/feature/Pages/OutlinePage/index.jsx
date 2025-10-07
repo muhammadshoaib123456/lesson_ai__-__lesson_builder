@@ -7,7 +7,9 @@
  * generation via FetchOutline and displays each slide's points.  Users
  * can regenerate the outline or proceed to slide creation.  This
  * component closely mirrors the working React version, adapted for
- * Next.js.
+ * Next.js.  The precondition check has been modified so that
+ * students in standards mode are not forced to provide subject and
+ * grade values.
  */
 
 import { useEffect, useRef, useState } from "react";
@@ -142,14 +144,19 @@ export default function OutlinePage({ setLoading, setFinalModal, setQueueStatus 
     }
   };
 
-  // Precondition check: redirect if mandatory fields are missing
+  // Precondition check: redirect if mandatory fields are missing.  We require
+  // socketId, topic and slides to be present.  Subject and grade are
+  // optional in state standards mode (when chosenStandard is provided).
   useEffect(() => {
     const missing = [];
     if (!socketId) missing.push("socketId");
     if (!topic) missing.push("topic");
     if (!slides) missing.push("slides");
-    if (!subject) missing.push("subject");
-    if (!grade && grade !== 0) missing.push("grade");
+    // Only require subject and grade when no standard is selected (core mode).
+    if (!chosenStandard) {
+      if (!subject) missing.push("subject");
+      if (!grade && grade !== 0) missing.push("grade");
+    }
     if (missing.length) {
       if (process.env.NODE_ENV !== "production") {
         console.warn("[OUTLINE] missing preconditions:", missing);
@@ -212,13 +219,6 @@ export default function OutlinePage({ setLoading, setFinalModal, setQueueStatus 
     </div>
   );
 }
-
-
-
-
-
-
-
 
 
 

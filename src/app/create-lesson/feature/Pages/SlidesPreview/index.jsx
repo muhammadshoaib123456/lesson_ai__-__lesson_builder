@@ -132,7 +132,8 @@ export default function SlidesPreview({ setFinalModal }) {
           { method: "POST", cache: "no-store", redirect: "follow" }
         );
         const uploadText = await uploadRes.text().catch(() => "fail");
-        if (uploadRes.ok && uploadText && uploadText !== "fail") {
+        const uploadSuccess = uploadRes.ok && uploadText && uploadText !== "fail";
+        if (uploadSuccess) {
           localStorage.setItem("url", uploadText);
         } else {
           console.warn("Upload failed:", uploadRes.status, uploadText);
@@ -140,10 +141,12 @@ export default function SlidesPreview({ setFinalModal }) {
 
         dispatch(setLoading(false));
 
-        if (upd.ok) {
+        // Only show success when both the update (upd) and upload succeed.
+        if (upd.ok && uploadSuccess) {
           toast.success("Slides Created Successfully");
           if (typeof setFinalModal === "function") setFinalModal(true);
-        } else {
+        } else if (!upd.ok) {
+          // Show a detailed error for update failures
           const msg = await (async () => {
             const ct = upd.headers.get("content-type") || "";
             if (ct.includes("application/json")) {
@@ -163,6 +166,9 @@ export default function SlidesPreview({ setFinalModal }) {
             }
           })();
           toast.error(`Error updating slides: ${msg}`);
+        } else if (!uploadSuccess) {
+          // If update succeeded but upload failed, inform the user
+          toast.error("Slides generated but failed to upload. Please try again later.");
         }
       } catch (error) {
         dispatch(setLoading(false));
