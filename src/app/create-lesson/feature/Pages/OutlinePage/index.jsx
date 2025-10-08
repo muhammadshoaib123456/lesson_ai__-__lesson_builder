@@ -31,6 +31,7 @@ export default function OutlinePage({ setLoading, setFinalModal, setQueueStatus 
   const [dataJSON, setDataJSON] = useState([]);
   const runningRef = useRef(false);
   const { socketId } = useSelector((state) => state.socket);
+
   // Pull prompt values from our unified slice.  Depending on your store
   // configuration the slice may be stored under `state.prompt` or
   // `state.promptData`.  Destructure the topic instead of reqPrompt and

@@ -50,39 +50,43 @@ export function FinalModal({ setFinalModal }) {
       });
   }
 
-  return (
-    <div
-      className="flex flex-col justify-center items-center fixed inset-0 z-[9999] backdrop-blur"
-      onClick={(event) => {
-        if (event.target.classList.contains('modals-backdrop')) {
-          setFinalModal(false);
-        }
-      }}
-    >
-    <div className="relative z-20 max-w-lg w-[90%] sm:w-[75%] md:w-[60%] bg-white rounded-2xl shadow-xl p-6 sm:p-8 flex flex-col items-center">
-  {/* Success icon */}
-  <svg
-    className="w-16 h-16 sm:w-20 sm:h-20 mb-4"
-    viewBox="0 0 160 160"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      d="M160.5 80C160.5 124.183 124.683 160 80.5 160C36.3171 160 0.5 124.183 0.5 80C0.5 35.8171 36.3171 0 80.5 0C124.683 0 160.5 35.8171 160.5 80ZM71.2464 122.359L130.601 63.0045C132.617 60.989 132.617 57.721 130.601 55.7055L123.302 48.4064C121.287 46.3906 118.019 46.3906 116.003 48.4064L67.5968 96.8123L44.9971 74.2126C42.9816 72.1971 39.7135 72.1971 37.6977 74.2126L30.3987 81.5116C28.3832 83.5271 28.3832 86.7952 30.3987 88.8106L63.9471 122.359C65.9629 124.375 69.2306 124.375 71.2464 122.359Z"
-      fill="#7DC243"
-    />
-  </svg>
+//   return (
+//     <div
+//       className="flex flex-col justify-center items-center fixed inset-0 z-[9999] backdrop-blur"
+//       onClick={(event) => {
+//         if (event.target.classList.contains('modals-backdrop')) {
+//           setFinalModal(false);
+//         }
+//       }}
+//     >
 
-  {/* Success message */}
-  <h2 className="text-green-primary text-center text-lg sm:text-xl font-semibold">
-    Presentation Completed Successfully
-  </h2>
-</div>
 
-      {/* Backdrop behind modal */}
-      <div className="absolute inset-0 bg-black opacity-50 z-10 modals-backdrop"></div>
-    </div>
-  );
+//     <div className="relative z-20 max-w-lg w-[90%] sm:w-[75%] md:w-[60%] bg-white rounded-2xl shadow-xl p-6 sm:p-8 flex flex-col items-center">
+ 
+//   <svg
+//     className="w-16 h-16 sm:w-20 sm:h-20 mb-4"
+//     viewBox="0 0 160 160"
+//     fill="none"
+//     xmlns="http://www.w3.org/2000/svg"
+//   >
+//     <path
+//       d="M160.5 80C160.5 124.183 124.683 160 80.5 160C36.3171 160 0.5 124.183 0.5 80C0.5 35.8171 36.3171 0 80.5 0C124.683 0 160.5 35.8171 160.5 80ZM71.2464 122.359L130.601 63.0045C132.617 60.989 132.617 57.721 130.601 55.7055L123.302 48.4064C121.287 46.3906 118.019 46.3906 116.003 48.4064L67.5968 96.8123L44.9971 74.2126C42.9816 72.1971 39.7135 72.1971 37.6977 74.2126L30.3987 81.5116C28.3832 83.5271 28.3832 86.7952 30.3987 88.8106L63.9471 122.359C65.9629 124.375 69.2306 124.375 71.2464 122.359Z"
+//       fill="#7DC243"
+//     />
+//   </svg>
+
+  
+//   <h2 className="text-green-primary text-center text-lg sm:text-xl font-semibold">
+//     Presentation Completed Successfully
+//   </h2>
+// </div>
+
+
+
+//       {/* Backdrop behind modal */}
+//       <div className="absolute inset-0 bg-black opacity-50 z-10 modals-backdrop"></div>
+//     </div>
+//   );
 }
 
 export function GoogleSlidesSVG() {

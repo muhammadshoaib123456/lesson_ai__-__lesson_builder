@@ -3,13 +3,16 @@ import Footer from "@/components/Footer";
 
 export default function PricingPage() {
   return (
-    <>
+    <div className="flex flex-col min-h-screen text-black">
       <Header />
-      <div className="max-w-[900px] mx-auto px-4 py-10 text-black">
+
+      {/* Main content expands to fill space */}
+      <main className="flex-grow max-w-[900px] mx-auto px-4 py-10 w-full">
         <h1 className="text-3xl font-bold mb-6">Pricing & Subscription</h1>
         <p className="text-gray-600">Show your plans here.</p>
-      </div>
+      </main>
+
       <Footer />
-    </>
+    </div>
   );
 }

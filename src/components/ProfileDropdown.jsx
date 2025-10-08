@@ -4,17 +4,10 @@ import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 
-/**
- * A self-contained avatar + dropdown used in Header and HeroSection.
- * - Wider than the grade/subject menus (w-72) per your requirement
- * - Items: My Profile, My Library, Pricing & Subscription, Logout
- * - Shows initials bubble + (optionally) the user's name/email
- */
 export default function ProfileDropdown({
-  showLabel = true,          // show user's name/email next to avatar
-  labelClassName = "",       // extra classes for the label text
-  align = "right",           // menu alignment
-  className = "",            // wrapper classes
+  showLabel = true,
+  labelClassName = "",
+  className = "",
 }) {
   const { data: session } = useSession();
   const [open, setOpen] = useState(false);
@@ -30,58 +23,117 @@ export default function ProfileDropdown({
 
   if (!session) return null;
 
-  const nameOrEmail = session?.user?.name || session?.user?.email || "";
-  const initials = nameOrEmail
-    .split(" ")
-    .map((s) => s?.[0]?.toUpperCase())
-    .filter(Boolean)
-    .slice(0, 2)
-    .join("");
-
-  // alignment class
-  const side = align === "left" ? "left-0" : "right-0";
+  const firstName =
+    session?.user?.firstName ||
+    session?.user?.name?.split(" ")?.[0] ||
+    session?.user?.email?.split("@")?.[0] ||
+    "";
 
   return (
     <div className={`relative ${className}`} ref={boxRef}>
+      {/* Capsule-style profile button */}
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-2"
+        className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white text-purple-700 font-semibold shadow border border-purple-300 hover:bg-purple-50 transition"
         aria-haspopup="menu"
         aria-expanded={open}
       >
-        <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center font-bold">
-          {initials || "?"}
-        </div>
+        {/* User icon */}
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+<mask id="mask0_428_49802" style={{maskType:"alpha"}} maskUnits="userSpaceOnUse" x="0" y="0" width="12" height="12">
+<rect width="12" height="12" fill="#D9D9D9"/>
+</mask>
+<g mask="url(#mask0_428_49802)">
+<path d="M6 6C5.3125 6 4.72396 5.75521 4.23438 5.26562C3.74479 4.77604 3.5 4.1875 3.5 3.5C3.5 2.8125 3.74479 2.22396 4.23438 1.73438C4.72396 1.24479 5.3125 1 6 1C6.6875 1 7.27604 1.24479 7.76562 1.73438C8.25521 2.22396 8.5 2.8125 8.5 3.5C8.5 4.1875 8.25521 4.77604 7.76562 5.26562C7.27604 5.75521 6.6875 6 6 6ZM1 9.75V9.25C1 8.89583 1.09115 8.57031 1.27344 8.27344C1.45573 7.97656 1.69792 7.75 2 7.59375C2.64583 7.27083 3.30208 7.02865 3.96875 6.86719C4.63542 6.70573 5.3125 6.625 6 6.625C6.6875 6.625 7.36458 6.70573 8.03125 6.86719C8.69792 7.02865 9.35417 7.27083 10 7.59375C10.3021 7.75 10.5443 7.97656 10.7266 8.27344C10.9089 8.57031 11 8.89583 11 9.25V9.75C11 10.0938 10.8776 10.388 10.6328 10.6328C10.388 10.8776 10.0938 11 9.75 11H2.25C1.90625 11 1.61198 10.8776 1.36719 10.6328C1.1224 10.388 1 10.0938 1 9.75Z" fill="#9500DE"/>
+</g>
+</svg>
+
+
         {showLabel && (
-          <span className={`hidden sm:block truncate max-w-[200px] ${labelClassName}`}>
-            {nameOrEmail}
+          <span className={`text-sm font-semibold truncate ${labelClassName}`}>
+            {firstName}
           </span>
         )}
       </button>
 
+      {/* Dropdown Menu - centered below the button */}
       {open && (
         <div
-          className={`absolute ${side} mt-2 w-72 rounded-xl bg-white text-black shadow-xl ring-1 ring-black/5 p-2 z-[999]`}
+          className={`absolute left-1/2 -translate-x-1/2 mt-2 w-55 rounded-xl bg-white text-purple-700 shadow-lg ring-1 ring-black/5 z-[999] overflow-hidden`}
           role="menu"
         >
-          <div className="px-3 py-2 text-sm font-semibold border-b">Account</div>
-
-          <Link href="/profile" className="block px-3 py-2 hover:bg-gray-100 rounded-md" role="menuitem">
-            My Profile
-          </Link>
-          <Link href="/library" className="block px-3 py-2 hover:bg-gray-100 rounded-md" role="menuitem">
-            My Library
-          </Link>
-          <Link href="/pricing" className="block px-3 py-2 hover:bg-gray-100 rounded-md" role="menuitem">
-            Pricing &amp; Subscription
-          </Link>
-
-          <button
-            className="w-full text-left px-3 py-2 hover:bg-gray-100 rounded-md"
-            onClick={() => signOut({ callbackUrl: "/login" })}
+          {/* My Profile */}
+          <Link
+            href="/profile"
+            className="flex items-center gap-3 text-[#9500DE] px-4 py-2.5 hover:bg-purple-50 transition-colors text-sm font-medium"
             role="menuitem"
           >
+           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<mask id="mask0_696_464" style={{maskType:"alpha"}} maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="20">
+<rect width="20" height="20" fill="#D9D9D9"/>
+</mask>
+<g mask="url(#mask0_696_464)">
+<path d="M3.84625 17.5C3.46264 17.5 3.14236 17.3715 2.88542 17.1146C2.62847 16.8576 2.5 16.5374 2.5 16.1538V8.01292C2.5 7.62931 2.62847 7.30903 2.88542 7.05208C3.14236 6.79514 3.46264 6.66667 3.84625 6.66667H8.33333V3.33333C8.33333 3.09931 8.41375 2.90194 8.57458 2.74125C8.73528 2.58042 8.93264 2.5 9.16667 2.5H10.8333C11.0674 2.5 11.2647 2.58042 11.4254 2.74125C11.5862 2.90194 11.6667 3.09931 11.6667 3.33333V6.66667H16.1538C16.5374 6.66667 16.8576 6.79514 17.1146 7.05208C17.3715 7.30903 17.5 7.62931 17.5 8.01292V16.1538C17.5 16.5374 17.3715 16.8576 17.1146 17.1146C16.8576 17.3715 16.5374 17.5 16.1538 17.5H3.84625ZM3.84625 16.6667H16.1538C16.3033 16.6667 16.4263 16.6186 16.5225 16.5225C16.6186 16.4263 16.6667 16.3033 16.6667 16.1538V8.01292C16.6667 7.86333 16.6186 7.74042 16.5225 7.64417C16.4263 7.54806 16.3033 7.5 16.1538 7.5H11.6667V8.14104C11.6667 8.36438 11.5836 8.5591 11.4175 8.72521C11.2514 8.89132 11.0567 8.97438 10.8333 8.97438H9.16667C8.94333 8.97438 8.74861 8.89132 8.5825 8.72521C8.41639 8.5591 8.33333 8.36438 8.33333 8.14104V7.5H3.84625C3.69667 7.5 3.57375 7.54806 3.4775 7.64417C3.38139 7.74042 3.33333 7.86333 3.33333 8.01292V16.1538C3.33333 16.3033 3.38139 16.4263 3.4775 16.5225C3.57375 16.6186 3.69667 16.6667 3.84625 16.6667ZM5.25646 14.5192H9.74354V14.4006C9.74354 14.2073 9.69097 14.0312 9.58583 13.8725C9.48056 13.7139 9.33653 13.5897 9.15375 13.5C8.88667 13.3857 8.61611 13.2999 8.34208 13.2427C8.06806 13.1856 7.78736 13.1571 7.5 13.1571C7.21264 13.1571 6.93194 13.1856 6.65792 13.2427C6.38389 13.2999 6.11333 13.3857 5.84625 13.5C5.66347 13.5897 5.51944 13.7139 5.41417 13.8725C5.30903 14.0312 5.25646 14.2073 5.25646 14.4006V14.5192ZM11.6667 13.2371H15V12.5H11.6667V13.2371ZM7.5 12.5C7.7725 12.5 8.00618 12.4025 8.20104 12.2075C8.39604 12.0125 8.49354 11.7788 8.49354 11.5065C8.49354 11.234 8.39604 11.0002 8.20104 10.8052C8.00618 10.6103 7.7725 10.5129 7.5 10.5129C7.2275 10.5129 6.99382 10.6103 6.79896 10.8052C6.60396 11.0002 6.50646 11.234 6.50646 11.5065C6.50646 11.7788 6.60396 12.0125 6.79896 12.2075C6.99382 12.4025 7.2275 12.5 7.5 12.5ZM11.6667 11.25H15V10.5129H11.6667V11.25ZM9.16667 8.14104H10.8333V3.33333H9.16667V8.14104Z" fill="#9500DE"/>
+</g>
+</svg>
+
+            My Profile
+          </Link>
+<hr className="border-t border-gray-300 mx-3" />
+
+          {/* My Lessons */}
+          <Link
+            href="/lessons"
+            className="flex items-center text-[#9500DE] gap-3 px-4 py-2.5 hover:bg-purple-50 transition-colors text-sm font-medium"
+            role="menuitem"
+          >
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<mask id="mask0_696_471" style={{maskType:"alpha"}} maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="20">
+<rect width="20" height="20" fill="#D9D9D9"/>
+</mask>
+<g mask="url(#mask0_696_471)">
+<path d="M9.96922 15.609C9.29186 15.1453 8.56963 14.789 7.80255 14.54C7.03547 14.2911 6.24061 14.1667 5.41797 14.1667C4.98422 14.1667 4.55818 14.203 4.13984 14.2756C3.72165 14.3483 3.31436 14.4647 2.91797 14.625C2.61561 14.7457 2.33172 14.712 2.0663 14.524C1.80075 14.336 1.66797 14.077 1.66797 13.7469V5.72438C1.66797 5.51813 1.72484 5.33222 1.83859 5.16667C1.95234 5.00111 2.10165 4.88361 2.28651 4.81417C2.77582 4.59833 3.28491 4.43646 3.8138 4.32854C4.34269 4.22063 4.87741 4.16667 5.41797 4.16667C6.23422 4.16667 7.02505 4.29222 7.79047 4.54333C8.55602 4.79431 9.29297 5.12813 10.0013 5.54479V14.6025C10.6989 14.1581 11.4394 13.8354 12.2226 13.6346C13.0056 13.4337 13.793 13.3333 14.5846 13.3333C15.0419 13.3333 15.4566 13.359 15.829 13.4102C16.2014 13.4615 16.5985 13.5491 17.0205 13.6731C17.138 13.7052 17.2475 13.7078 17.349 13.681C17.4505 13.6544 17.5013 13.5662 17.5013 13.4167V4.69875C17.5814 4.71472 17.6581 4.73687 17.7313 4.76521C17.8045 4.79354 17.8742 4.83118 17.9405 4.87813C18.0719 4.94757 18.1704 5.04639 18.2361 5.17458C18.3018 5.30292 18.3346 5.44347 18.3346 5.59625V13.7148C18.3346 14.0449 18.1939 14.3013 17.9123 14.484C17.6308 14.6667 17.3228 14.7031 16.9884 14.5929C16.6028 14.4433 16.2089 14.3349 15.8065 14.2677C15.4043 14.2003 14.997 14.1667 14.5846 14.1667C13.7513 14.1667 12.9404 14.2831 12.1519 14.516C11.3635 14.749 10.6359 15.1133 9.96922 15.609ZM11.668 12.5V5.41667L15.8346 1.25V8.75L11.668 12.5ZM9.16797 14.2067V6.03688C8.58144 5.71424 7.97484 5.46076 7.34818 5.27646C6.72165 5.09215 6.07825 5 5.41797 5C4.90408 5 4.42811 5.04597 3.99005 5.13792C3.552 5.22972 3.15727 5.34611 2.80589 5.48708C2.72033 5.51917 2.64818 5.56458 2.58943 5.62333C2.53068 5.68208 2.5013 5.75424 2.5013 5.83979V13.4535C2.5013 13.6031 2.55207 13.6912 2.65359 13.7179C2.75512 13.7446 2.86464 13.7366 2.98214 13.694C3.31866 13.5774 3.68373 13.4882 4.07734 13.4262C4.47109 13.3643 4.91797 13.3333 5.41797 13.3333C6.16366 13.3333 6.86422 13.4204 7.51964 13.5946C8.17519 13.7688 8.72464 13.9728 9.16797 14.2067Z" fill="#9500DE"/>
+</g>
+</svg>
+
+            My Lessons
+          </Link>
+<hr className="border-t border-gray-300 mx-3" />
+
+          {/* Pricing & Subscription */}
+          <Link
+            href="/pricing"
+ className="flex items-center gap-3 px-4 py-2.5 text-[#9500DE] hover:bg-purple-50 transition-colors text-sm font-medium"            role="menuitem"
+          >
+         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<mask id="mask0_696_478" style={{maskType:"alpha"}} maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="20">
+<rect width="20" height="20" fill="#D9D9D9"/>
+</mask>
+<g mask="url(#mask0_696_478)">
+<path d="M9.87708 15.2083H10.7104V14.375H11.9604C12.0789 14.375 12.178 14.3352 12.2577 14.2556C12.3373 14.176 12.3771 14.0769 12.3771 13.9583V11.4583C12.3771 11.3397 12.3373 11.2406 12.2577 11.161C12.178 11.0815 12.0789 11.0417 11.9604 11.0417H9.04375V9.375H12.3771V8.54167H10.7104V7.70833H9.87708V8.54167H8.62708C8.50847 8.54167 8.40938 8.58146 8.32979 8.66104C8.25021 8.74062 8.21042 8.83972 8.21042 8.95833V11.4583C8.21042 11.5769 8.25021 11.676 8.32979 11.7556C8.40938 11.8352 8.50847 11.875 8.62708 11.875H11.5438V13.5417H8.21042V14.375H9.87708V15.2083ZM5.51813 17.5C5.13451 17.5 4.81424 17.3715 4.55729 17.1146C4.30035 16.8576 4.17188 16.5374 4.17188 16.1538V3.84625C4.17188 3.46264 4.30035 3.14236 4.55729 2.88542C4.81424 2.62847 5.13451 2.5 5.51813 2.5H12.0885L15.8385 6.25V16.1538C15.8385 16.5374 15.7101 16.8576 15.4531 17.1146C15.1962 17.3715 14.8759 17.5 14.4923 17.5H5.51813ZM11.6719 6.47438V3.33333H5.51813C5.38979 3.33333 5.27222 3.38674 5.16542 3.49354C5.05861 3.60035 5.00521 3.71792 5.00521 3.84625V16.1538C5.00521 16.2821 5.05861 16.3997 5.16542 16.5065C5.27222 16.6133 5.38979 16.6667 5.51813 16.6667H14.4923C14.6206 16.6667 14.7382 16.6133 14.845 16.5065C14.9518 16.3997 15.0052 16.2821 15.0052 16.1538V6.47438H11.6719Z" fill="#9500DE"/>
+</g>
+</svg>
+
+            Pricing & Subscription
+          </Link>
+<hr className="border-t border-gray-300 mx-3" />
+
+          {/* Logout */}
+          <button
+            onClick={() => signOut({ callbackUrl: "/login" })}
+            className="flex items-center gap-3 w-full text-left px-4 py-2.5 text-red-600 hover:bg-red-50 transition-colors text-sm font-medium"
+            role="menuitem"
+          >
+           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<mask id="mask0_696_484" style={{maskType:"alpha"}} maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="20">
+<rect width="20" height="20" fill="#D9D9D9"/>
+</mask>
+<g mask="url(#mask0_696_484)">
+<path d="M4.67828 16.6668C4.29467 16.6668 3.97439 16.5384 3.71745 16.2814C3.4605 16.0245 3.33203 15.7042 3.33203 15.3206V4.67975C3.33203 4.29613 3.4605 3.97586 3.71745 3.71891C3.97439 3.46197 4.29467 3.3335 4.67828 3.3335H9.59807C9.71668 3.3335 9.81578 3.37329 9.89537 3.45287C9.97495 3.53245 10.0147 3.63155 10.0147 3.75016C10.0147 3.86877 9.97495 3.96787 9.89537 4.04745C9.81578 4.12704 9.71668 4.16683 9.59807 4.16683H4.67828C4.54995 4.16683 4.43238 4.22023 4.32557 4.32704C4.21877 4.43384 4.16536 4.55141 4.16536 4.67975V15.3206C4.16536 15.4489 4.21877 15.5665 4.32557 15.6733C4.43238 15.7801 4.54995 15.8335 4.67828 15.8335H9.59807C9.71668 15.8335 9.81578 15.8733 9.89537 15.9529C9.97495 16.0325 10.0147 16.1316 10.0147 16.2502C10.0147 16.3688 9.97495 16.4679 9.89537 16.5475C9.81578 16.627 9.71668 16.6668 9.59807 16.6668H4.67828ZM15.0483 10.4168H8.07557C7.95696 10.4168 7.85786 10.377 7.77828 10.2975C7.6987 10.2179 7.65891 10.1188 7.65891 10.0002C7.65891 9.88155 7.6987 9.78245 7.77828 9.70287C7.85786 9.62329 7.95696 9.5835 8.07557 9.5835H15.0483L13.4058 7.94079C13.3277 7.86287 13.2861 7.76891 13.2808 7.65891C13.2754 7.54877 13.317 7.4478 13.4058 7.356C13.4944 7.26405 13.5927 7.21732 13.7006 7.21579C13.8085 7.21412 13.9084 7.25926 14.0004 7.3512L16.1783 9.52891C16.3129 9.66364 16.3802 9.82072 16.3802 10.0002C16.3802 10.1796 16.3129 10.3367 16.1783 10.4714L14.0004 12.6491C13.9191 12.7304 13.8227 12.7729 13.711 12.7766C13.5993 12.7804 13.4976 12.7363 13.4058 12.6443C13.317 12.5525 13.2735 12.4534 13.2752 12.347C13.2767 12.2408 13.3218 12.1434 13.4106 12.0547L15.0483 10.4168Z" fill="#B3261E"/>
+</g>
+</svg>
+
             Log out
           </button>
         </div>

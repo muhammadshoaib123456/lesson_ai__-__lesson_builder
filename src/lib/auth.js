@@ -6,7 +6,7 @@ import bcrypt from "bcrypt";
 
 export const authOptions = {
   adapter: PrismaAdapter(prisma),
-  session: { strategy: "jwt", maxAge: 60 * 60 * 24 * 30 },
+  session: { strategy: "jwt", maxAge: 60 * 60 * 24 * 30 }, // 30 days
   secret: process.env.NEXTAUTH_SECRET,
   pages: { signIn: "/login" },
   providers: [
@@ -26,25 +26,40 @@ export const authOptions = {
         const ok = await bcrypt.compare(password, user.passwordHash);
         if (!ok) return null;
 
-        return { id: user.id, name: user.name, email: user.email, image: user.image || null };
+        // ✅ Include firstName and lastName when returning user
+        return {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          firstName: user.firstName || "",
+          lastName: user.lastName || "",
+          image: user.image || null,
+        };
       },
     }),
   ],
   callbacks: {
     async jwt({ token, user }) {
+      // ✅ When user logs in, attach all fields to the token
       if (user) {
         token.id = user.id;
         token.name = user.name;
         token.email = user.email;
+        token.firstName = user.firstName || "";
+        token.lastName = user.lastName || "";
       }
       return token;
     },
     async session({ session, token }) {
-      // ensure session.user exists before assigning
+      // ✅ Make sure the session has the same fields
       session.user = session.user || {};
+
       if (token?.id) session.user.id = token.id;
       if (token?.name) session.user.name = token.name;
       if (token?.email) session.user.email = token.email;
+      if (token?.firstName) session.user.firstName = token.firstName;
+      if (token?.lastName) session.user.lastName = token.lastName;
+
       return session;
     },
   },

@@ -1,20 +1,9 @@
 "use client";
 
-/*
- * StandardForm.jsx
- *
- * Standards-mode multi-step form.  Lets the user pick a standard,
- * subject, grade, topic, and specific curriculum point.
- * Integrated with react-hook-form and shared FormContext.
- */
-
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useFormContext as useStdFormContext } from "./FormContext";
 import { getData } from "./getFormData";
-// Import input and select components from the main components folder.  The
-// standard‑components directory has been removed in favour of using
-// shared components with behaviour flags.
 import { FormInput } from "./standard-components/FormInput";
 import { FormSelect } from "./standard-components/FormSelect";
 import { FormCurriculumPointSelectionModal } from "./standard-components/FormCurriculumPointSelectionModal";
@@ -53,6 +42,7 @@ const StandardForm = ({ register, setValue }) => {
   } = useStdFormContext();
 
   const [enlargeCurriculumModal, setEnlargeCurriculumModal] = useState(false);
+  const [isFetchingCurriculum, setIsFetchingCurriculum] = useState(false);
 
   // Fetch standards
   useEffect(() => {
@@ -123,48 +113,53 @@ const StandardForm = ({ register, setValue }) => {
     setGradeOptions,
   ]);
 
-  // Fetch curriculum data when topic changes
-  useEffect(() => {
+  /**
+   * ✅ FIXED LOGIC:
+   * The modal now waits until curriculum data has been fetched successfully,
+   * then automatically opens (just like your working React example).
+   */
+  const handleSearchCurriculum = async () => {
     if (
       !standardModeEnabled ||
       !selectedStandard ||
       !selectedSubject ||
       !selectedGrade ||
-      !selectedTopic
-    )
+      !topicInput
+    ) {
       return;
-    const fetchCurriculumData = async () => {
-      try {
-        const data = await getData(
-          "standards/curriculum",
-          selectedGrade.value,
-          selectedStandard.value,
-          selectedSubject.value,
-          selectedTopic
-        );
-        setCurriculumData(data || []);
-        // Do not automatically show the curriculum modal here.  The modal
-        // will be triggered explicitly when the user clicks the search
-        // button or the edit selection button.
-      } catch (error) {
-        console.error("Error fetching curriculum data:", error);
-        setCurriculumData([]);
-      }
-    };
-    fetchCurriculumData();
-  }, [
-    standardModeEnabled,
-    selectedStandard,
-    selectedSubject,
-    selectedGrade,
-    selectedTopic,
-    setCurriculumData,
-  ]);
+    }
 
-  // Close the curriculum modal whenever any of the dependent selections
-  // (standard, subject, grade, or topic) become empty.  Without this
-  // effect, navigating back to the main page or clearing a field would
-  // leave the modal open, resulting in a poor user experience.
+    setIsFetchingCurriculum(true);
+    try {
+      // trigger topic change for context consistency
+      handleTopicChange(topicInput);
+
+      // fetch curriculum data
+      const data = await getData(
+        "standards/curriculum",
+        selectedGrade.value,
+        selectedStandard.value,
+        selectedSubject.value,
+        topicInput
+      );
+
+      setCurriculumData(data || []);
+
+      // ✅ Only open modal after data is successfully loaded
+      if (data && Object.keys(data).length > 0) {
+        setEnlargeCurriculumModal(true);
+      } else {
+        alert("No curriculum data found for this topic.");
+      }
+    } catch (error) {
+      console.error("Error fetching curriculum data:", error);
+      setCurriculumData([]);
+    } finally {
+      setIsFetchingCurriculum(false);
+    }
+  };
+
+  // Close modal if user clears dependencies
   useEffect(() => {
     if (
       !standardModeEnabled ||
@@ -182,11 +177,6 @@ const StandardForm = ({ register, setValue }) => {
     selectedGrade,
     selectedTopic,
   ]);
-
-  // No need to synchronise label fields or full curriculum point data in
-  // this implementation.  The selected values are directly registered
-  // via react-hook-form and the curriculum point array is written
-  // through the modal's confirm handler.
 
   return (
     <div>
@@ -236,7 +226,7 @@ const StandardForm = ({ register, setValue }) => {
         />
       )}
 
-      {/* Topic input */}
+      {/* Topic input + button */}
       {selectedStandard && selectedSubject && selectedGrade && (
         <div className="flex flex-col sm:flex-row gap-2 items-center">
           <FormInput
@@ -250,16 +240,15 @@ const StandardForm = ({ register, setValue }) => {
           />
           <button
             type="button"
-            // When searching for relevant standards, trigger the topic change
-            // handler and explicitly open the curriculum modal.  This ensures
-            // the modal appears only in response to a deliberate user action.
-            onClick={() => {
-              handleTopicChange(topicInput);
-              setEnlargeCurriculumModal(true);
-            }}
-            className="px-4 py-2 rounded-3xl bg-purple-600 hover:bg-purple-700 text-white font-semibold text-xs shadow transition"
+            onClick={handleSearchCurriculum}
+            disabled={isFetchingCurriculum}
+            className={`px-4 py-2 rounded-3xl ${
+              isFetchingCurriculum
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-purple-600 hover:bg-purple-700"
+            } text-white font-semibold text-xs shadow transition`}
           >
-            Search Relevant Standards
+            {isFetchingCurriculum ? "Loading..." : "Search Relevant Standards"}
           </button>
         </div>
       )}
@@ -278,7 +267,7 @@ const StandardForm = ({ register, setValue }) => {
           />
         )}
 
-      {/* Curriculum selection modal */}
+      {/* Curriculum modal */}
       {enlargeCurriculumModal && (
         <FormCurriculumPointSelectionModal
           enlarge={enlargeCurriculumModal}
@@ -291,8 +280,7 @@ const StandardForm = ({ register, setValue }) => {
         />
       )}
 
-      {/* Hidden field for curriculum points.  This ensures the array of
-          selected curriculum points is included in the form data. */}
+      {/* Hidden field for form data */}
       <input type="hidden" {...register("curriculumPoint")} />
     </div>
   );

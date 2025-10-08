@@ -9,30 +9,30 @@ datasource db {
 }
 
 model Presentation {
-  id                         Int      @id @default(autoincrement())
-  slug                       String   @unique
-  name                       String
-  grade                      String
-  subject                    String
-  topic                      String?
-  sub_topic                  String?
-  thumbnail_alt_text         String?
-  thumbnail                  String?
-  presentation_content       String?
-  presentation_view_link     String
-  rating                     Float?
-  reviews                    Int?
-  download_ppt_url           String?
-  download_pdf_url           String?
-  slides_export_link_url     String?
-  meta_description           String?
-  meta_titles                String?
-  summary                    String?
-  createdAt                  DateTime @default(now())
-  updatedAt                  DateTime @updatedAt
+  id                     Int      @id @default(autoincrement())
+  slug                   String   @unique
+  name                   String
+  grade                  String
+  subject                String
+  topic                  String?
+  sub_topic              String?
+  thumbnail_alt_text     String?
+  thumbnail              String?
+  presentation_content   String?
+  presentation_view_link String
+  rating                 Float?
+  reviews                Int?
+  download_ppt_url       String?
+  download_pdf_url       String?
+  slides_export_link_url String?
+  meta_description       String?
+  meta_titles            String?
+  summary                String?
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
 
   // reverse relation
-  savedBy                    SavedPresentation[]
+  savedBy                SavedPresentation[]
 
   @@index([subject])
   @@index([grade])
@@ -43,7 +43,12 @@ model Presentation {
 /* ---------- NextAuth models + reset tokens ---------- */
 model User {
   id                 String    @id @default(cuid())
-  name               String?
+  
+  // ✅ New name fields
+  firstName          String?
+  lastName           String?
+  name               String?   // (still useful for full name display)
+
   email              String    @unique
   emailVerified      DateTime?
   image              String?

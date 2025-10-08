@@ -131,6 +131,7 @@ export default function SlidesPreview({ setFinalModal }) {
           `/api/lesson-builder/slides/upload?socketID=${encodeURIComponent(socketId)}`,
           { method: "POST", cache: "no-store", redirect: "follow" }
         );
+        
         const uploadText = await uploadRes.text().catch(() => "fail");
         const uploadSuccess = uploadRes.ok && uploadText && uploadText !== "fail";
         if (uploadSuccess) {
@@ -142,9 +143,24 @@ export default function SlidesPreview({ setFinalModal }) {
         dispatch(setLoading(false));
 
         // Only show success when both the update (upd) and upload succeed.
-        if (upd.ok && uploadSuccess) {
-          toast.success("Slides Created Successfully");
-          if (typeof setFinalModal === "function") setFinalModal(true);
+      if (upd.ok && uploadSuccess) {
+  toast.success("Slides Created Successfully");
+  if (typeof setFinalModal === "function") setFinalModal(true);
+
+  // ✅ Call your success URL when slides generate successfully
+  try {
+    const successgen = await fetch(
+      `https://builder.lessn.ai:8031/get_saved_routes?socketID=${encodeURIComponent(socketId)}`,
+      { method: "GET", cache: "no-store", redirect: "follow" }
+    );
+    if (!successgen.ok) {
+      console.warn("Success route fetch failed:", successgen.status);
+    }
+  } catch (err) {
+    console.error("Error calling success URL:", err);
+  }
+
+
         } else if (!upd.ok) {
           // Show a detailed error for update failures
           const msg = await (async () => {
